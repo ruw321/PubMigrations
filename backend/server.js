@@ -11,29 +11,29 @@ const app = express();
 // whitelist localhost 3000
 app.use(cors({ credentials: true, origin: ['http://localhost:3000'] }));
 
-// Route 1 - register as GET 
-app.get('/hello', routes.hello)
+// Route 1 - 
+app.get('/migration', routes.getMigrations)
 
-// Route 2 - register as GET 
-app.get('/jersey/:choice', routes.jersey)
+// // Route 2 - 
+app.get('/filterResearchers', routes.filterResearchers)
 
-// Route 3 - register as GET 
-app.get('/matches/:league', routes.all_matches)
+// // Route 3 
+app.get('/paper/words', routes.filterPaperWords)
 
-// Route 4 - register as GET 
-app.get('/players', routes.all_players)
+// // Route 4 
+app.get('/paper/publications', routes.filterPaperPublication)
 
-// Route 5 - register as GET 
-app.get('/match', routes.match)
+// // Route 5 
+app.get('/researchers/top', routes.topResearcher)
 
-// Route 6 - register as GET 
-app.get('/player', routes.player)
+// // Route 6 - register as GET 
+app.get('/paper/totalbycountry', routes.getTotalPaperByCountry)
 
-// Route 7 - register as GET 
-app.get('/search/matches', routes.search_matches)
+// // Route 7 - register as GET 
+// app.get('/search/matches', routes.search_matches)
 
-// Route 8 - register as GET 
-app.get('/search/players', routes.search_players)
+// // Route 8 - register as GET 
+// app.get('/search/players', routes.search_players)
 
 
 
