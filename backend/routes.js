@@ -1,6 +1,6 @@
 const config = require("./config.json");
 const mysql = require("mysql");
-const e = require("express");
+// const e = require("express");
 
 // TODO: fill in your connection details here
 const connection = mysql.createConnection({
@@ -12,6 +12,78 @@ const connection = mysql.createConnection({
   multipleStatements: true
 });
 connection.connect();
+
+// hekper function
+function processSearchWords(words) {
+  let wordList = words.split(',');
+  wordList.forEach(function(part, index, theArray) {
+    theArray[index] = `'${theArray[index]}'`;
+  }); 
+  return wordList.toString();
+}
+
+// helper function
+function multipleWhere(req, integerProperty, sqlQuery) {
+  let firstProperty = true;
+  for (var propName in req.query) {
+    if (req.query.hasOwnProperty(propName)) {
+      if (firstProperty) {
+        if (integerProperty.includes(propName)) {
+          sqlQuery += `WHERE ${propName} = ${req.query[propName]} `;
+        } else {
+          sqlQuery += `WHERE ${propName} = '${req.query[propName]}' `;
+        }
+        firstProperty = false;
+      } else {
+        if (integerProperty.includes(propName)) {
+          sqlQuery += `AND ${propName} = ${req.query[propName]} `;
+        } else {
+          sqlQuery += `AND ${propName} = '${req.query[propName]}' `;
+        }      
+      }
+    }
+  }
+  return sqlQuery;
+}
+
+// create the views when the server starts
+async function createViews() {
+  let sqlQuery = `
+  CREATE OR REPLACE VIEW AuthorCountriesOrgYear (ANDID, BeginYear, Country, Organization) AS (
+    SELECT ANDID, BeginYear, Country, Organization
+    FROM Employment
+    UNION
+    (SELECT ANDID, BeginYear, Country, Organization
+    FROM Education)
+    ORDER BY ANDID ASC, BeginYear DESC
+  );
+  CREATE OR REPLACE VIEW PmidAndidInfo (PMID, ANDID, BeginYear, Country, Organization) AS (
+    WITH temp1 AS (
+      SELECT * FROM Papers
+      NATURAL JOIN Writes
+      WHERE AuOrder = 1
+    ),
+    temp2 AS (
+      SELECT PMID, temp1.ANDID AS ANDID, PubYear, BeginYear, Country, Organization
+      FROM temp1, AuthorCountriesOrgYear
+      WHERE temp1.ANDID = AuthorCountriesOrgYear.ANDID
+      AND temp1.PubYear >= AuthorCountriesOrgYear.BeginYear
+    ),
+    temp3 AS (
+      SELECT PMID, ANDID, MAX(BeginYear) AS BeginYear
+      FROM temp2
+      GROUP BY ANDID, PMID
+    )
+    SELECT PMID, ANDID, BeginYear, Country, Organization
+    FROM temp2
+    WHERE (PMID, ANDID, BeginYear) IN (SELECT * FROM temp3)
+  );
+  `;
+
+  // we have implemented this for you to see how to return results by querying the database
+  connection.query(sqlQuery);
+}
+createViews();
 
 // Query 13
 async function getBestAuthors(req, res) {
@@ -219,37 +291,6 @@ async function topInstituteByCountry(req, res) {
   )
 }
 
-function processSearchWords(words) {
-  let wordList = words.split(',');
-  wordList.forEach(function(part, index, theArray) {
-    theArray[index] = `'${theArray[index]}'`;
-  }); 
-  return wordList.toString();
-}
-
-function multipleWhere(req, integerProperty, sqlQuery) {
-  let firstProperty = true;
-  for (var propName in req.query) {
-    if (req.query.hasOwnProperty(propName)) {
-      if (firstProperty) {
-        if (integerProperty.includes(propName)) {
-          sqlQuery += `WHERE ${propName} = ${req.query[propName]} `;
-        } else {
-          sqlQuery += `WHERE ${propName} = '${req.query[propName]}' `;
-        }
-        firstProperty = false;
-      } else {
-        if (integerProperty.includes(propName)) {
-          sqlQuery += `AND ${propName} = ${req.query[propName]} `;
-        } else {
-          sqlQuery += `AND ${propName} = '${req.query[propName]}' `;
-        }      
-      }
-    }
-  }
-  return sqlQuery;
-}
-
 // example request: http://localhost:8000/migration?PhdYear=2000&EarliestYear=2000&HasPhd=1
 async function getMigrations(req, res) {
   let sqlQuery = `SELECT * FROM Migrations `;
@@ -405,35 +446,7 @@ async function topResearcher(req, res) {
   }
   const SearchLimit = req.query.SearchLimit ? req.query.SearchLimit : 100;
   const Organization = req.query.Organization;
-  let sqlQuery = `CREATE OR REPLACE VIEW AuthorCountriesOrgYear (ANDID, BeginYear, Country, Organization) AS (
-      SELECT ANDID, BeginYear, Country, Organization
-      FROM Employment
-      UNION
-      (SELECT ANDID, BeginYear, Country, Organization
-      FROM Education)
-      ORDER BY ANDID ASC, BeginYear DESC
-    );
-    CREATE OR REPLACE VIEW PmidAndidInfo (PMID, ANDID, BeginYear, Country, Organization) AS (
-      WITH temp1 AS (
-        SELECT * FROM Papers
-        NATURAL JOIN Writes
-        WHERE AuOrder = 1
-      ),
-      temp2 AS (
-        SELECT PMID, temp1.ANDID AS ANDID, PubYear, BeginYear, Country, Organization
-        FROM temp1, AuthorCountriesOrgYear
-        WHERE temp1.ANDID = AuthorCountriesOrgYear.ANDID
-        AND temp1.PubYear >= AuthorCountriesOrgYear.BeginYear
-      ),
-      temp3 AS (
-        SELECT PMID, ANDID, MAX(BeginYear) AS BeginYear
-        FROM temp2
-        GROUP BY ANDID, PMID
-      )
-      SELECT PMID, ANDID, BeginYear, Country, Organization
-      FROM temp2
-      WHERE (PMID, ANDID, BeginYear) IN (SELECT * FROM temp3)
-    );
+  let sqlQuery = `
     SELECT ANDID, Count(*) AS NumPapers
     FROM PmidAndidInfo
     WHERE Organization = '${Organization}'
@@ -460,35 +473,7 @@ async function topResearcher(req, res) {
 }
 
 async function getTotalPaperByCountry(req, res) {
-  let sqlQuery = `CREATE OR REPLACE VIEW AuthorCountriesOrgYear (ANDID, BeginYear, Country, Organization) AS (
-    SELECT ANDID, BeginYear, Country, Organization
-    FROM Employment
-    UNION
-    (SELECT ANDID, BeginYear, Country, Organization
-    FROM Education)
-    ORDER BY ANDID ASC, BeginYear DESC
-  );
-  CREATE OR REPLACE VIEW PmidAndidInfo (PMID, ANDID, BeginYear, Country, Organization) AS (
-    WITH temp1 AS (
-      SELECT * FROM Papers
-      NATURAL JOIN Writes
-      WHERE AuOrder = 1
-    ),
-    temp2 AS (
-      SELECT PMID, temp1.ANDID AS ANDID, PubYear, BeginYear, Country, Organization
-      FROM temp1, AuthorCountriesOrgYear
-      WHERE temp1.ANDID = AuthorCountriesOrgYear.ANDID
-      AND temp1.PubYear >= AuthorCountriesOrgYear.BeginYear
-    ),
-    temp3 AS (
-      SELECT PMID, ANDID, MAX(BeginYear) AS BeginYear
-      FROM temp2
-      GROUP BY ANDID, PMID
-    )
-    SELECT PMID, ANDID, BeginYear, Country, Organization
-    FROM temp2
-    WHERE (PMID, ANDID, BeginYear) IN (SELECT * FROM temp3)
-  );
+  let sqlQuery = `
   SELECT Country, COUNT(*) as NumPapers FROM PmidAndidInfo GROUP BY Country ORDER BY NumPapers`;
 
   if (req.query.page && !isNaN(req.query.page)) {
