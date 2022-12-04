@@ -165,20 +165,61 @@ async function mostBenefitedOrg(req, res) {
 }
 
 // Query 10
-async function mostEmployedCities(req, res) {
-  // a GET request to /mostEmployedCities?limit=100
+async function topBioEdByCountry(req, res) {
+  // a GET request to /topBioEdByCountry?limit=100&country=
   let limit = 100;
   if (req.query.limit) {
     limit = req.query.limit;
   }
 
   let query = `
-  SELECT e.City, COUNT(*) as count FROM Employment e
-  JOIN Authors a ON a.ANDID = e.ANDID
-  GROUP BY e.City
-  ORDER BY count DESC 
-  LIMIT ${limit}
+  SELECT Mention, Count(*) as Count
+  FROM PmidAndidInfo
+  INNER JOIN BioEntities
+  ON PmidAndidInfo.PMID = BioEntities.PMID
   `;
+
+  if (req.query.country) {
+    query += `\n WHERE Country = '${req.query.country}'\n`;
+  }
+
+  query += `GROUP BY Mention
+  ORDER BY Count DESC
+  LIMIT ${limit}`;
+
+  connection.query(query,
+    function (error, results, fields) {
+      if (error) {
+        console.log(error);
+        res.json({error : error});
+      } else if (results) {
+        res.json({ results: results });
+      }
+    }
+  )
+}
+
+// Query 9
+async function topInstituteByCountry(req, res) {
+  // a GET request to /topInstitudeByCountry?limit=100&Country="Country"
+  let limit = 100;
+  if (req.query.limit) {
+    limit = req.query.limit;
+  }
+
+  let query = `
+  SELECT Country, Organization, COUNT(*) AS NumPapers
+  FROM PmidAndidInfo
+  `;
+
+  if (req.query.country) {
+    query += `\n WHERE Country = '${req.query.country}'\n`
+  }
+
+  query += `GROUP BY Country, Organization
+  ORDER BY NumPapers DESC 
+  LIMIT ${limit}`
+
   connection.query(query,
     function (error, results, fields) {
       if (error) {
@@ -195,5 +236,7 @@ module.exports = {
   hello,
   getBestAuthors,
   mostEmployedCities,
-  mostBenefitedOrg
+  mostBenefitedOrg,
+  topBioEdByCountry,
+  topInstituteByCountry
 };
