@@ -23,11 +23,11 @@ app.get('/paper/words', routes.filterPaperWords)
 // // Route 4 
 app.get('/paper/publications', routes.filterPaperPublication)
 
-// // Route 5 - register as GET 
-// app.get('/match', routes.match)
+// // Route 5 
+app.get('/researchers/top', routes.topResearcher)
 
 // // Route 6 - register as GET 
-// app.get('/player', routes.player)
+app.get('/paper/totalbycountry', routes.getTotalPaperByCountry)
 
 // // Route 7 - register as GET 
 // app.get('/search/matches', routes.search_matches)

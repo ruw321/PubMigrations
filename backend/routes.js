@@ -10,6 +10,7 @@ const connection = mysql.createConnection({
   password: config.rds_password,
   port: config.rds_port,
   database: config.rds_db,
+  multipleStatements: true
 });
 connection.connect();
 
@@ -125,7 +126,6 @@ async function filterPaperWords(req, res) {
   if (req.query.words) {
     listOfWords = processSearchWords(req.query.words);
   } else {
-    console.log(req.query.words);
     res.json({ error: "search query is empty" });
     return;
   }
@@ -195,6 +195,118 @@ async function filterPaperPublication(req, res) {
   }
 }
 
+// example request: http://localhost:8000/researchers/top?Organization=Tsinghua University
+// this one takes about 2 minutes 
+// be careful with parsing in the frontend, it returns more stuff but it has multiple sql statements
+async function topResearcher(req, res) {
+  if (!req.query.Organization) {
+    res.json({ error: "Organization is not specified" });
+    return;
+  }
+  const SearchLimit = req.query.SearchLimit ? req.query.SearchLimit : 100;
+  const Organization = req.query.Organization;
+  let sqlQuery = `CREATE OR REPLACE VIEW AuthorCountriesOrgYear (ANDID, BeginYear, Country, Organization) AS (
+      SELECT ANDID, BeginYear, Country, Organization
+      FROM Employment
+      UNION
+      (SELECT ANDID, BeginYear, Country, Organization
+      FROM Education)
+      ORDER BY ANDID ASC, BeginYear DESC
+    );
+    CREATE OR REPLACE VIEW PmidAndidInfo (PMID, ANDID, BeginYear, Country, Organization) AS (
+      WITH temp1 AS (
+        SELECT * FROM Papers
+        NATURAL JOIN Writes
+        WHERE AuOrder = 1
+      ),
+      temp2 AS (
+        SELECT PMID, temp1.ANDID AS ANDID, PubYear, BeginYear, Country, Organization
+        FROM temp1, AuthorCountriesOrgYear
+        WHERE temp1.ANDID = AuthorCountriesOrgYear.ANDID
+        AND temp1.PubYear >= AuthorCountriesOrgYear.BeginYear
+      ),
+      temp3 AS (
+        SELECT PMID, ANDID, MAX(BeginYear) AS BeginYear
+        FROM temp2
+        GROUP BY ANDID, PMID
+      )
+      SELECT PMID, ANDID, BeginYear, Country, Organization
+      FROM temp2
+      WHERE (PMID, ANDID, BeginYear) IN (SELECT * FROM temp3)
+    );
+    SELECT ANDID, Count(*) AS NumPapers
+    FROM PmidAndidInfo
+    WHERE Organization = '${Organization}'
+    GROUP BY ANDID
+    ORDER BY NumPapers DESC
+    LIMIT ${SearchLimit}
+    `;
+
+  if (req.query.page && !isNaN(req.query.page)) {
+    // TODO: add the page feature 
+  } else {
+    // we have implemented this for you to see how to return results by querying the database
+    connection.query(sqlQuery,
+      function (error, results, fields) {
+        if (error) {
+          console.log(error);
+          res.json({ error: error });
+        } else if (results) {
+          res.json({ results: results });
+        }
+      }
+    );
+  }
+}
+
+async function getTotalPaperByCountry(req, res) {
+  let sqlQuery = `CREATE OR REPLACE VIEW AuthorCountriesOrgYear (ANDID, BeginYear, Country, Organization) AS (
+    SELECT ANDID, BeginYear, Country, Organization
+    FROM Employment
+    UNION
+    (SELECT ANDID, BeginYear, Country, Organization
+    FROM Education)
+    ORDER BY ANDID ASC, BeginYear DESC
+  );
+  CREATE OR REPLACE VIEW PmidAndidInfo (PMID, ANDID, BeginYear, Country, Organization) AS (
+    WITH temp1 AS (
+      SELECT * FROM Papers
+      NATURAL JOIN Writes
+      WHERE AuOrder = 1
+    ),
+    temp2 AS (
+      SELECT PMID, temp1.ANDID AS ANDID, PubYear, BeginYear, Country, Organization
+      FROM temp1, AuthorCountriesOrgYear
+      WHERE temp1.ANDID = AuthorCountriesOrgYear.ANDID
+      AND temp1.PubYear >= AuthorCountriesOrgYear.BeginYear
+    ),
+    temp3 AS (
+      SELECT PMID, ANDID, MAX(BeginYear) AS BeginYear
+      FROM temp2
+      GROUP BY ANDID, PMID
+    )
+    SELECT PMID, ANDID, BeginYear, Country, Organization
+    FROM temp2
+    WHERE (PMID, ANDID, BeginYear) IN (SELECT * FROM temp3)
+  );
+  SELECT Country, COUNT(*) as NumPapers FROM PmidAndidInfo GROUP BY Country ORDER BY NumPapers`;
+
+  if (req.query.page && !isNaN(req.query.page)) {
+    // TODO: add the page feature 
+  } else {
+    // we have implemented this for you to see how to return results by querying the database
+    connection.query(sqlQuery,
+      function (error, results, fields) {
+        if (error) {
+          console.log(error);
+          res.json({ error: error });
+        } else if (results) {
+          res.json({ results: results });
+        }
+      }
+    );
+  }
+}
 
 // // Route 2 (handler)
 // async function jersey(req, res) {
@@ -537,5 +649,7 @@ module.exports = {
   getMigrations, 
   filterResearchers, 
   filterPaperWords, 
-  filterPaperPublication 
+  filterPaperPublication,
+  topResearcher,
+  getTotalPaperByCountry
 };
