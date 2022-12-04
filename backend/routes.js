@@ -1,6 +1,7 @@
 const config = require("./config.json");
 const mysql = require("mysql");
-const e = require("express");
+// const e = require("express");
+// const { query } = require("express");
 
 // TODO: fill in your connection details here
 const connection = mysql.createConnection({
@@ -16,19 +17,184 @@ connection.connect();
 //            SIMPLE ROUTE EXAMPLE
 // ********************************************
 
-// Route 1 (handler)
-async function hello(req, res) {
-  // a GET request to /hello?name=Steve
-  if (req.query.name) {
-    res.send(`Hello, ${req.query.name}! Welcome to the FIFA server!`);
+// helper function for searching papers by words 
+function processSearchWords(words) {
+  let wordList = words.split(',');
+  wordList.forEach(function(part, index, theArray) {
+    theArray[index] = `'${theArray[index]}'`;
+  }); 
+  return wordList.toString();
+}
+
+function multipleWhere(req, integerProperty, sqlQuery) {
+  let firstProperty = true;
+  for (var propName in req.query) {
+    if (req.query.hasOwnProperty(propName)) {
+      if (firstProperty) {
+        if (integerProperty.includes(propName)) {
+          sqlQuery += `WHERE ${propName} = ${req.query[propName]} `;
+        } else {
+          sqlQuery += `WHERE ${propName} = '${req.query[propName]}' `;
+        }
+        firstProperty = false;
+      } else {
+        if (integerProperty.includes(propName)) {
+          sqlQuery += `AND ${propName} = ${req.query[propName]} `;
+        } else {
+          sqlQuery += `AND ${propName} = '${req.query[propName]}' `;
+        }      
+      }
+    }
+  }
+  return sqlQuery;
+}
+
+// example request: http://localhost:8000/migration?PhdYear=2000&EarliestYear=2000&HasPhd=1
+async function getMigrations(req, res) {
+  let sqlQuery = `SELECT * FROM Migrations `;
+  const integerProperty = ["PhdYear", "EarliestYear", "HasPhd", "HasMigrated"];
+  sqlQuery = multipleWhere(req, integerProperty, sqlQuery);
+
+  sqlQuery += `\nLIMIT 100`;
+
+  if (req.query.page && !isNaN(req.query.page)) {
+    // TODO: add the page feature 
   } else {
-    res.send(`Hello! Welcome to the FIFA server!`);
+    // we have implemented this for you to see how to return results by querying the database
+    connection.query(sqlQuery,
+      function (error, results, fields) {
+        if (error) {
+          console.log(error);
+          res.json({ error: error });
+        } else if (results) {
+          res.json({ results: results });
+        }
+      }
+    );
   }
 }
 
-// ********************************************
-//                  WARM UP
-// ********************************************
+// example request is: http://localhost:8000/filterResearchers?Education=Tsinghua University&Employment=Tsinghua University&Writes=1726147
+// TODO: note that the frontend will have to deal with different number of columns depending on how many tables we are joining
+async function filterResearchers(req, res) {
+  let sqlQuery = `SELECT * FROM Authors au `;
+  let where = `WHERE `;
+  let temp = 'a';
+  let firstProperty = true;
+  for (var propName in req.query) {
+    if (req.query.hasOwnProperty(propName)) {
+      sqlQuery += `JOIN ${propName} ${temp} ON ${temp}.ANDID = au.ANDID `;    
+      if (!firstProperty) {
+        where += 'AND ';
+      }
+      if (propName == 'Writes') {
+        where += `${temp}.PMID = ${req.query[propName]} `;
+      } else {
+        where += `${temp}.Organization = '${req.query[propName]}' `;
+      }
+      firstProperty = false;
+    }
+    temp = String.fromCharCode(temp.charCodeAt(0) + 1);
+  }
+  
+  if (where.length > 6) {
+    sqlQuery += where;
+  }
+  sqlQuery += `\nLIMIT 100`;
+
+  if (req.query.page && !isNaN(req.query.page)) {
+    // TODO: add the page feature 
+  } else {
+    // we have implemented this for you to see how to return results by querying the database
+    connection.query(sqlQuery,
+      function (error, results, fields) {
+        if (error) {
+          console.log(error);
+          res.json({ error: error });
+        } else if (results) {
+          res.json({ results: results });
+        }
+      }
+    );
+  }
+}
+
+// example request: http://localhost:8000/paper/words?words=brain,neurology
+async function filterPaperWords(req, res) {
+  let listOfWords = "";
+  if (req.query.words) {
+    listOfWords = processSearchWords(req.query.words);
+  } else {
+    console.log(req.query.words);
+    res.json({ error: "search query is empty" });
+    return;
+  }
+  console.log(listOfWords);
+  let sqlQuery = `WITH temp1 AS (
+    SELECT DISTINCT PMID, Mention
+    FROM BioEntities
+    WHERE Mention IN (${listOfWords})
+    )
+    SELECT PMID, GROUP_CONCAT(Mention) AS TermsFound, COUNT(*) AS Count
+    FROM temp1
+    GROUP BY PMID
+    ORDER BY Count DESC
+    LIMIT 100;     
+    `;
+
+  if (req.query.page && !isNaN(req.query.page)) {
+    // TODO: add the page feature 
+  } else {
+    // we have implemented this for you to see how to return results by querying the database
+    connection.query(sqlQuery,
+      function (error, results, fields) {
+        if (error) {
+          console.log(error);
+          res.json({ error: error });
+        } else if (results) {
+          res.json({ results: results });
+        }
+      }
+    );
+  }
+}
+
+// example request: http://localhost:8000/paper/publications?PubYear=1975&PMID=1
+async function filterPaperPublication(req, res) {
+  let sqlQuery = `WITH temp1 AS (
+    SELECT * FROM Papers
+    NATURAL JOIN Writes
+    ),
+    temp2 AS (
+      SELECT ANDID, LastName, Initials
+      FROM Authors
+    )
+    SELECT * FROM temp1
+    NATURAL JOIN temp2      
+    `;
+
+  const integerProperty = ["ANDID", "PMID", "AuOrder", "PubYear"];
+  sqlQuery = multipleWhere(req, integerProperty, sqlQuery);
+
+  sqlQuery += `\nLIMIT 100`;
+
+  if (req.query.page && !isNaN(req.query.page)) {
+    // TODO: add the page feature 
+  } else {
+    // we have implemented this for you to see how to return results by querying the database
+    connection.query(sqlQuery,
+      function (error, results, fields) {
+        if (error) {
+          console.log(error);
+          res.json({ error: error });
+        } else if (results) {
+          res.json({ results: results });
+        }
+      }
+    );
+  }
+}
+
 
 // // Route 2 (handler)
 // async function jersey(req, res) {
@@ -368,5 +534,8 @@ async function hello(req, res) {
 // }
 
 module.exports = {
-  hello,
+  getMigrations, 
+  filterResearchers, 
+  filterPaperWords, 
+  filterPaperPublication 
 };
