@@ -16,16 +16,6 @@ connection.connect();
 //            SIMPLE ROUTE EXAMPLE
 // ********************************************
 
-// Route 1 (handler)
-async function hello(req, res) {
-  // a GET request to /hello?name=Steve
-  if (req.query.name) {
-    res.send(`Hello, ${req.query.name}! Welcome to the FIFA server!`);
-  } else {
-    res.send(`Hello! Welcome to the FIFA server!`);
-  }
-}
-
 // Query 13
 async function getBestAuthors(req, res) {
   // a GET request to /getBestAuthors?limit=100
