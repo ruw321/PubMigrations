@@ -18,6 +18,15 @@ connection.connect();
 //            SIMPLE ROUTE EXAMPLE
 // ********************************************
 
+// Query 13
+async function getBestAuthors(req, res) {
+  // a GET request to /getBestAuthors?limit=100
+  let limit = 100
+  if (req.query.limit) {
+    limit = req.query.limit
+  }
+}
+
 // helper function for searching papers by words 
 function processSearchWords(words) {
   let wordList = words.split(',');
@@ -73,8 +82,43 @@ async function getMigrations(req, res) {
       }
     );
   }
+
+  let query = `
+  WITH temp1 AS (
+    SELECT ANDID, COUNT(*) AS count FROM Writes
+    GROUP BY ANDID
+  ),
+  temp2 AS (
+      SELECT e.Organization, e.City, e.ANDID AS ANDID FROM Education e
+      JOIN Employment E2 on e.ANDID = E2.ANDID
+  )
+  SELECT temp2.Organization, temp2.City, SUM(temp1.count) AS count FROM temp2
+  JOIN temp1 ON temp1.ANDID = temp2.ANDID
+  GROUP BY temp2.Organization
+  ORDER BY count DESC
+  LIMIT ${limit}
+  `
+
+  connection.query(query,
+    function (error, results, fields) {
+      if (error) {
+        console.log(error)
+        res.json({error : error})
+      } else if (results) {
+        res.json({ results: results })
+      }
+    }
+  )
+
 }
 
+// Query 12
+async function mostEmployedCities(req, res) {
+  // a GET request to /mostEmployedCities?limit=100
+  let limit = 100;
+  if (req.query.limit) {
+    limit = req.query.limit;
+  }
 // example request is: http://localhost:8000/filterResearchers?Education=Tsinghua University&Employment=Tsinghua University&Writes=1726147
 // TODO: note that the frontend will have to deal with different number of columns depending on how many tables we are joining
 async function filterResearchers(req, res) {
@@ -308,344 +352,174 @@ async function getTotalPaperByCountry(req, res) {
   }
 }
 
-// // Route 2 (handler)
-// async function jersey(req, res) {
-//   const colors = ["red", "blue", "white"];
-//   const jersey_number = Math.floor(Math.random() * 20) + 1;
-//   const name = req.query.name ? req.query.name : "player";
+  let query = `
+  SELECT e.City, COUNT(*) as count FROM Employment e
+  JOIN Authors a ON a.ANDID = e.ANDID
+  GROUP BY e.City
+  ORDER BY count DESC 
+  LIMIT ${limit}
+  `;
+  connection.query(query,
+    function (error, results, fields) {
+      if (error) {
+        console.log(error);
+        res.json({error : error});
+      } else if (results) {
+        res.json({ results: results });
+      }
+    }
+  )
+}
 
-//   if (req.params.choice === "number") {
-//     // TODO: TASK 1: inspect for issues and correct
-//     res.json({ message: `Hello, ${name}!`, jersey_number: jersey_number });
-//   } else if (req.params.choice === "color") {
-//     var lucky_color_index = Math.floor(Math.random() * 2);
-//     // TODO: TASK 2: change this or any variables above to return only 'red' or 'blue' at random (go Quakers!)
-//     res.json({
-//       message: `Hello, ${name}!`,
-//       jersey_color: colors[lucky_color_index],
-//     });
-//   } else {
-//     // TODO: TASK 3: inspect for issues and correct
-//     res.json({ message: `Hello, ${name}, we like your jersey!` });
-//   }
-// }
+// Query 11
+async function mostBenefitedOrg(req, res) {
+  // a GET request to /mostBenefitedOrg?limit=100m
+  let limit = 100;
+  let min = 0;
+  let max = 1;
+  if (req.query.limit) {
+    limit = req.query.limit;
+  }
+  if (req.query.min) {
+    min = req.query.min;
+  }
+  if (req.query.max) {
+    max = req.query.max;
+  }
 
-// // ********************************************
-// //               GENERAL ROUTES
-// // ********************************************
+  let query = `
+  WITH hasMigrated AS
+  (
+    SELECT ORCID FROM Migrations
+    WHERE HasMigrated = True
+  ),
+  ANDID_migrated AS
+  (
+    SELECT ANDID FROM ORCIDs
+    WHERE ORCID IN
+    (
+      SELECT ORCID FROM hasMigrated
+    )
+  ),
+  paperCounts AS
+  (
+    SELECT ANDID, COUNT(*) AS count FROM Writes
+    GROUP BY ANDID
+  ),
+  Orgnization_Paper_Count AS
+  (
+    SELECT e.Organization, SUM(pc.count) AS COUNT
+    FROM paperCounts pc
+    JOIN Employment e ON e.ANDID = pc.ANDID
+    GROUP BY e.Organization
+  ),
 
-// // Route 3 (handler)
-// async function all_matches(req, res) {
-//   // TODO: TASK 4: implement and test, potentially writing your own (ungraded) tests
-//   // We have partially implemented this function for you to
-//   // parse in the league encoding - this is how you would use the ternary operator to set a variable to a default value
-//   // we didn't specify this default value for league, and you could change it if you want!
-//   // in reality, league will never be undefined since URLs will need to match matches/:league for the request to be routed here...
-//   const league = req.params.league ? req.params.league : "D1";
-//   // use this league encoding in your query to furnish the correct results
+  Organization_Migration_Paper_Count AS
+  (
+    SELECT e.Organization, SUM(pc.count) AS Count
+    FROM paperCounts pc
+    JOIN Employment e ON e.ANDID = pc.ANDID
+    WHERE e.ANDID IN
+    (
+      SELECT ANDID FROM ANDID_migrated
+    )
+    GROUP BY e.Organization
+  )
+  SELECT o.Organization, om.Count / o.Count AS Percentage
+  FROM Orgnization_Paper_Count o
+  JOIN Organization_Migration_Paper_Count om ON o.Organization = om.Organization
+  WHERE om.Count / o.Count >= ${min} AND om.Count / o.Count <= ${max}
+  ORDER BY om.Count / o.Count DESC
+  LIMIT ${limit}
 
-//   if (req.query.page && !isNaN(req.query.page)) {
-//     // This is the case where page is defined.
-//     // The SQL schema has the attribute OverallRating, but modify it to match spec!
-//     // TODO: query and return results here:
-//     const pagesize = req.query.pagesize ? req.query.pagesize : 10;
-//     const page = req.query.page;
-//     connection.query(
-//       `SELECT MatchId, Date, Time, HomeTeam AS Home, AwayTeam AS Away, FullTimeGoalsH AS HomeGoals, FullTimeGoalsA AS AwayGoals  
-//           FROM Matches 
-//           WHERE Division = '${league}'
-//           ORDER BY HomeTeam, AwayTeam`,
-//       function (error, results, fields) {
-//         if (error) {
-//           console.log(error);
-//           res.json({ error: error });
-//         } else if (results) {
-//           filteredResults = [];
-//           for (let i = (page - 1) * pagesize; i < page * pagesize; i++) {
-//             if (i < results.length) {
-//               filteredResults.push(results[i]);
-//             }
-//           }
-//           res.json({ results: filteredResults });
-//         }
-//       }
-//     );
-//   } else {
-//     // we have implemented this for you to see how to return results by querying the database
-//     connection.query(
-//       `SELECT MatchId, Date, Time, HomeTeam AS Home, AwayTeam AS Away, FullTimeGoalsH AS HomeGoals, FullTimeGoalsA AS AwayGoals  
-//         FROM Matches 
-//         WHERE Division = '${league}'
-//         ORDER BY HomeTeam, AwayTeam`,
-//       function (error, results, fields) {
-//         if (error) {
-//           console.log(error);
-//           res.json({ error: error });
-//         } else if (results) {
-//           res.json({ results: results });
-//         }
-//       }
-//     );
-//   }
-// }
+  `
+  connection.query(query,
+    function (error, results, fields) {
+      if (error) {
+        console.log(error)
+        res.json({error : error})
+      } else if (results) {
+        res.json({ results: results })
+      }
+    }
+  )
+}
 
-// // Route 4 (handler)
-// async function all_players(req, res) {
-//   // TODO: TASK 5: implement and test, potentially writing your own (ungraded) tests
+// Query 10
+async function topBioEdByCountry(req, res) {
+  // a GET request to /topBioEdByCountry?limit=100&country=
+  let limit = 100;
+  if (req.query.limit) {
+    limit = req.query.limit;
+  }
 
-//   if (req.query.page && !isNaN(req.query.page)) {
-//     const pagesize = req.query.pagesize ? req.query.pagesize : 10;
-//     const page = req.query.page;
+  let query = `
+  SELECT Mention, Count(*) as Count
+  FROM PmidAndidInfo
+  INNER JOIN BioEntities
+  ON PmidAndidInfo.PMID = BioEntities.PMID
+  `;
 
-//     connection.query(
-//       `SELECT PlayerId, Name, Nationality, OverallRating AS Rating, Potential, Club, Value  
-//           FROM Players 
-//           ORDER BY Name ASC`,
-//       function (error, results, fields) {
-//         if (error) {
-//           console.log(error);
-//           res.json({ error: error });
-//         } else if (results) {
-//           filteredResults = [];
-//           for (let i = (page - 1) * pagesize; i < page * pagesize; i++) {
-//             if (i < results.length) {
-//               filteredResults.push(results[i]);
-//             }
-//           }
-//           res.json({ results: filteredResults });
-//         }
-//       }
-//     );
-//   } else {
-//     connection.query(
-//       `SELECT PlayerId, Name, Nationality, OverallRating AS Rating, Potential, Club, Value  
-//           FROM Players 
-//           ORDER BY Name ASC`,
-//       function (error, results, fields) {
-//         if (error) {
-//           console.log(error);
-//           res.json({ error: error });
-//         } else if (results) {
-//           res.json({ results: results });
-//         }
-//       }
-//     );
-//   }
+  if (req.query.country) {
+    query += `\n WHERE Country = '${req.query.country}'\n`;
+  }
 
-//   //   return res.json({ error: "Not implemented" });
-// }
+  query += `GROUP BY Mention
+  ORDER BY Count DESC
+  LIMIT ${limit}`;
 
-// // ********************************************
-// //             MATCH-SPECIFIC ROUTES
-// // ********************************************
+  connection.query(query,
+    function (error, results, fields) {
+      if (error) {
+        console.log(error);
+        res.json({error : error});
+      } else if (results) {
+        res.json({ results: results });
+      }
+    }
+  )
+}
 
-// // Route 5 (handler)
-// async function match(req, res) {
-//   // TODO: TASK 6: implement and test, potentially writing your own (ungraded) tests
-//   const id = req.query.id;
+// Query 9
+async function topInstituteByCountry(req, res) {
+  // a GET request to /topInstitudeByCountry?limit=100&Country="Country"
+  let limit = 100;
+  if (req.query.limit) {
+    limit = req.query.limit;
+  }
 
-//   if (id && !isNaN(id)) {
-//     connection.query(
-//       `SELECT MatchId, Date, Time, HomeTeam AS Home, AwayTeam AS Away, FullTimeGoalsH AS HomeGoals, FullTimeGoalsA AS AwayGoals,
-//     HalfTimeGoalsH AS HTHomeGoals, HalfTimeGoalsA AS HTAwayGoals, ShotsH AS ShotsHome, ShotsA AS ShotsAway, ShotsOnTargetH AS ShotsOnTargetHome,
-//     ShotsOnTargetA AS ShotsOnTargetAway, FoulsH AS FoulsHome, FoulsA AS FoulsAway, CornersH AS CornersHome, CornersA AS CornersAway,
-//     YellowCardsH AS YCHome, YellowCardsA AS YCAway, RedCardsH AS RCHome, RedCardsA AS RCAway
-//       FROM Matches 
-//       WHERE Matchid = '${id}'`,
-//       // ORDER BY HomeTeam, AwayTeam`,
-//       function (error, results, fields) {
-//         if (error) {
-//           console.log(error);
-//           res.json({ error: error });
-//         } else if (results) {
-//           res.json({ results: results });
-//         }
-//       }
-//     );
-//   } else {
-//     return res.json({ results: [] });
-//   }
-// }
+  let query = `
+  SELECT Country, Organization, COUNT(*) AS NumPapers
+  FROM PmidAndidInfo
+  `;
 
-// // ********************************************
-// //            PLAYER-SPECIFIC ROUTES
-// // ********************************************
+  if (req.query.country) {
+    query += `\n WHERE Country = '${req.query.country}'\n`
+  }
 
-// // Route 6 (handler)
-// async function player(req, res) {
-//   // TODO: TASK 7: implement and test, potentially writing your own (ungraded) tests
-//   const id = req.query.id;
+  query += `GROUP BY Country, Organization
+  ORDER BY NumPapers DESC 
+  LIMIT ${limit}`
 
-//   if (id && !isNaN(id)) {
-//     connection.query(
-//       `SELECT PlayerId, Name, Age, Photo, Nationality, Flag, OverallRating AS Rating, Potential, Club, ClubLogo, Value, Wage, InternationalReputation,
-//         Skill, JerseyNumber, ContractValidUntil, Height, Weight, BestPosition, BestOverallRating, ReleaseClause,
-//         GKPenalties, GKDiving, GKHandling, GKKicking, GKPositioning, GKReflexes,
-//         NPassing, NBallControl, NAdjustedAgility, NStamina, NStrength, NPositioning  
-//         FROM Players 
-//         WHERE PlayerId='${id}'
-//         ORDER BY Name ASC`,
-//       function (error, results, fields) {
-//         if (error) {
-//           console.log(error);
-//           res.json({ error: error });
-//         } else if (results.length > 0 && results) {
-//           if (results[0]["BestPosition"] == "GK") {
-//             delete results[0]["NPassing"];
-//             delete results[0]["NBallControl"];
-//             delete results[0]["NAdjustedAgility"];
-//             delete results[0]["NStamina"];
-//             delete results[0]["NStrength"];
-//             delete results[0]["NPositioning"];
-//             res.json({ results: results });
-//           } else {
-//             delete results[0]["GKPenalties"];
-//             delete results[0]["GKDiving"];
-//             delete results[0]["GKHandling"];
-//             delete results[0]["GKKicking"];
-//             delete results[0]["GKPositioning"];
-//             delete results[0]["GKReflexes"];
-//             res.json({ results: results });
-//           }
-//         } else {
-//           return res.json({ results: [] });
-//         }
-//       }
-//     );
-//   } else {
-//     return res.json({ results: [] });
-//   }
-// }
-
-// // ********************************************
-// //             SEARCH ROUTES
-// // ********************************************
-
-// // Route 7 (handler)
-// async function search_matches(req, res) {
-//   // TODO: TASK 8: implement and test, potentially writing your own (ungraded) tests
-//   // IMPORTANT: in your SQL LIKE matching, use the %query% format to match the search query to substrings, not just the entire string
-//   const home = req.query.Home;
-//   const away = req.query.Away;
-
-//   let query = `SELECT MatchId, Date, Time, HomeTeam AS Home, AwayTeam AS Away, FullTimeGoalsH AS HomeGoals, FullTimeGoalsA AS AwayGoals  
-//   FROM Matches`;
-
-//   if (home && !away){
-//     query += `\nWHERE HomeTeam like '%${home}%'`;
-//   } else if (!home && away){
-//     query += `\nWHERE AwayTeam like '%${away}%'`;
-//   } else if (!home && !away){
-//     // do nothing
-//   } else {
-//     query += `\nWHERE HomeTeam like '%${home}%'
-//         AND AwayTeam like '%${away}%'`;
-//   }
-
-//   query += `\nORDER BY HomeTeam, AwayTeam`;
-
-//   if (req.query.page && !isNaN(req.query.page)) {
-//     // This is the case where page is defined.
-//     // The SQL schema has the attribute OverallRating, but modify it to match spec!
-//     // TODO: query and return results here:
-//     const pagesize = req.query.pagesize ? req.query.pagesize : 10;
-//     const page = req.query.page;
-//     connection.query(query,
-//       function (error, results, fields) {
-//         if (error) {
-//           console.log(error);
-//           res.json({ error: error });
-//         } else if (results) {
-//           filteredResults = [];
-//           for (let i = (page - 1) * pagesize; i < page * pagesize; i++) {
-//             if (i < results.length) {
-//               filteredResults.push(results[i]);
-//             }
-//           }
-//           res.json({ results: filteredResults });
-//         }
-//       }
-//     );
-//   } else {
-//     // we have implemented this for you to see how to return results by querying the database
-//     connection.query(query,
-//       function (error, results, fields) {
-//         if (error) {
-//           console.log(error);
-//           res.json({ error: error });
-//         } else if (results) {
-//           res.json({ results: results });
-//         }
-//       }
-//     );
-//   }
-// }
-
-// // Route 8 (handler)
-// async function search_players(req, res) {
-//   // TODO: TASK 9: implement and test, potentially writing your own (ungraded) tests
-//   // IMPORTANT: in your SQL LIKE matching, use the %query% format to match the search query to substrings, not just the entire string
-
-//   const name = req.query.Name;
-//   const nationality = req.query.Nationality;
-//   const club = req.query.Club;
-//   const rating_low = req.query.RatingLow ? req.query.RatingLow : 0;
-//   const rating_high = req.query.RatingHigh ? req.query.RatingHigh : 100;
-//   const potential_low = req.query.PotentialLow ? req.query.PotentialLow : 0;
-//   const potential_high = req.query.PotentialHigh ? req.query.PotentialHigh : 100;
-//   const page = req.query.page;
-//   const pagesize = req.query.pagesize ? req.query.pagesize : 10;
-
-//   let query = `SELECT PlayerId, Name, Nationality, OverallRating AS Rating, Potential, Club, Value 
-//                FROM Players
-//                WHERE OverallRating >= ${rating_low}
-//                AND OverallRating <= ${rating_high}
-//                AND (Potential >= ${potential_low}
-//                AND Potential) <= ${potential_high}`;
-
-//   if (name){
-//     query += `\nAND Name like '%${name}%'`
-//   }
-//   if (nationality){
-//     query += `\nAND Nationality like '%${nationality}%'`
-//   }
-//   if (club){
-//     query += `\nAND Club like '%${club}%'`
-//   }
-//   query += `\nORDER BY Name ASC`
-//   console.log(query);
-//   if (page&& !isNaN(page)) {
-//     connection.query(query,
-//       function (error, results, fields) {
-//         if (error) {
-//           console.log(error);
-//           res.json({ error: error });
-//         } else if (results) {
-//           filteredResults = [];
-//           for (let i = (page - 1) * pagesize; i < page * pagesize; i++) {
-//             if (i < results.length) {
-//               filteredResults.push(results[i]);
-//             }
-//           }
-//           res.json({ results: filteredResults });
-//         }
-//       }
-//     );
-//   } else {
-//     connection.query(query,
-//       function (error, results, fields) {
-//         if (error) {
-//           console.log(error);
-//           res.json({ error: error });
-//         } else if (results) {
-//           res.json({ results: results });
-//         }
-//       }
-//     );
-//   }
-// }
+  connection.query(query,
+    function (error, results, fields) {
+      if (error) {
+        console.log(error);
+        res.json({error : error});
+      } else if (results) {
+        res.json({ results: results });
+      }
+    }
+  )
+}
 
 module.exports = {
+  hello,
+  getBestAuthors,
+  mostEmployedCities,
+  mostBenefitedOrg,
+  topBioEdByCountry,
+  topInstituteByCountry,
   getMigrations, 
   filterResearchers, 
   filterPaperWords, 
