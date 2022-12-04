@@ -9,6 +9,7 @@ const connection = mysql.createConnection({
   password: config.rds_password,
   port: config.rds_port,
   database: config.rds_db,
+  multipleStatements: true
 });
 connection.connect();
 
