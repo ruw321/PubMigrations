@@ -45,10 +45,7 @@ app.get('/mostEmployedCities', routes.mostEmployedCities)
 app.get('/mostBenefitedOrg', routes.mostBenefitedOrg)
 
 // Query 10 - register as GET
-app.get('/topBioEdByCountry', routes.topBioEdByCountry)
-
-// Query 9 - register as GET
-app.get('/topInstituteByCountry', routes.topInstituteByCountry)
+app.get('/mostBenefitedOrg', routes.mostBenefitedOrg)
 
 app.listen(config.server_port, () => {
     console.log(`Server running at http://${config.server_host}:${config.server_port}/`);
