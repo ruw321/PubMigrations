@@ -1,5 +1,5 @@
 const express = require('express');
-const mysql      = require('mysql');
+const mysql = require('mysql');
 var cors = require('cors')
 
 
@@ -8,8 +8,23 @@ const config = require('./config.json')
 
 const app = express();
 
-// whitelist localhost 3000
-app.use(cors({ credentials: true, origin: ['http://localhost:3000'] }));
+// whitelist localhost 8000
+app.use(cors({ credentials: true, origin: ['http://localhost:8000'] }));
+
+// Query 13 - register as GET
+app.get('/getBestAuthors', routes.getBestAuthors)
+
+// Query 12 - register as GET
+app.get('/mostEmployedCities', routes.mostEmployedCities)
+
+// Query 11 - register as GET
+app.get('/mostBenefitedOrg', routes.mostBenefitedOrg)
+
+// Query 10 - register as GET
+app.get('/topBioEdByCountry', routes.topBioEdByCountry)
+
+// Query 9 - register as GET
+app.get('/topInstituteByCountry', routes.topInstituteByCountry)
 
 // Route 1 - 
 app.get('/migration', routes.getMigrations)
