@@ -47,43 +47,51 @@ function multipleWhere(req, integerProperty, sqlQuery) {
 }
 
 // create the views when the server starts
-async function createViews() {
+async function createTempTable() {
   let sqlQuery = `
-  CREATE OR REPLACE VIEW AuthorCountriesOrgYear (ANDID, BeginYear, Country, Organization) AS (
-    SELECT ANDID, BeginYear, Country, Organization
-    FROM Employment
-    UNION
-    (SELECT ANDID, BeginYear, Country, Organization
-    FROM Education)
-    ORDER BY ANDID ASC, BeginYear DESC
-  );
-  CREATE OR REPLACE VIEW PmidAndidInfo (PMID, ANDID, BeginYear, Country, Organization) AS (
-    WITH temp1 AS (
-      SELECT * FROM Papers
-      NATURAL JOIN Writes
-      WHERE AuOrder = 1
-    ),
-    temp2 AS (
-      SELECT PMID, temp1.ANDID AS ANDID, PubYear, BeginYear, Country, Organization
-      FROM temp1, AuthorCountriesOrgYear
-      WHERE temp1.ANDID = AuthorCountriesOrgYear.ANDID
-      AND temp1.PubYear >= AuthorCountriesOrgYear.BeginYear
-    ),
-    temp3 AS (
-      SELECT PMID, ANDID, MAX(BeginYear) AS BeginYear
+    CREATE TEMPORARY TABLE PmidAndidInfo AS (
+      WITH AuthorCountriesOrgYear AS (
+        SELECT ANDID, BeginYear, Country, Organization
+        FROM Employment
+        UNION
+        (SELECT ANDID, BeginYear, Country, Organization
+        FROM Education)
+        ORDER BY ANDID ASC, BeginYear DESC
+      ),
+      temp1 AS (
+        SELECT * FROM Papers
+        NATURAL JOIN Writes
+        WHERE AuOrder = 1
+      ),
+      temp2 AS (
+        SELECT PMID, temp1.ANDID AS ANDID, PubYear, BeginYear, Country, Organization
+        FROM temp1, AuthorCountriesOrgYear
+        WHERE temp1.ANDID = AuthorCountriesOrgYear.ANDID
+        AND temp1.PubYear >= AuthorCountriesOrgYear.BeginYear
+      ),
+      temp3 AS (
+        SELECT PMID, ANDID, MAX(BeginYear) AS BeginYear
+        FROM temp2
+        GROUP BY ANDID, PMID
+      )
+      SELECT PMID, ANDID, BeginYear, Country, Organization
       FROM temp2
-      GROUP BY ANDID, PMID
-    )
-    SELECT PMID, ANDID, BeginYear, Country, Organization
-    FROM temp2
-    WHERE (PMID, ANDID, BeginYear) IN (SELECT * FROM temp3)
-  );
+      WHERE (PMID, ANDID, BeginYear) IN (SELECT * FROM temp3)   
+    ) 
   `;
 
   // we have implemented this for you to see how to return results by querying the database
-  connection.query(sqlQuery);
+  connection.query(sqlQuery,
+    function (error, results, fields) {
+      if (error) {
+        console.log(error);
+      } else if (results) {
+        console.log("Temporary Table is created");
+      }
+    }
+  );
 }
-createViews();
+createTempTable();
 
 // Query 13
 async function getBestAuthors(req, res) {
