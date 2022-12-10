@@ -7,6 +7,49 @@ const getAllMigrations = async(page, pagesize) => {
     return res.json()
 }
 
+const getAllResearchers = async(page, pagesize) => {
+    var res = await fetch(`http://${config.server_host}:${config.server_port}/filterResearchers`, {
+        method: 'GET',
+    })
+    return res.json()
+}
+
+const getPaperWords = async(wordsList, page, pagesize) => {
+    var res = await fetch(`http://${config.server_host}:${config.server_port}/paper/words?words=${wordsList}`, {
+        method: 'GET',
+    })
+    return res.json()
+}
+
+const getPublications = async(page, pagesize) => {
+    var res = await fetch(`http://${config.server_host}:${config.server_port}/paper/publications`, {
+        method: 'GET',
+    })
+    return res.json()
+}
+
+const getTopInstitutions = async(organization, page, pagesize) => {
+    var res = await fetch(`http://${config.server_host}:${config.server_port}/researchers/top?Organization=${organization}`, {
+        method: 'GET',
+    })
+    return res.json()
+}
+
+const getBestAuthors = async(page, pagesize) => {
+    var res = await fetch(`http://${config.server_host}:${config.server_port}/getBestAuthors`, {
+        method: 'GET',
+    })
+    return res.json()
+}
+
+const getTotalPapersByCountry = async(page, pagesize) => {
+    var res = await fetch(`http://${config.server_host}:${config.server_port}/paper/totalByCountry`, {
+        method: 'GET',
+    })
+    return res.json()
+}
+
+
 const getAllMatches = async (page, pagesize, league) => {
     var res = await fetch(`http://${config.server_host}:${config.server_port}/matches/${league}?page=${page}&pagesize=${pagesize}`, {
         method: 'GET',
@@ -63,6 +106,12 @@ const getPlayerSearch = async (name, nationality, club, rating_high, rating_low,
 
 export {
     getAllMigrations,
+    getAllResearchers,
+    getPaperWords,
+    getPublications,
+    getTopInstitutions,
+    getBestAuthors,
+    getTotalPapersByCountry,
 
     getAllMatches,
     getAllPlayers,
