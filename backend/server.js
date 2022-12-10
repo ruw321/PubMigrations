@@ -8,8 +8,8 @@ const config = require('./config.json')
 
 const app = express();
 
-// whitelist localhost 8000
-app.use(cors({ credentials: true, origin: ['http://localhost:8000'] }));
+// whitelist localhost 3000
+app.use(cors({ credentials: true, origin: ['http://localhost:3000'] }));
 
 // Query 13 - register as GET
 app.get('/getBestAuthors', routes.getBestAuthors)
