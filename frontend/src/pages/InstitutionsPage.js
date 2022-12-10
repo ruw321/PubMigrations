@@ -6,7 +6,7 @@ import {
 } from 'antd'
 
 import MenuBar from '../components/MenuBar';
-import { getTopInstitutions, getBestAuthors } from '../fetcher'
+import { getMostBenefitedOrg, getTopInstitutions, getBestAuthors } from '../fetcher'
 
 const { Column, ColumnGroup } = Table;
 const { Option } = Select;
@@ -47,6 +47,21 @@ const bestAuthorsColumns = [
     }
   ];
 
+  const mostBenefitedOrgColumns = [
+    {
+      title: 'Organization',
+      dataIndex: 'Organization',
+      key: 'Organization',
+      // sorter: (a, b) => a.Nationality.localeCompare(b.Nationality)
+    },
+    {
+      title: 'Percentage',
+      dataIndex: 'Percentage',
+      key: 'Percentage',
+      // sorter: (a, b) => a.Rating - b.Rating
+    }
+  ];
+
 class InstitutionsPage extends React.Component {
 
   constructor(props) {
@@ -60,6 +75,7 @@ class InstitutionsPage extends React.Component {
       organization: "Tsinghua University",
       publicationsResults: [],
       bestAuthorsResults: [],
+      mostBenefitedOrgResults: [],
     }
 
     this.goToMatch = this.goToMatch.bind(this)
@@ -85,6 +101,13 @@ class InstitutionsPage extends React.Component {
         this.setState({ institutionsResults: res.results})
         console.log('set state')
       })
+
+    getMostBenefitedOrg().then(res => {
+      console.log(res.results)
+      // TASK 1: set the correct state attribute to res.results
+      this.setState({ mostBenefitedOrgResults: res.results})
+      console.log('set state')
+    })
   }
 
   render() {
@@ -92,9 +115,12 @@ class InstitutionsPage extends React.Component {
       <div>
       <MenuBar />
       <div style={{ width: '70vw', margin: '0 auto', marginTop: '5vh' }}>
-        <h3>Institutions</h3>
+        <h3>Top Researchers</h3>
         <Table dataSource={this.state.institutionsResults} columns={institutionsColumns} pagination={{ pageSizeOptions:[5, 10], defaultPageSize: 5, showQuickJumper:true }}/>
+        <h3>Best Authors</h3>
         <Table dataSource={this.state.bestAuthorsResults} columns={bestAuthorsColumns} pagination={{ pageSizeOptions:[5, 10], defaultPageSize: 5, showQuickJumper:true }}/>
+        <h3>Most Benefited Organization</h3>
+        <Table dataSource={this.state.mostBenefitedOrgResults} columns={mostBenefitedOrgColumns} pagination={{ pageSizeOptions:[5, 10], defaultPageSize: 5, showQuickJumper:true }}/>
       </div>
     </div>
     )
