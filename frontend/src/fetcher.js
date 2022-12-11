@@ -7,6 +7,21 @@ const getAllMigrations = async(page, pagesize) => {
     return res.json()
 }
 
+const getSearchMigrations = async(phdYear, earliestYear, hasPhd, hasMigrated, page, pagesize) => {
+    let url = `http://${config.server_host}:${config.server_port}/migration?`;
+    url += phdYear !== "" ? `&PhdYear=${phdYear}` : "";
+    url += earliestYear !== "" ? `&EarliestYear=${earliestYear}` : "";
+    url += hasPhd !== "" ? `&HasPhd=${hasPhd}` : "";
+    url += hasMigrated !== "" ? `&HasMigrated=${hasMigrated}` : "";
+    console.log(url);
+    // var res = await fetch(`http://${config.server_host}:${config.server_port}/migration?PhdYear=${phdYear}&EarliestYear=${earliestYear}`, {
+    var res = await fetch(url, {
+
+        method: 'GET',
+    })
+    return res.json()
+}
+
 const getAllResearchers = async(page, pagesize) => {
     var res = await fetch(`http://${config.server_host}:${config.server_port}/filterResearchers`, {
         method: 'GET',
@@ -135,6 +150,7 @@ const getPlayerSearch = async (name, nationality, club, rating_high, rating_low,
 
 export {
     getAllMigrations,
+    getSearchMigrations,
     getAllResearchers,
     getPaperWords,
     getPublications,
