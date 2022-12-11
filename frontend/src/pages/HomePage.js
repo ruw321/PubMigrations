@@ -80,7 +80,6 @@ class HomePage extends React.Component {
     this.goToMatch = this.goToMatch.bind(this)
   }
 
-
   goToMatch(matchId) {
     window.location = `/matches?id=${matchId}`
   }
@@ -95,6 +94,10 @@ class HomePage extends React.Component {
   }
 
   render() {
+    if (window.localStorage.getItem('Authenticated') !== 'True') {
+      // go back to the login page since you are not authenticated
+      window.location = '/login';
+    }
     return (
       <div>
       <MenuBar />

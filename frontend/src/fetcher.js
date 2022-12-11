@@ -1,6 +1,34 @@
 import config from './config.json'
 
-const getAllMigrations = async(page, pagesize) => {
+const postLogin = async(email, password) => {
+  var res = await fetch(`http://${config.server_host}:${config.server_port}/login`, {
+      mode: 'cors',
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({email: email, password: password})
+  })
+  return res.json()
+}
+
+const postSignup = async(email, password, firstName, lastName) => {
+  var res = await fetch(`http://${config.server_host}:${config.server_port}/signup`, {
+      mode: 'cors',
+      method: 'POST',
+      credentials: 'include',
+      headers: {
+        'Content-Type': 'application/json',
+        'Accept': 'application/json'
+      },
+      body: JSON.stringify({email: email, password: password, FirstName: firstName, LastName: lastName})
+  })
+  return res.json()
+}
+
+const getAllMigrations = async() => {
     var res = await fetch(`http://${config.server_host}:${config.server_port}/migration`, {
         method: 'GET',
     })
@@ -49,25 +77,14 @@ const getPlayerSearch = async (name, nationality, club, rating_high, rating_low,
     return res.json()
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
 export {
+    postLogin,
     getAllMigrations,
-
     getAllMatches,
     getAllPlayers,
     getMatch,
     getPlayer,
     getMatchSearch,
-    getPlayerSearch
+    getPlayerSearch,
+    postSignup
 }

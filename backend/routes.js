@@ -1,6 +1,6 @@
 const config = require("./config.json");
 const mysql = require("mysql");
-// const e = require("express");
+const { MongoClient, ServerApiVersion } = require('mongodb');
 
 // TODO: fill in your connection details here
 const connection = mysql.createConnection({
@@ -13,7 +13,52 @@ const connection = mysql.createConnection({
 });
 connection.connect();
 
-// hekper function
+// Connecting to MongoDB
+const client = new MongoClient(config.mongodb_uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
+
+async function login(req, res) {
+  const email = req.body.email;
+  const password = req.body.password;
+  // check if the email exists
+  try {
+    const collection = client.db("CIS550").collection("Users");
+    const result = await collection.findOne({Email: email});
+    if (!result) {
+      res.status(404).json({ error: "email doesn't exist" });
+    } else {
+      // check the password
+      if (result.Password === password) {
+        res.status(200).json({ result: "user successfully logged in" });
+      } else {
+        res.status(401).json({ result: "wrong password" });
+      }
+    }
+  } catch (e) {
+    res.status(400).json({ error: e });
+  } finally {
+    //await client.close();
+  }
+}
+
+async function signup(req, res) {
+  try {
+    const collection = client.db("CIS550").collection("Users");
+    await collection.createIndex( { "Email": 1 }, { unique: true } );
+    const result = await collection.insertOne({
+      FirstName: req.body.FirstName, 
+      LastName: req.body.LastName, 
+      Email: req.body.email, 
+      Password: req.body.password
+    });
+    res.status(201).json({ InsertedID: result.insertedId });
+  } catch (e) {
+    res.status(409).json({ error: e.errmsg });
+  } finally {
+    //await client.close();
+  }
+}
+
+// helper function
 function processSearchWords(words) {
   let wordList = words.split(',');
   wordList.forEach(function(part, index, theArray) {
@@ -512,5 +557,7 @@ module.exports = {
   mostEmployedCities,
   mostBenefitedOrg,
   topBioEdByCountry,
-  topInstituteByCountry
+  topInstituteByCountry,
+  login,
+  signup
 };
