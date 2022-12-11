@@ -2,11 +2,15 @@ import React from 'react';
 import {
   Table,
   Pagination,
-  Select
+  Select,
+  Row,
+  Col,
+  Divider
 } from 'antd'
+import { Form, FormInput, FormGroup, Button, Card, CardBody, CardTitle, Progress } from "shards-react";
 
 import MenuBar from '../components/MenuBar';
-import { getMostBenefitedOrg, getTopInstitutions, getBestAuthors } from '../fetcher'
+import { getMostBenefitedOrg, searchMostBenefitedOrg, getTopInstitutions, getBestAuthors } from '../fetcher'
 
 const { Column, ColumnGroup } = Table;
 const { Option } = Select;
@@ -72,18 +76,52 @@ class InstitutionsPage extends React.Component {
       matchesPageNumber: 1,
       matchesPageSize: 10,
       pagination: null,
+
       organization: "Tsinghua University",
-      publicationsResults: [],
+      min: 0,
+      max: 1000000,
+      institutionsResults: [],
       bestAuthorsResults: [],
       mostBenefitedOrgResults: [],
     }
 
-    this.goToMatch = this.goToMatch.bind(this)
+    this.handleOrganizationQueryChange = this.handleOrganizationQueryChange.bind(this)
+    this.handleMinQueryChange = this.handleMinQueryChange.bind(this)
+    this.handleMaxQueryChange = this.handleMaxQueryChange.bind(this)
+    this.updateSearchResults = this.updateSearchResults.bind(this)
+    this.updateBenefitedSearchResults = this.updateBenefitedSearchResults.bind(this)
+
   }
 
+  handleOrganizationQueryChange(event) {
+    this.setState({ organization: event.target.value })
+  }
 
-  goToMatch(matchId) {
-    window.location = `/matches?id=${matchId}`
+  handleMinQueryChange(event) {
+    this.setState({ min: event.target.value })
+  }
+
+  handleMaxQueryChange(event) {
+    this.setState({ max: event.target.value })
+  }
+
+  updateSearchResults() {
+    getTopInstitutions(this.state.organization,
+      null, null).then( res => {
+        this.setState({ institutionsResults: res.results })
+    })
+    console.log('done with updating search results');
+
+  }
+
+  updateBenefitedSearchResults() {
+    console.log(this.state);
+    searchMostBenefitedOrg(this.state.min, this.state.max,
+      null, null).then( res => {
+        this.setState({ mostBenefitedOrgResults: res.results })
+    })
+    console.log('done with updating search results');
+
   }
 
   componentDidMount() {
@@ -115,11 +153,37 @@ class InstitutionsPage extends React.Component {
       <div>
       <MenuBar />
       <div style={{ width: '70vw', margin: '0 auto', marginTop: '5vh' }}>
+      <Form style={{ width: '80vw', margin: '0 auto', marginTop: '5vh' }}>
+            <Row>
+                <Col flex={2}><FormGroup style={{ width: '20vw', margin: '0 auto' }}>
+                    <label>Organization</label>
+                    <FormInput placeholder="organization" value={this.state.organization} onChange={this.handleOrganizationQueryChange} />
+                </FormGroup></Col>
+                <Col flex={2}><FormGroup style={{ width: '10vw' }}>
+                    <Button style={{ marginTop: '4vh' }} onClick={this.updateSearchResults}>Search</Button>
+                </FormGroup></Col>
+            </Row>
+        </Form>
         <h3>Top Researchers</h3>
         <Table dataSource={this.state.institutionsResults} columns={institutionsColumns} pagination={{ pageSizeOptions:[5, 10], defaultPageSize: 5, showQuickJumper:true }}/>
         <h3>Best Authors</h3>
         <Table dataSource={this.state.bestAuthorsResults} columns={bestAuthorsColumns} pagination={{ pageSizeOptions:[5, 10], defaultPageSize: 5, showQuickJumper:true }}/>
         <h3>Most Benefited Organization</h3>
+        <Form style={{ width: '80vw', margin: '0 auto', marginTop: '5vh' }}>
+            <Row>
+                <Col flex={2}><FormGroup style={{ width: '20vw', margin: '0 auto' }}>
+                    <label>Min Count</label>
+                    <FormInput placeholder="min" value={this.state.min} onChange={this.handleMinQueryChange} />
+                </FormGroup></Col>
+                <Col flex={2}><FormGroup style={{ width: '20vw', margin: '0 auto' }}>
+                    <label>Max Count</label>
+                    <FormInput placeholder="max" value={this.state.max} onChange={this.handleMaxQueryChange} />
+                </FormGroup></Col>
+                <Col flex={2}><FormGroup style={{ width: '10vw' }}>
+                    <Button style={{ marginTop: '4vh' }} onClick={this.updateBenefitedSearchResults}>Search</Button>
+                </FormGroup></Col>
+            </Row>
+        </Form>
         <Table dataSource={this.state.mostBenefitedOrgResults} columns={mostBenefitedOrgColumns} pagination={{ pageSizeOptions:[5, 10], defaultPageSize: 5, showQuickJumper:true }}/>
       </div>
     </div>

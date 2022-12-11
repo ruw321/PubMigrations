@@ -2,8 +2,13 @@ import React from 'react';
 import {
   Table,
   Pagination,
-  Select
+  Select,
+  Row,
+  Col,
+  Divider
 } from 'antd'
+import { Form, FormInput, FormGroup, Button, Card, CardBody, CardTitle, Progress } from "shards-react";
+
 
 import MenuBar from '../components/MenuBar';
 import { getPaperWords } from '../fetcher'
@@ -46,19 +51,28 @@ class BioEntitiesSearcherPage extends React.Component {
       bioEntitiesResults: []  
     }
 
-    this.goToMatch = this.goToMatch.bind(this)
+    this.handleWordsListQueryChange = this.handleWordsListQueryChange.bind(this)
+    this.updateSearchResults = this.updateSearchResults.bind(this)
+
   }
 
+  handleWordsListQueryChange(event) {
+    this.setState({ wordsList: event.target.value })
+  }
 
-  goToMatch(matchId) {
-    window.location = `/matches?id=${matchId}`
+  updateSearchResults() {
+    getPaperWords(this.state.wordsList,
+      null, null).then( res => {
+        this.setState({ bioEntitiesResults: res.results })
+    })
+    console.log('done with updating search results');
+
   }
 
   componentDidMount() {
 
     getPaperWords(this.state.wordsList, null, null).then(res => {
       console.log(res.results)
-      // TASK 1: set the correct state attribute to res.results
       this.setState({ bioEntitiesResults: res.results})
       console.log('set state')
     })
@@ -68,6 +82,17 @@ class BioEntitiesSearcherPage extends React.Component {
     return (
       <div>
       <MenuBar />
+      <Form style={{ width: '80vw', margin: '0 auto', marginTop: '5vh' }}>
+            <Row>
+                <Col flex={2}><FormGroup style={{ width: '20vw', margin: '0 auto' }}>
+                    <label>Words (Comma Separated)</label>
+                    <FormInput placeholder="wordsList" value={this.state.wordsList} onChange={this.handleWordsListQueryChange} />
+                </FormGroup></Col>
+                <Col flex={2}><FormGroup style={{ width: '10vw' }}>
+                    <Button style={{ marginTop: '4vh' }} onClick={this.updateSearchResults}>Search</Button>
+                </FormGroup></Col>
+            </Row>
+        </Form>
       <div style={{ width: '70vw', margin: '0 auto', marginTop: '5vh' }}>
         <h3>Bio Entities Searcher</h3>
         <Table dataSource={this.state.bioEntitiesResults} columns={bioEntitiesColumns} pagination={{ pageSizeOptions:[5, 10], defaultPageSize: 5, showQuickJumper:true }}/>

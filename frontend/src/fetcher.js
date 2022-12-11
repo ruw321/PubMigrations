@@ -1,5 +1,12 @@
 import config from './config.json'
 
+const getAllCountries = async(page, pagesize) => {
+    var res = await fetch(`http://${config.server_host}:${config.server_port}/countries`, {
+        method: 'GET',
+    })
+    return res.json()
+}
+
 const getAllMigrations = async(page, pagesize) => {
     var res = await fetch(`http://${config.server_host}:${config.server_port}/migration`, {
         method: 'GET',
@@ -43,6 +50,18 @@ const getPublications = async(page, pagesize) => {
     return res.json()
 }
 
+const getSearchPublications = async(andid, pmid, auorder, pubyear, page, pagesize) => {
+    let url = `http://${config.server_host}:${config.server_port}/paper/publications?`;
+    url += andid !== "" ? `&ANDID=${andid}` : "";
+    url += pmid !== "" ? `&PMID=${pmid}` : "";
+    url += auorder !== "" ? `&AuOrder=${auorder}` : "";
+    url += pubyear !== "" ? `&PubYear=${pubyear}` : "";
+    var res = await fetch(url, {
+        method: 'GET',
+    })
+    return res.json()
+}
+
 const getTopInstitutions = async(organization, page, pagesize) => {
     var res = await fetch(`http://${config.server_host}:${config.server_port}/researchers/top?Organization=${organization}`, {
         method: 'GET',
@@ -64,8 +83,18 @@ const getMostBenefitedOrg = async(page, pagesize) => {
     return res.json()
 }
 
-const getTotalPapersByCountry = async(country, page, pagesize) => {
-    var res = await fetch(`http://${config.server_host}:${config.server_port}/paper/totalByCountry?country=${country}`, {
+const searchMostBenefitedOrg = async(min, max, page, pagesize) => {
+    let url = `http://${config.server_host}:${config.server_port}/mostBenefitedOrg?`;
+    url += min !== "" ? `&min=${min}` : "";
+    url += max !== "" ? `&max=${max}` : "";
+    var res = await fetch(url, {
+        method: 'GET',
+    })
+    return res.json()
+}
+
+const getTotalPapersByCountry = async(page, pagesize) => {
+    var res = await fetch(`http://${config.server_host}:${config.server_port}/paper/totalByCountry`, {
         method: 'GET',
     })
     return res.json()
@@ -154,13 +183,16 @@ export {
     getAllResearchers,
     getPaperWords,
     getPublications,
+    getSearchPublications,
     getTopInstitutions,
     getBestAuthors,
     getMostBenefitedOrg,
+    searchMostBenefitedOrg,
     getTotalPapersByCountry,
     getTopInstituteByCountry,
     getTopBioEdByCountry,
     getMostEmployedCities,
+    getAllCountries,
 
     getAllMatches,
     getAllPlayers,

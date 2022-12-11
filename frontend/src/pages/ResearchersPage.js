@@ -2,8 +2,12 @@ import React from 'react';
 import {
   Table,
   Pagination,
-  Select
+  Select,
+  Row,
+  Col,
+  Divider
 } from 'antd'
+import { Form, FormInput, FormGroup, Button, Card, CardBody, CardTitle, Progress } from "shards-react";
 
 import MenuBar from '../components/MenuBar';
 import { getAllResearchers } from '../fetcher'
@@ -51,6 +55,11 @@ class ResearchersPage extends React.Component {
       matchesPageNumber: 1,
       matchesPageSize: 10,
       pagination: null,
+
+      education: null,
+      employment: null,
+      pmid: null,
+      organization: null,
       researchersResults: []  
     }
 
