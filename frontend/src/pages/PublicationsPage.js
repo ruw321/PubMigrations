@@ -2,11 +2,15 @@ import React from 'react';
 import {
   Table,
   Pagination,
-  Select
+  Select,
+  Row,
+  Col,
+  Divider
 } from 'antd'
+import { Form, FormInput, FormGroup, Button, Card, CardBody, CardTitle, Progress } from "shards-react";
 
 import MenuBar from '../components/MenuBar';
-import { getPublications } from '../fetcher'
+import { getPublications, getSearchPublications } from '../fetcher'
 
 const { Column, ColumnGroup } = Table;
 const { Option } = Select;
@@ -63,15 +67,44 @@ class PublicationsPage extends React.Component {
       matchesPageNumber: 1,
       matchesPageSize: 10,
       pagination: null,
+
+      andid: null,
+      pmid: null,
+      auOrder: null,
+      pubYear: null,
       publicationsResults: []  
     }
 
-    this.goToMatch = this.goToMatch.bind(this)
+    this.handleAndidQueryChange = this.handleAndidQueryChange.bind(this)
+    this.handlePmidQueryChange = this.handlePmidQueryChange.bind(this)
+    this.handleAuOrderQueryChange = this.handleAuOrderQueryChange.bind(this)
+    this.handlePubYearQueryChange = this.handlePubYearQueryChange.bind(this)
+    this.updateSearchResults = this.updateSearchResults.bind(this)
   }
 
+  handleAndidQueryChange(event) {
+    this.setState({ andid: event.target.value })
+  }
 
-  goToMatch(matchId) {
-    window.location = `/matches?id=${matchId}`
+  handlePmidQueryChange(event) {
+    this.setState({ pmid: event.target.value })
+  }
+
+  handleAuOrderQueryChange(event) {
+    this.setState({ auOrder: event.target.value })
+  }
+
+  handlePubYearQueryChange(event) {
+    this.setState({ pubYear: event.target.value })
+  }
+
+  updateSearchResults() {
+    getSearchPublications(this.state.andid, this.state.pmid, this.state.auOrder, this.state.pubYear,
+      null, null).then( res => {
+        this.setState({ publicationsResults: res.results })
+    })
+    console.log('done with updating search results');
+
   }
 
   componentDidMount() {
@@ -88,6 +121,29 @@ class PublicationsPage extends React.Component {
     return (
       <div>
       <MenuBar />
+      <Form style={{ width: '80vw', margin: '0 auto', marginTop: '5vh' }}>
+            <Row>
+                <Col flex={2}><FormGroup style={{ width: '20vw', margin: '0 auto' }}>
+                    <label>ANDID</label>
+                    <FormInput placeholder="andid" value={this.state.andid} onChange={this.handleAndidQueryChange} />
+                </FormGroup></Col>
+                <Col flex={2}><FormGroup style={{ width: '20vw', margin: '0 auto' }}>
+                    <label>PMID</label>
+                    <FormInput placeholder="pmid" value={this.state.pmid} onChange={this.handlePmidQueryChange} />
+                </FormGroup></Col>
+                <Col flex={2}><FormGroup style={{ width: '20vw', margin: '0 auto' }}>
+                    <label>AuOrder</label>
+                    <FormInput placeholder="AuOrder" value={this.state.auOrder} onChange={this.handleAuOrderQueryChange} />
+                </FormGroup></Col>
+                <Col flex={2}><FormGroup style={{ width: '20vw', margin: '0 auto' }}>
+                    <label>PubYear</label>
+                    <FormInput placeholder="pubYear" value={this.state.pubYear} onChange={this.handlePubYearQueryChange} />
+                </FormGroup></Col>
+                <Col flex={2}><FormGroup style={{ width: '10vw' }}>
+                    <Button style={{ marginTop: '4vh' }} onClick={this.updateSearchResults}>Search</Button>
+                </FormGroup></Col>
+            </Row>
+        </Form>
       <div style={{ width: '70vw', margin: '0 auto', marginTop: '5vh' }}>
         <h3>Publications</h3>
         <Table dataSource={this.state.publicationsResults} columns={publicationsColumns} pagination={{ pageSizeOptions:[5, 10], defaultPageSize: 5, showQuickJumper:true }}/>

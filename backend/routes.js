@@ -493,6 +493,28 @@ async function getTotalPaperByCountry(req, res) {
   }
 }
 
+// example request: http://localhost:8000/countries?
+async function getCountries(req, res) {
+  let sqlQuery = `SELECT * FROM Countries `;
+
+  if (req.query.page && !isNaN(req.query.page)) {
+    // TODO: add the page feature 
+  } else {
+    // we have implemented this for you to see how to return results by querying the database
+    connection.query(sqlQuery,
+      function (error, results, fields) {
+        if (error) {
+          console.log(error);
+          res.json({ error: error });
+        } else if (results) {
+          res.json({ results: results });
+        }
+      }
+    );
+  }
+}
+
+
 module.exports = {
   getMigrations, 
   filterResearchers, 
@@ -504,5 +526,6 @@ module.exports = {
   mostEmployedCities,
   mostBenefitedOrg,
   topBioEdByCountry,
-  topInstituteByCountry
+  topInstituteByCountry,
+  getCountries  
 };

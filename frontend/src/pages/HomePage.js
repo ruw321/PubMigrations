@@ -2,11 +2,16 @@ import React from 'react';
 import {
   Table,
   Pagination,
-  Select
+  Select,
+  Row,
+  Col,
+  Divider
 } from 'antd'
+import { Form, FormInput, FormGroup, Button, Card, CardBody, CardTitle, Progress } from "shards-react";
+
 
 import MenuBar from '../components/MenuBar';
-import { getAllMigrations } from '../fetcher'
+import { getAllMigrations, getSearchMigrations } from '../fetcher'
 const { Column, ColumnGroup } = Table;
 const { Option } = Select;
 
@@ -15,7 +20,7 @@ const migrationColumns = [
     title: 'ORCID',
     dataIndex: 'ORCID',
     key: 'ORCID',
-    // sorter: (a, b) => a.Name.localeCompare(b.Name),
+    // sorter: (a, b) => a.ORCID.localeCompare(b.ORCID),
     // render: (text, row) => <a href={`/players?id=${row.PlayerId}`}>{text}</a>
   },
   {
@@ -69,27 +74,61 @@ class HomePage extends React.Component {
     super(props)
 
     this.state = {
-      matchesResults: [],
+      // matchesResults: [],
       matchesPageNumber: 1,
       matchesPageSize: 10,
       playersResults: [],
       pagination: null,
+
+      phdYear: null,
+      earliestYear: null,
+      hasPhd: null,
+      hasMigrated: null,
       migrationsResults: []  
     }
 
-    this.goToMatch = this.goToMatch.bind(this)
+    this.handlePhdYearQueryChange = this.handlePhdYearQueryChange.bind(this)
+    this.handleEarliestYearQueryChange = this.handleEarliestYearQueryChange.bind(this)
+    this.handleHasPhdQueryChange = this.handleHasPhdQueryChange.bind(this)
+    this.handleHasMigratedQueryChange = this.handleHasMigratedQueryChange.bind(this)
+    this.updateSearchResults = this.updateSearchResults.bind(this)
   }
 
+  handlePhdYearQueryChange(event) {
+    this.setState({ phdYear: event.target.value })
+  }
 
-  goToMatch(matchId) {
-    window.location = `/matches?id=${matchId}`
+  handleEarliestYearQueryChange(event) {
+    this.setState({ earliestYear: event.target.value })
+  }
+
+  handleHasPhdQueryChange(value) {
+    this.setState({ hasPhd: value })
+  }
+
+  handleHasMigratedQueryChange(value) {
+    console.log("value here:", value)
+    this.setState({ hasMigrated: value })
+  }
+
+  updateSearchResults() {
+    console.log('phd year: ',this.state.phdYear);
+    console.log('earliest year: ',this.state.earliestYear);
+    console.log('has phd:' , this.state.hasPhd);
+    console.log('has migrated:', this.state.hasMigrated);
+    //TASK 11: call getMatchSearch and update matchesResults in state. See componentDidMount() for a hint
+    getSearchMigrations(this.state.phdYear, this.state.earliestYear, this.state.hasPhd, this.state.hasMigrated,
+      null, null).then( res => {
+        this.setState({ migrationsResults: res.results })
+    })
+    console.log('done with updating search results');
+
   }
 
   componentDidMount() {
 
     getAllMigrations().then(res => {
       console.log(res.results)
-      // TASK 1: set the correct state attribute to res.results
       this.setState({ migrationsResults: res.results})
     })
   }
@@ -98,6 +137,30 @@ class HomePage extends React.Component {
     return (
       <div>
       <MenuBar />
+        <Form style={{ width: '80vw', margin: '0 auto', marginTop: '5vh' }}>
+            <Row>
+                <Col flex={2}><FormGroup style={{ width: '20vw', margin: '0 auto' }}>
+                    <label>PhD Year</label>
+                    <FormInput placeholder="phdYear" value={this.state.phdYear} onChange={this.handlePhdYearQueryChange} />
+                </FormGroup></Col>
+                <Col flex={2}><FormGroup style={{ width: '20vw', margin: '0 auto' }}>
+                    <label>Earliest Year</label>
+                    <FormInput placeholder="earliestYear" value={this.state.earliestYear} onChange={this.handleEarliestYearQueryChange} />
+                </FormGroup></Col>
+                <Col flex={2}><FormGroup style={{ width: '20vw', margin: '0 auto' }}>
+                    <label>Has PhD</label>
+                    <Select defaultValue="True" options={[{label:"True", value:1},{label:"False", value:0}]} onChange={this.handleHasPhdQueryChange}></Select>
+                </FormGroup></Col>
+                <Col flex={2}><FormGroup style={{ width: '20vw', margin: '0 auto' }}>
+                    <label>Has Migrated</label>
+                    {/* <FormInput placeholder="hasMigrated" value={this.state.hasMigrated} onChange={this.handleHasMigratedQueryChange} /> */}
+                    <Select defaultValue="True" options={[{label:"True", value:1},{label:"False", value:0}]} onChange={this.handleHasMigratedQueryChange}></Select>
+                </FormGroup></Col>
+                <Col flex={2}><FormGroup style={{ width: '10vw' }}>
+                    <Button style={{ marginTop: '4vh' }} onClick={this.updateSearchResults}>Search</Button>
+                </FormGroup></Col>
+            </Row>
+        </Form>
       <div style={{ width: '70vw', margin: '0 auto', marginTop: '5vh' }}>
         <h3>Migrations</h3>
         <Table dataSource={this.state.migrationsResults} columns={migrationColumns} pagination={{ pageSizeOptions:[5, 10], defaultPageSize: 5, showQuickJumper:true }}/>

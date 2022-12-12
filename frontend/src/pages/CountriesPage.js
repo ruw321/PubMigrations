@@ -2,11 +2,15 @@ import React from 'react';
 import {
   Table,
   Pagination,
-  Select
+  Select,
+  Row,
+  Col,
+  Divider
 } from 'antd'
+import { Form, FormInput, FormGroup, Button, Card, CardBody, CardTitle, Progress } from "shards-react";
 
 import MenuBar from '../components/MenuBar';
-import { getMostEmployedCities, getTopBioEdByCountry, getTopInstituteByCountry, getTotalPapersByCountry } from '../fetcher'
+import { getAllCountries, getMostEmployedCities, getTopBioEdByCountry, getTopInstituteByCountry, getTotalPapersByCountry } from '../fetcher'
 
 const { Column, ColumnGroup } = Table;
 const { Option } = Select;
@@ -82,6 +86,8 @@ class CountriesPage extends React.Component {
       matchesPageSize: 10,
       pagination: null,
       country: "IT",
+      
+      countries: [],
       papersByCountries: [],
       topInstituteByCountry: [],
       topBioEdByCountry: [],
@@ -90,6 +96,24 @@ class CountriesPage extends React.Component {
     }
 
     this.goToMatch = this.goToMatch.bind(this)
+    this.handleCountryQueryChange = this.handleCountryQueryChange.bind(this)
+    this.updateSearchResults = this.updateSearchResults.bind(this)
+
+  }
+
+  handleCountryQueryChange(value) {
+    console.log("value here:", value)
+    this.setState({ country: value })
+  }
+
+  updateSearchResults() {
+    getTopInstituteByCountry(this.state.country, null, null).then( res => {
+        this.setState({ topInstituteByCountry: res.results })
+    })
+    getTopBioEdByCountry(this.state.country, null, null).then( res => {
+      this.setState({ topBioEdByCountry: res.results })
+    })
+    console.log('done with updating search results');
   }
 
 
@@ -98,8 +122,23 @@ class CountriesPage extends React.Component {
   }
 
   componentDidMount() {
+    getAllCountries(null, null).then(res => {
+      console.log(res.results)
+      let newResults = [];
+      for (let i in res.results){
+        console.log(i);
+        let label = res.results[i].Name;
+        let value = res.results[i].Alpha2Code;
+        let d = {label: label, value: value};
+        newResults.push(d);
+      }
+      console.log(newResults);
+      // TASK 1: set the correct state attribute to res.results
+      this.setState({ countries: newResults})
+      console.log('set state')
+    })
 
-    getTotalPapersByCountry(this.state.country, null, null).then(res => {
+    getTotalPapersByCountry(null, null).then(res => {
       console.log(res.results)
       // TASK 1: set the correct state attribute to res.results
       this.setState({ papersByCountries: res.results})
@@ -120,7 +159,7 @@ class CountriesPage extends React.Component {
       console.log('set state')
     })
 
-    getMostEmployedCities(this.state.country, null, null).then(res => {
+    getMostEmployedCities(null, null).then(res => {
       console.log(res.results)
       // TASK 1: set the correct state attribute to res.results
       this.setState({ mostEmployedCities: res.results})
@@ -134,6 +173,17 @@ class CountriesPage extends React.Component {
       <div>
       <MenuBar />
       <div style={{ width: '70vw', margin: '0 auto', marginTop: '5vh' }}>
+      <Form style={{ width: '80vw', margin: '0 auto', marginTop: '5vh' }}>
+            <Row>
+                <Col flex={2}><FormGroup style={{ width: '20vw', margin: '0 auto' }}>
+                    <label>Country</label>
+                    <Select defaultValue="" options={this.state.countries} onChange={this.handleCountryQueryChange}></Select>
+                </FormGroup></Col>
+                <Col flex={2}><FormGroup style={{ width: '10vw' }}>
+                    <Button style={{ marginTop: '4vh' }} onClick={this.updateSearchResults}>Search</Button>
+                </FormGroup></Col>
+            </Row>
+        </Form>
         <h3>Total Papers By Country</h3>
         <Table dataSource={this.state.papersByCountries} columns={papersByCountriesColumns} pagination={{ pageSizeOptions:[5, 10], defaultPageSize: 5, showQuickJumper:true }}/>
         <h3>Top Institutions By Country</h3>
