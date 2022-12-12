@@ -9,12 +9,16 @@ import {
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
 import HomePage from './pages/HomePage';
-import PlayersPage from './pages/PlayersPage';
 import 'antd/dist/antd.css';
 
 import "bootstrap/dist/css/bootstrap.min.css";
 import "shards-ui/dist/css/shards.min.css"
-import MatchesPage from './pages/MatchesPage';
+import MigrationsPage from './pages/MigrationsPage';
+import ResearchersPage from './pages/ResearchersPage';
+import BioEntitiesSearcherPage from './pages/BioEntitiesSearcherPage';
+import PublicationsPage from './pages/PublicationsPage';
+import InstitutionsPage from './pages/InstitutionsPage';
+import CountriesPage from './pages/CountriesPage';
 
 ReactDOM.render(
   <div>
@@ -36,15 +40,35 @@ ReactDOM.render(
             <LoginPage />
           )} />
         <Route exact
-          path="/players"
-          render={() => (
-            <PlayersPage />
-          )} />
+			path="/migrations"
+			render={() => (
+				<MigrationsPage />
+			)}/>
         <Route exact
-          path="/matches"
-          render={() => (
-            <MatchesPage />
-          )} />
+			path="/researchers"
+			render={() => (
+				<ResearchersPage />
+			)}/>
+        <Route exact
+			path="/bioentities"
+			render={() => (
+				<BioEntitiesSearcherPage />
+			)}/>
+		<Route exact
+			path="/publications"
+			render={() => (
+				<PublicationsPage />
+			)}/>
+		<Route exact
+			path="/institutions"
+			render={() => (
+				<InstitutionsPage />
+			)}/>
+		<Route exact
+			path="/countries"
+			render={() => (
+				<CountriesPage />
+			)}/>
       </Switch>
     </Router>
   </div>,
