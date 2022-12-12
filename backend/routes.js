@@ -136,7 +136,7 @@ async function createTempTable() {
     }
   );
 }
-createTempTable();
+//createTempTable();
 
 // Christian Query 1
 async function papersLostToOne(req, res) {
@@ -311,7 +311,7 @@ async function mostSharedBioEdByCountry(req, res) {
     FROM PmidAndidInfo
     INNER JOIN BioEntities
     ON PmidAndidInfo.PMID = BioEntities.PMID
-    WHERE Country = '${Country2}'
+    WHERE Country = '${country2}'
     GROUP BY Mention
     ORDER BY Count DESC
     LIMIT 100
