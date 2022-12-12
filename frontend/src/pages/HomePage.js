@@ -122,7 +122,6 @@ class HomePage extends React.Component {
         this.setState({ migrationsResults: res.results })
     })
     console.log('done with updating search results');
-
   }
 
   componentDidMount() {
@@ -134,6 +133,10 @@ class HomePage extends React.Component {
   }
 
   render() {
+    if (window.localStorage.getItem('Authenticated') !== 'True') {
+      // go back to the login page since you are not authenticated
+      window.location = '/login';
+    }
     return (
       <div>
       <MenuBar />

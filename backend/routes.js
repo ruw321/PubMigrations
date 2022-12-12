@@ -1,6 +1,6 @@
 const config = require("./config.json");
 const mysql = require("mysql");
-// const e = require("express");
+const { MongoClient, ServerApiVersion } = require('mongodb');
 
 // TODO: fill in your connection details here
 const connection = mysql.createConnection({
@@ -13,7 +13,52 @@ const connection = mysql.createConnection({
 });
 connection.connect();
 
-// hekper function
+// Connecting to MongoDB
+const client = new MongoClient(config.mongodb_uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
+
+async function login(req, res) {
+  const email = req.body.email;
+  const password = req.body.password;
+  // check if the email exists
+  try {
+    const collection = client.db("CIS550").collection("Users");
+    const result = await collection.findOne({Email: email});
+    if (!result) {
+      res.status(404).json({ error: "email doesn't exist" });
+    } else {
+      // check the password
+      if (result.Password === password) {
+        res.status(200).json({ result: "user successfully logged in" });
+      } else {
+        res.status(401).json({ result: "wrong password" });
+      }
+    }
+  } catch (e) {
+    res.status(400).json({ error: e });
+  } finally {
+    //await client.close();
+  }
+}
+
+async function signup(req, res) {
+  try {
+    const collection = client.db("CIS550").collection("Users");
+    await collection.createIndex( { "Email": 1 }, { unique: true } );
+    const result = await collection.insertOne({
+      FirstName: req.body.FirstName, 
+      LastName: req.body.LastName, 
+      Email: req.body.email, 
+      Password: req.body.password
+    });
+    res.status(201).json({ InsertedID: result.insertedId });
+  } catch (e) {
+    res.status(409).json({ error: e.errmsg });
+  } finally {
+    //await client.close();
+  }
+}
+
+// helper function
 function processSearchWords(words) {
   let wordList = words.split(',');
   wordList.forEach(function(part, index, theArray) {
@@ -47,43 +92,51 @@ function multipleWhere(req, integerProperty, sqlQuery) {
 }
 
 // create the views when the server starts
-async function createViews() {
+async function createTempTable() {
   let sqlQuery = `
-  CREATE OR REPLACE VIEW AuthorCountriesOrgYear (ANDID, BeginYear, Country, Organization) AS (
-    SELECT ANDID, BeginYear, Country, Organization
-    FROM Employment
-    UNION
-    (SELECT ANDID, BeginYear, Country, Organization
-    FROM Education)
-    ORDER BY ANDID ASC, BeginYear DESC
-  );
-  CREATE OR REPLACE VIEW PmidAndidInfo (PMID, ANDID, BeginYear, Country, Organization) AS (
-    WITH temp1 AS (
-      SELECT * FROM Papers
-      NATURAL JOIN Writes
-      WHERE AuOrder = 1
-    ),
-    temp2 AS (
-      SELECT PMID, temp1.ANDID AS ANDID, PubYear, BeginYear, Country, Organization
-      FROM temp1, AuthorCountriesOrgYear
-      WHERE temp1.ANDID = AuthorCountriesOrgYear.ANDID
-      AND temp1.PubYear >= AuthorCountriesOrgYear.BeginYear
-    ),
-    temp3 AS (
-      SELECT PMID, ANDID, MAX(BeginYear) AS BeginYear
+    CREATE TEMPORARY TABLE PmidAndidInfo AS (
+      WITH AuthorCountriesOrgYear AS (
+        SELECT ANDID, BeginYear, Country, Organization
+        FROM Employment
+        UNION
+        (SELECT ANDID, BeginYear, Country, Organization
+        FROM Education)
+        ORDER BY ANDID ASC, BeginYear DESC
+      ),
+      temp1 AS (
+        SELECT * FROM Papers
+        NATURAL JOIN Writes
+        WHERE AuOrder = 1
+      ),
+      temp2 AS (
+        SELECT PMID, temp1.ANDID AS ANDID, PubYear, BeginYear, Country, Organization
+        FROM temp1, AuthorCountriesOrgYear
+        WHERE temp1.ANDID = AuthorCountriesOrgYear.ANDID
+        AND temp1.PubYear >= AuthorCountriesOrgYear.BeginYear
+      ),
+      temp3 AS (
+        SELECT PMID, ANDID, MAX(BeginYear) AS BeginYear
+        FROM temp2
+        GROUP BY ANDID, PMID
+      )
+      SELECT PMID, ANDID, BeginYear, Country, Organization
       FROM temp2
-      GROUP BY ANDID, PMID
-    )
-    SELECT PMID, ANDID, BeginYear, Country, Organization
-    FROM temp2
-    WHERE (PMID, ANDID, BeginYear) IN (SELECT * FROM temp3)
-  );
+      WHERE (PMID, ANDID, BeginYear) IN (SELECT * FROM temp3)   
+    ) 
   `;
 
   // we have implemented this for you to see how to return results by querying the database
-  connection.query(sqlQuery);
+  connection.query(sqlQuery,
+    function (error, results, fields) {
+      if (error) {
+        console.log(error);
+      } else if (results) {
+        console.log("Temporary Table is created");
+      }
+    }
+  );
 }
-createViews();
+createTempTable();
 
 // Query 13
 async function getBestAuthors(req, res) {
@@ -527,5 +580,7 @@ module.exports = {
   mostBenefitedOrg,
   topBioEdByCountry,
   topInstituteByCountry,
+  login,
+  signup,
   getCountries  
 };

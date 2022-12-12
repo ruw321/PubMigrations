@@ -1,11 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import {
-	BrowserRouter as Router,
-	Route,
-	Switch
+  BrowserRouter as Router,
+  Route,
+  Switch
 } from 'react-router-dom';
 
+import LoginPage from './pages/LoginPage';
+import SignupPage from './pages/SignupPage';
 import HomePage from './pages/HomePage';
 import 'antd/dist/antd.css';
 
@@ -23,10 +25,20 @@ ReactDOM.render(
     <Router>
       <Switch>
         <Route exact
-			path="/"
-			render={() => (
-				<HomePage />
-			)}/>
+          path="/"
+          render={() => (
+            <HomePage />
+          )} />
+        <Route exact
+          path="/signup"
+          render={() => (
+            <SignupPage />
+          )} />
+        <Route exact
+          path="/login"
+          render={() => (
+            <LoginPage />
+          )} />
         <Route exact
 			path="/migrations"
 			render={() => (

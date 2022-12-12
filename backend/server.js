@@ -1,7 +1,5 @@
 const express = require('express');
-const mysql = require('mysql');
 var cors = require('cors')
-
 
 const routes = require('./routes')
 const config = require('./config.json')
@@ -9,7 +7,14 @@ const config = require('./config.json')
 const app = express();
 
 // whitelist localhost 3000
-app.use(cors({ credentials: true, origin: ['http://localhost:3000'] }));
+app.use(cors({ 
+  credentials: true, 
+  origin: ['http://localhost:3000'],
+  methods: "GET,PUT,POST,DELETE",
+}));
+
+// parse application/json
+app.use(express.json());
 
 // Query 14 - register as GET
 app.get('/countries', routes.getCountries)
@@ -47,11 +52,11 @@ app.get('/researchers/top', routes.topResearcher)
 // // Route 6 - register as GET 
 app.get('/paper/totalbycountry', routes.getTotalPaperByCountry)
 
-// // Route 7 - register as GET 
-// app.get('/search/matches', routes.search_matches)
+// login
+app.post('/login', routes.login)
 
-// // Route 8 - register as GET 
-// app.get('/search/players', routes.search_players)
+// signup
+app.post('/signup', routes.signup)
 
 app.listen(config.server_port, () => {
     console.log(`Server running at http://${config.server_host}:${config.server_port}/`);
