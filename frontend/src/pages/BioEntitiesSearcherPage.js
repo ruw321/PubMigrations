@@ -79,6 +79,10 @@ class BioEntitiesSearcherPage extends React.Component {
   }
 
   render() {
+    if (window.localStorage.getItem('Authenticated') !== 'True') {
+      // go back to the login page since you are not authenticated
+      window.location = '/login';
+    }
     return (
       <div>
       <MenuBar />
