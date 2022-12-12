@@ -59,16 +59,10 @@ class ResearchersPage extends React.Component {
       education: null,
       employment: null,
       pmid: null,
-      organization: null,
+      // organization: null,
       researchersResults: []  
     }
 
-    this.goToMatch = this.goToMatch.bind(this)
-  }
-
-
-  goToMatch(matchId) {
-    window.location = `/matches?id=${matchId}`
   }
 
   componentDidMount() {
