@@ -16,6 +16,18 @@ app.use(cors({
 // parse application/json
 app.use(express.json());
 
+// Christian Query 1 - register as GET
+app.get('/papersLostToOne', routes.papersLostToOne)
+
+// Christian Query 2 - register as GET
+app.get('/sameBioEntitiesByCountry', routes.sameBioEntitiesByCountry)
+
+// Christian Query 3 - register as GET
+app.get('/netMovement', routes.netMovement)
+
+// Christian Query 4 - register as GET
+app.get('/mostSharedBioEdByCountry', routes.mostSharedBioEdByCountry)
+
 // Query 14 - register as GET
 app.get('/countries', routes.getCountries)
 

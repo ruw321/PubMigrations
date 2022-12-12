@@ -138,6 +138,202 @@ async function createTempTable() {
 }
 createTempTable();
 
+// Christian Query 1
+async function papersLostToOne(req, res) {
+  // a GET request to /papersLostToOne?limit=100
+  let limit = 100;
+  let country1 = "US";
+  let country2 = "CA";
+  if (req.query.limit) {
+    limit = req.query.limit;
+  }
+  if (req.query.country1) {
+    country1 = req.query.country1
+  }
+  if (req.query.country2) {
+    country2 = req.query.country2
+  }
+  
+  let query = `
+  WITH temp1 AS (
+    SELECT ORCID FROM Migrations
+    WHERE EarliestCountry = '${country1}'
+    AND Country2016 = '${country2}'
+  ),
+  temp2 AS (
+    SELECT ANDID FROM temp1
+    NATURAL JOIN ORCIDs
+  )
+  SELECT COUNT(*) FROM temp2
+  NATURAL JOIN PmidAndidInfo
+  LIMIT ${limit}
+  `
+  connection.query(query,
+    function (error, results, fields) {
+      if (error) {
+        console.log(error)
+        res.json({error : error})
+      } else if (results) {
+        res.json({ results: results })
+      }
+    }
+  )
+}
+
+// Christian Query 2
+async function sameBioEntitiesByCountry(req, res) {
+  // a GET request to /sameBioEntitiesByCountry?limit=100
+  let limit = 100;
+  let country1 = "US";
+  let country2 = "CA";
+  if (req.query.limit) {
+    limit = req.query.limit;
+  }
+  if (req.query.country1) {
+    country1 = req.query.country1
+  }
+  if (req.query.country2) {
+    country2 = req.query.country2
+  }
+  
+  let query = `
+  WITH temp1 AS (
+    SELECT ORCID
+    FROM Migrations
+    WHERE EarliestCountry = '${country1}'
+    AND Country2016 = '${country2}'
+  ),
+  temp2 AS (
+    SELECT ANDID
+    FROM temp1
+    NATURAL JOIN ORCIDs
+  ),
+  temp3 AS (
+    SELECT *
+    FROM temp2
+    NATURAL JOIN PmidAndidInfo
+  )
+  SELECT Mention, COUNT(*) as Count
+  FROM temp3
+  NATURAL JOIN BioEntities
+  GROUP BY Mention
+  ORDER BY Count DESC
+  LIMIT ${limit}
+  `
+  connection.query(query,
+    function (error, results, fields) {
+      if (error) {
+        console.log(error)
+        res.json({error : error})
+      } else if (results) {
+        res.json({ results: results })
+      }
+    }
+  )
+
+}
+
+// Christian Query 3
+async function netMovement(req, res) {
+  // a GET request to /netMovement?limit=100
+  let limit = 100;
+  let country1 = "US";
+  let country2 = "CA";
+  if (req.query.limit) {
+    limit = req.query.limit;
+  }
+  if (req.query.country1) {
+    country1 = req.query.country1
+  }
+  if (req.query.country2) {
+    country2 = req.query.country2
+  }
+  
+  let query = `
+  WITH temp1 AS (
+    SELECT COUNT(*) AS Count
+    FROM Migrations
+    WHERE EarliestCountry = '${country1}'
+    AND Country2016 = '${country2}'
+  ),
+  temp2 AS (
+    SELECT COUNT(*) AS Count
+    FROM Migrations
+    WHERE EarliestCountry = '${country2}'
+    AND Country2016 = '${country1}'
+  )
+  SELECT temp1.count - temp2.count AS Count
+  FROM temp1, temp2
+  LIMIT ${limit}
+  `
+  connection.query(query,
+    function (error, results, fields) {
+      if (error) {
+        console.log(error)
+        res.json({error : error})
+      } else if (results) {
+        res.json({ results: results })
+      }
+    }
+  )
+
+}
+
+// Christian Query 4
+async function mostSharedBioEdByCountry(req, res) {
+  // a GET request to /mostSharedBioEdByCountry?limit=100
+  let limit = 100;
+  let country1 = "US";
+  let country2 = "CA";
+  if (req.query.limit) {
+    limit = req.query.limit;
+  }
+  if (req.query.country1) {
+    country1 = req.query.country1
+  }
+  if (req.query.country2) {
+    country2 = req.query.country2
+  }
+  
+  let query = `
+  WITH temp1 AS(
+    SELECT Mention, Count(*) as Count
+    FROM PmidAndidInfo
+    INNER JOIN BioEntities
+    ON PmidAndidInfo.PMID = BioEntities.PMID
+    WHERE Country = '${country1}'
+    GROUP BY Mention
+    ORDER BY Count DESC
+    LIMIT 100
+  ),
+  temp2 AS (
+    SELECT Mention, Count(*) as Count
+    FROM PmidAndidInfo
+    INNER JOIN BioEntities
+    ON PmidAndidInfo.PMID = BioEntities.PMID
+    WHERE Country = '${Country2}'
+    GROUP BY Mention
+    ORDER BY Count DESC
+    LIMIT 100
+  )
+  SELECT temp1.Mention as Mention, temp1.Count + temp2.Count as TotalCount
+  FROM temp1 INNER JOIN temp2
+  ON temp1.Mention = temp2.mention
+  ORDER BY TotalCount DESC
+  LIMIT ${limit}
+  `
+  connection.query(query,
+    function (error, results, fields) {
+      if (error) {
+        console.log(error)
+        res.json({error : error})
+      } else if (results) {
+        res.json({ results: results })
+      }
+    }
+  )
+}
+
 // Query 13
 async function getBestAuthors(req, res) {
   // a GET request to /getBestAuthors?limit=100
@@ -582,5 +778,9 @@ module.exports = {
   topInstituteByCountry,
   login,
   signup,
-  getCountries  
+  getCountries,
+  papersLostToOne,
+  sameBioEntitiesByCountry,
+  netMovement,
+  mostSharedBioEdByCountry
 };
