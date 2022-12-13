@@ -2,19 +2,14 @@ import React from 'react';
 import {
   Table,
   Pagination,
-  // Select,
   Row,
-  Col,
-  Divider
+  Col
 } from 'antd'
-import { Form, FormInput, FormGroup, Button, Card, CardBody, CardTitle, Progress } from "shards-react";
 import Select from 'react-select';
+import { Form, FormGroup, Button } from "shards-react";
 
 import MenuBar from '../components/MenuBar';
 import { getAllCountries, getMostEmployedCities, getTopBioEdByCountry, getTopInstituteByCountry, getTotalPapersByCountry } from '../fetcher'
-
-const { Column, ColumnGroup } = Table;
-const { Option } = Select;
 
 const papersByCountriesColumns = [
   {
