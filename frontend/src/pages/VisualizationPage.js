@@ -7,25 +7,26 @@ import { getVisualData } from '../fetcher'
 
 export default function VisualizationPage() {
   const [data, setData] = useState(0);
-  const [links, setLinks] = useState(new Map());
+  const [links, setLinks] = useState({});
   const [width, height] = useWindowSize();
-  var countriesList = require("countries-list")
+  let countriesList = require("countries-list")
   const contriesOnly = countriesList["countries"];
+
   useEffect(() => {
     getVisualData().then(res => {
-      console.log(res.results);
+      // console.log(res.results);
       // process the results
       const theResult = res.results;
       let dataToWrite = {"nodes":[], "links":[]}
       let countries = new Set();
       const countinents = {"AF": 1, "AN":2, "AS":3, "EU":4, "NA":5, "SA":6};
       theResult.forEach(function (element) {
-        let tempLink = {
+        let linkObject = {
           "source": `${contriesOnly[element.EarliestCountry]["name"]}`, "target": `${contriesOnly[element.Country2016]["name"]}`
         }
-        console.log(tempLink);
-        if (links.has(tempLink)) {
-          links[tempLink] += 1;
+        let tempLink = JSON.stringify(linkObject);
+        if (links[tempLink]) {
+          links[tempLink] = links[tempLink]+1;
         } else {
           links[tempLink] = 1;
         }
@@ -39,8 +40,10 @@ export default function VisualizationPage() {
         }
         dataToWrite["links"].push({"source": `${contriesOnly[element.EarliestCountry]["name"]}`, "target": `${contriesOnly[element.Country2016]["name"]}`});
       });
-      // console.log(countries);
+      // console.log(links);
       setLinks(links);
+      setData(data);
+      // console.log(links);
       // var json = JSON.stringify(dataToWrite);
       // console.log(json);
     })
@@ -48,19 +51,18 @@ export default function VisualizationPage() {
       // go back to the login page since you are not authenticated
       window.location = '/login';
     }
-    if (!data) {
-      fetch('myjsonfile.json').then(res => res.json()).then(d => {
-        setData(d);
-      });
-    }
   }, []);
+
+  if (!data) {
+    fetch('myjsonfile.json').then(res => res.json()).then(d => {
+      setData(d);
+    });
+  }
 
   if (data) {
     return (
       <div>
         <MenuBar />
-        <body style={{height: '100%'}}>
-        </body>
         <div>
           <ForceGraph3D
             graphData={data}
@@ -68,7 +70,28 @@ export default function VisualizationPage() {
             height={height-68}
             linkDirectionalArrowLength={3.5}
             linkDirectionalArrowRelPos={1}
-            linkWidth={link => links[link]}
+
+            //linkWidth={link => links[JSON.stringify({"source": `${link["source"]}`, "target": `${link["target"]}`})]}
+            linkThreeObjectExtend={true}
+            linkThreeObject={link => {
+              // extend link with text sprite
+              const str = links[JSON.stringify({"source": `${link["source"]}`, "target": `${link["target"]}`})];
+              const sprite = new SpriteText(str);
+              sprite.color = 'white';
+              sprite.textHeight = 4;
+              return sprite;
+            }}
+
+            // calculates the position of the link text
+            linkPositionUpdate={(sprite, { start, end }) => {
+              const middlePos = Object.assign(...['x', 'y', 'z'].map(c => ({
+                [c]: start[c] + (end[c] - start[c]) / 2 // calc middle point
+              })));
+  
+              // Position sprite
+              Object.assign(sprite.position, middlePos);
+            }}
+            linkColor = {() => 'white'}
             // nodeLabel="id" (this is what shows up when you mouse hover over the node)
             nodeAutoColorBy="group"
             nodeThreeObject={node => {
@@ -88,6 +111,7 @@ export default function VisualizationPage() {
     )
   }
   return (
-    <div />
+    <div>
+      </div>
   );
 };

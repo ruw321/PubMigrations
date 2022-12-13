@@ -1,19 +1,15 @@
 import React from 'react';
 import {
   Table,
-  Pagination,
   Select,
   Row,
   Col,
-  Divider
 } from 'antd'
-import { Form, FormInput, FormGroup, Button, Card, CardBody, CardTitle, Progress } from "shards-react";
+import { Form, FormInput, FormGroup, Button } from "shards-react";
 
 
 import MenuBar from '../components/MenuBar';
 import { getAllMigrations, getSearchMigrations } from '../fetcher'
-const { Column, ColumnGroup } = Table;
-const { Option } = Select;
 
 const migrationColumns = [
   {

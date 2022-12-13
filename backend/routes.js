@@ -571,31 +571,6 @@ async function getVisualData(req, res) {
     ORDER BY Count DESC
     LIMIT 150;
   `
-  // let sqlQuery = `WITH temp1 AS (
-  //   SELECT ORCID, c1.name AS EarliestCountry, c2.name AS Country2016
-  //   FROM Migrations
-  //   INNER JOIN Countries c1
-  //   ON Migrations.EarliestCountry = c1.Alpha2Code
-  //   INNER JOIN Countries c2
-  //   ON Migrations.Country2016 = c2.Alpha2Code
-  //   WHERE HasMigrated = 1
-  //   ),
-  //   temp2 AS (
-  //     SELECT EarliestCountry, Country2016, ANDID
-  //     FROM temp1
-  //     NATURAL JOIN ORCIDs
-  //   ),
-  //   temp3 AS (
-  //     SELECT ANDID, PMID
-  //     FROM Writes
-  //   )
-  //   SELECT ANDID, EarliestCountry, Country2016, COUNT(PMID) AS Count
-  //   FROM temp2
-  //   NATURAL JOIN temp3
-  //   WHERE EarliestCountry != Country2016 AND EarliestCountry != 'Unknown' AND Country2016 != 'Unknown'
-  //   GROUP BY ANDID, EarliestCountry, Country2016
-  //   ORDER BY Count DESC
-  //   LIMIT 150;`;
 
   if (req.query.page && !isNaN(req.query.page)) {
     // TODO: add the page feature 
