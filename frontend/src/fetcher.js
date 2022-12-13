@@ -193,5 +193,4 @@ export {
     postSignup,
     getVisualData,
     getAllOrganizations,
-    postSignup
 }

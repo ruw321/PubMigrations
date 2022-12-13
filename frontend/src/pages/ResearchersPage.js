@@ -17,45 +17,44 @@ const researchersColumns = [
     title: 'ANDID',
     dataIndex: 'ANDID',
     key: 'ANDID',
-    // sorter: (a, b) => a.Name.localeCompare(b.Name),
+    sorter: (a, b) => a.ANDID - b.ANDID
     // render: (text, row) => <a href={`/players?id=${row.PlayerId}`}>{text}</a>
   },
   {
     title: 'LastName',
     dataIndex: 'LastName',
     key: 'LastName',
-    // sorter: (a, b) => a.Nationality.localeCompare(b.Nationality)
+    sorter: (a, b) => a.LastName.localeCompare(b.LastName)
   },
   {
     title: 'Initials',
     dataIndex: 'Initials',
     key: 'Initials',
-    // sorter: (a, b) => a.Rating - b.Rating
-    
+    sorter: (a, b) => a.Initials.localeCompare(b.Initials)
   },
   {
     title: 'BeginYear',
     dataIndex: 'BeginYear',
     key: 'BeginYear',
-    // sorter: (a, b) => a.Potential - b.Potential
+    sorter: (a, b) => a.BeginYear - b.BeginYear
   },
   {
     title: 'Employment',
     dataIndex: 'Employment',
     key: 'Employment',
-    // sorter: (a, b) => a.Potential - b.Potential
+    sorter: (a, b) => a.Employment.localeCompare(b.Employment)
   },
   {
     title: 'Education',
     dataIndex: 'Education',
     key: 'Education',
-    // sorter: (a, b) => a.Potential - b.Potential
+    sorter: (a, b) => a.Education.localeCompare(b.Education)
   },
   {
     title: 'Papers',
     dataIndex: 'Papers',
     key: 'Papers',
-    // sorter: (a, b) => a.Potential - b.Potential
+    sorter: (a, b) => a.Papers.localeCompare(b.Papers)
   }
 ];
 
