@@ -2,12 +2,13 @@ import React from 'react';
 import {
   Table,
   Pagination,
-  Select,
+  // Select,
   Row,
   Col,
   Divider
 } from 'antd'
 import { Form, FormInput, FormGroup, Button, Card, CardBody, CardTitle, Progress } from "shards-react";
+import Select from 'react-select';
 
 import MenuBar from '../components/MenuBar';
 import { getMostBenefitedOrg, searchMostBenefitedOrg, getTopInstitutions, getBestAuthors, getAllOrganizations } from '../fetcher'
