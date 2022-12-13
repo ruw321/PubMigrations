@@ -57,10 +57,18 @@ const getSearchMigrations = async(phdYear, earliestYear, hasPhd, hasMigrated, pa
     return res.json()
 }
 
-const getAllResearchers = async(page, pagesize) => {
-    var res = await fetch(`http://${config.server_host}:${config.server_port}/filterResearchers`, {
+const getResearchers = async(employment, education, pmid) => {
+    
+    let url = `http://${config.server_host}:${config.server_port}/filterResearchers?`;
+
+    url += employment !== "" ? `&Employment=${employment}` : "";
+    url += education !== "" ? `&Education=${education}` : "";
+    url += pmid !== "" ? `&Writes=${pmid}` : "";
+
+    var res = await fetch(url, {
         method: 'GET',
     })
+
     return res.json()
 }
 
@@ -153,7 +161,7 @@ export {
     postLogin,
     getAllMigrations,
     getSearchMigrations,
-    getAllResearchers,
+    getResearchers,
     getPaperWords,
     getPublications,
     getSearchPublications,

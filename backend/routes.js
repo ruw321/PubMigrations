@@ -372,6 +372,9 @@ async function getMigrations(req, res) {
 // example request is: http://localhost:8000/filterResearchers?Education=Tsinghua University&Employment=Tsinghua University&Writes=1726147
 // TODO: note that the frontend will have to deal with different number of columns depending on how many tables we are joining
 async function filterResearchers(req, res) {
+
+  console.log("filter researchers");
+
   let sqlQuery = `SELECT * FROM Authors au `;
   let where = `WHERE `;
   let temp = 'a';
@@ -413,6 +416,53 @@ async function filterResearchers(req, res) {
     );
   }
 }
+
+
+// async function filterResearchers(req, res) {
+
+//   console.log("filter researchers");
+
+//   let sqlQuery = `SELECT * FROM Authors au `;
+//   let where = `WHERE `;
+//   let temp = 'a';
+//   let firstProperty = true;
+//   for (var propName in req.query) {
+//     if (req.query.hasOwnProperty(propName)) {
+//       sqlQuery += `JOIN ${propName} ${temp} ON ${temp}.ANDID = au.ANDID `;    
+//       if (!firstProperty) {
+//         where += 'AND ';
+//       }
+//       if (propName == 'Writes') {
+//         where += `${temp}.PMID = ${req.query[propName]} `;
+//       } else {
+//         where += `${temp}.Organization = '${req.query[propName]}' `;
+//       }
+//       firstProperty = false;
+//     }
+//     temp = String.fromCharCode(temp.charCodeAt(0) + 1);
+//   }
+  
+//   if (where.length > 6) {
+//     sqlQuery += where;
+//   }
+//   sqlQuery += `\nLIMIT 100`;
+
+//   if (req.query.page && !isNaN(req.query.page)) {
+//     // TODO: add the page feature 
+//   } else {
+//     // we have implemented this for you to see how to return results by querying the database
+//     connection.query(sqlQuery,
+//       function (error, results, fields) {
+//         if (error) {
+//           console.log(error);
+//           res.json({ error: error });
+//         } else if (results) {
+//           res.json({ results: results });
+//         }
+//       }
+//     );
+//   }
+// }
 
 // example request: http://localhost:8000/paper/words?words=brain,neurology
 async function filterPaperWords(req, res) {
@@ -488,6 +538,8 @@ async function filterPaperPublication(req, res) {
     );
   }
 }
+
+
 
 // example request: http://localhost:8000/researchers/top?Organization=Tsinghua University
 // this one takes about 2 minutes 

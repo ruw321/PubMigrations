@@ -1,19 +1,16 @@
 import React from 'react';
 import {
   Table,
-  Pagination,
+  // Pagination,
   Select,
   Row,
   Col,
-  Divider
+  // Divider
 } from 'antd'
-import { Form, FormInput, FormGroup, Button, Card, CardBody, CardTitle, Progress } from "shards-react";
+import { Form, FormInput, FormGroup, Button } from "shards-react";
 
 import MenuBar from '../components/MenuBar';
-import { getAllResearchers } from '../fetcher'
-import BioEntitiesSearcherPage from './BioEntitiesSearcherPage';
-const { Column, ColumnGroup } = Table;
-const { Option } = Select;
+import { getResearchers } from '../fetcher'
 
 const researchersColumns = [
   {
@@ -56,20 +53,39 @@ class ResearchersPage extends React.Component {
       matchesPageSize: 10,
       pagination: null,
 
-      education: null,
-      employment: null,
-      pmid: null,
+      education: "",
+      employment: "",
+      pmid: "",
       // organization: null,
       researchersResults: []  
     }
 
   }
 
+  handlePmidChange(event) {
+    this.setState({ pmid: event.target.value })
+  }
+
+  handleEmploymentChange(event) {
+    this.setState({ employment: event.target.value })
+  }
+
+  handleEducationChange(event) {
+    this.setState({ education: event.target.value })
+  }
+
+  updateSearchResults() {
+    getResearchers(this.state.employment, this.state.education, this.state.pmid).then( res => {
+        this.setState({ researchersResults: res.results })
+    })
+    console.log(this.researchersResults);
+    console.log('Done updating search results');
+  }
+
   componentDidMount() {
 
-    getAllResearchers().then(res => {
+    getResearchers().then(res => {
       console.log(res.results)
-      // TASK 1: set the correct state attribute to res.results
       this.setState({ researchersResults: res.results})
       console.log('set state')
     })
@@ -83,6 +99,25 @@ class ResearchersPage extends React.Component {
     return (
       <div>
       <MenuBar />
+      <Form style={{ width: '80vw', margin: '0 auto', marginTop: '5vh' }}>
+            <Row>
+                <Col flex={2}><FormGroup style={{ width: '20vw', margin: '0 auto' }}>
+                    <label>Employment</label>
+                    <FormInput placeholder="andid" value={this.state.andid} onChange={this.handleEmploymentChange} />
+                </FormGroup></Col>
+                <Col flex={2}><FormGroup style={{ width: '20vw', margin: '0 auto' }}>
+                    <label>Education</label>
+                    <FormInput placeholder="pmid" value={this.state.pmid} onChange={this.handleEducationChange} />
+                </FormGroup></Col>
+                <Col flex={2}><FormGroup style={{ width: '20vw', margin: '0 auto' }}>
+                    <label>Paper ID (PMID)</label>
+                    <FormInput placeholder="AuOrder" value={this.state.auOrder} onChange={this.handlePmidChange} />
+                </FormGroup></Col>
+                <Col flex={2}><FormGroup style={{ width: '10vw' }}>
+                    <Button style={{ marginTop: '4vh' }} onClick={this.updateSearchResults}>Search</Button>
+                </FormGroup></Col>
+            </Row>
+        </Form>
       <div style={{ width: '70vw', margin: '0 auto', marginTop: '5vh' }}>
         <h3>Researchers</h3>
         <Table dataSource={this.state.researchersResults} columns={researchersColumns} pagination={{ pageSizeOptions:[5, 10], defaultPageSize: 5, showQuickJumper:true }}/>
