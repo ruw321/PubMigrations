@@ -91,53 +91,6 @@ function multipleWhere(req, integerProperty, sqlQuery) {
   return sqlQuery;
 }
 
-// // create the views when the server starts
-// async function createTempTable() {
-//   let sqlQuery = `
-//     CREATE TEMPORARY TABLE PmidAndidInfo AS (
-//       WITH AuthorCountriesOrgYear AS (
-//         SELECT ANDID, BeginYear, Country, Organization
-//         FROM Employment
-//         UNION
-//         (SELECT ANDID, BeginYear, Country, Organization
-//         FROM Education)
-//         ORDER BY ANDID ASC, BeginYear DESC
-//       ),
-//       temp1 AS (
-//         SELECT * FROM Papers
-//         NATURAL JOIN Writes
-//         WHERE AuOrder = 1
-//       ),
-//       temp2 AS (
-//         SELECT PMID, temp1.ANDID AS ANDID, PubYear, BeginYear, Country, Organization
-//         FROM temp1, AuthorCountriesOrgYear
-//         WHERE temp1.ANDID = AuthorCountriesOrgYear.ANDID
-//         AND temp1.PubYear >= AuthorCountriesOrgYear.BeginYear
-//       ),
-//       temp3 AS (
-//         SELECT PMID, ANDID, MAX(BeginYear) AS BeginYear
-//         FROM temp2
-//         GROUP BY ANDID, PMID
-//       )
-//       SELECT PMID, ANDID, BeginYear, Country, Organization
-//       FROM temp2
-//       WHERE (PMID, ANDID, BeginYear) IN (SELECT * FROM temp3)   
-//     ) 
-//   `;
-
-//   // we have implemented this for you to see how to return results by querying the database
-//   connection.query(sqlQuery,
-//     function (error, results, fields) {
-//       if (error) {
-//         console.log(error);
-//       } else if (results) {
-//         console.log("Temporary Table is created");
-//       }
-//     }
-//   );
-// }
-// createTempTable();
-
 // Query 13
 async function getBestAuthors(req, res) {
   // a GET request to /getBestAuthors?limit=100
@@ -372,46 +325,72 @@ async function getMigrations(req, res) {
 // example request is: http://localhost:8000/filterResearchers?Education=Tsinghua University&Employment=Tsinghua University&Writes=1726147
 // TODO: note that the frontend will have to deal with different number of columns depending on how many tables we are joining
 async function filterResearchers(req, res) {
-  let sqlQuery = `SELECT * FROM Authors au `;
-  let where = `WHERE `;
-  let temp = 'a';
-  let firstProperty = true;
-  for (var propName in req.query) {
-    if (req.query.hasOwnProperty(propName)) {
-      sqlQuery += `JOIN ${propName} ${temp} ON ${temp}.ANDID = au.ANDID `;
-      if (!firstProperty) {
-        where += 'AND ';
+  let sqlQuery = `WITH temp1 AS (
+    SELECT ANDID, GROUP_CONCAT(PMID SEPARATOR ', ') AS Papers
+    FROM Writes
+    GROUP BY ANDID
+  ),
+  temp2 AS (
+    SELECT ANDID, GROUP_CONCAT(Organization SEPARATOR ', ') AS Education
+    FROM Education
+    GROUP BY ANDID
+  ),
+  temp3 AS (
+    SELECT ANDID, GROUP_CONCAT(Organization SEPARATOR ', ') AS Employment
+    FROM Employment
+    GROUP BY ANDID
+  )
+  SELECT au.ANDID AS ANDID, LastName, Initials, au.BeginYear as BeginYear,
+  Employment, Education, Papers
+  FROM Authors au
+  NATURAL JOIN temp1
+  NATURAL JOIN temp2
+  NATURAL JOIN temp3
+  WHERE 1 = 1 `;
+
+  if (req.query.employment) {
+    sqlQuery += `AND EXISTS (
+      SELECT *
+      FROM temp3
+      WHERE temp3.ANDID = au.ANDID
+      AND temp3.Employment LIKE "%${req.query.employment}%"
+      
+    )`
+  }
+
+  if (req.query.education) {
+    sqlQuery += `AND EXISTS (
+      SELECT *
+      FROM temp2
+      WHERE temp2.ANDID = au.ANDID
+      AND temp2.Education LIKE "%${req.query.education}%"
+    ) `
+  }
+
+  if (req.query.pmid) {
+    sqlQuery += `AND EXISTS (
+      SELECT *
+      FROM temp1
+      WHERE temp1.ANDID = au.ANDID
+      AND temp1.Papers LIKE "%${req.query.pmid}%"
+    ) `
+  }
+
+  sqlQuery += `GROUP BY au.ANDID, LastName, Initials, au.BeginYear
+                LIMIT 100;`;
+
+  connection.query(sqlQuery,
+    function (error, results, fields) {
+      if (error) {
+        console.log(error);
+        res.json({ error: error });
+      } else if (results) {
+        console.log("finished query");
+        res.json({ results: results });
       }
-      if (propName == 'Writes') {
-        where += `${temp}.PMID = ${req.query[propName]} `;
-      } else {
-        where += `${temp}.Organization = '${req.query[propName]}' `;
-      }
-      firstProperty = false;
     }
-    temp = String.fromCharCode(temp.charCodeAt(0) + 1);
-  }
+  );
 
-  if (where.length > 6) {
-    sqlQuery += where;
-  }
-  sqlQuery += `\nLIMIT 100`;
-
-  if (req.query.page && !isNaN(req.query.page)) {
-    // TODO: add the page feature 
-  } else {
-    // we have implemented this for you to see how to return results by querying the database
-    connection.query(sqlQuery,
-      function (error, results, fields) {
-        if (error) {
-          console.log(error);
-          res.json({ error: error });
-        } else if (results) {
-          res.json({ results: results });
-        }
-      }
-    );
-  }
 }
 
 // example request: http://localhost:8000/paper/words?words=brain,neurology
@@ -488,6 +467,8 @@ async function filterPaperPublication(req, res) {
     );
   }
 }
+
+
 
 // example request: http://localhost:8000/researchers/top?Organization=Tsinghua University
 // this one takes about 2 minutes 
@@ -634,6 +615,28 @@ async function getVisualData(req, res) {
 }
 
 
+// example request: http://localhost:8000/organizations?
+async function getOrganizations(req, res) {
+  let sqlQuery = `SELECT DISTINCT Organization FROM PmidAndidInfo `;
+
+  if (req.query.page && !isNaN(req.query.page)) {
+    // TODO: add the page feature 
+  } else {
+    // we have implemented this for you to see how to return results by querying the database
+    connection.query(sqlQuery,
+      function (error, results, fields) {
+        if (error) {
+          console.log(error);
+          res.json({ error: error });
+        } else if (results) {
+          res.json({ results: results });
+        }
+      }
+    );
+  }
+}
+
+
 module.exports = {
   getMigrations,
   filterResearchers,
@@ -649,5 +652,6 @@ module.exports = {
   login,
   signup,
   getCountries,
-  getVisualData
+  getVisualData,
+  getOrganizations
 };

@@ -17,11 +17,11 @@ class MenuBar extends React.Component {
       <Navbar type="dark" theme="primary" expand="md">
         <NavbarBrand href="/">CIS 550 Project</NavbarBrand>
         <Nav navbar className="container-fluid">
-          <NavItem>
+          {/* <NavItem>
             <NavLink active href="/">
               Home
             </NavLink>
-          </NavItem>
+          </NavItem> */}
           <NavItem>
             <NavLink active href="/migrations">
               Migrations

@@ -10,7 +10,7 @@ import {
 import { Form, FormInput, FormGroup, Button, Card, CardBody, CardTitle, Progress } from "shards-react";
 
 import MenuBar from '../components/MenuBar';
-import { getMostBenefitedOrg, searchMostBenefitedOrg, getTopInstitutions, getBestAuthors } from '../fetcher'
+import { getMostBenefitedOrg, searchMostBenefitedOrg, getTopInstitutions, getBestAuthors, getAllOrganizations } from '../fetcher'
 
 const { Column, ColumnGroup } = Table;
 const { Option } = Select;
@@ -20,13 +20,15 @@ const institutionsColumns = [
     title: 'ANDID',
     dataIndex: 'ANDID',
     key: 'ANDID',
+    sorter: (a, b) => a.ANDID - b.ANDID
+
     // sorter: (a, b) => a.Nationality.localeCompare(b.Nationality)
   },
   {
     title: 'NumPapers',
     dataIndex: 'NumPapers',
     key: 'NumPapers',
-    // sorter: (a, b) => a.Rating - b.Rating
+    sorter: (a, b) => a.NumPapers - b.NumPapers
   }
 ];
 
@@ -35,19 +37,19 @@ const bestAuthorsColumns = [
       title: 'Organization',
       dataIndex: 'Organization',
       key: 'Organization',
-      // sorter: (a, b) => a.Nationality.localeCompare(b.Nationality)
+      sorter: (a, b) => a.Organization.localeCompare(b.Organization)
     },
     {
       title: 'City',
       dataIndex: 'City',
       key: 'City',
-      // sorter: (a, b) => a.Rating - b.Rating
+      sorter: (a, b) => a.City.localeCompare(b.City)
     },
     {
-      title: 'count',
+      title: 'Count',
       dataIndex: 'count',
       key: 'count',
-      // sorter: (a, b) => a.Rating - b.Rating
+      sorter: (a, b) => a.count - b.count
     }
   ];
 
@@ -56,13 +58,13 @@ const bestAuthorsColumns = [
       title: 'Organization',
       dataIndex: 'Organization',
       key: 'Organization',
-      // sorter: (a, b) => a.Nationality.localeCompare(b.Nationality)
+      sorter: (a, b) => a.Organization.localeCompare(b.Organization)
     },
     {
       title: 'Percentage',
       dataIndex: 'Percentage',
       key: 'Percentage',
-      // sorter: (a, b) => a.Rating - b.Rating
+      sorter: (a, b) => a.Percentage - b.Percentage
     }
   ];
 
@@ -77,6 +79,7 @@ class InstitutionsPage extends React.Component {
       matchesPageSize: 10,
       pagination: null,
 
+      organizations: [],
       organization: "Tsinghua University",
       min: 0,
       max: 1000000,
@@ -93,8 +96,13 @@ class InstitutionsPage extends React.Component {
 
   }
 
-  handleOrganizationQueryChange(event) {
-    this.setState({ organization: event.target.value })
+  // handleOrganizationQueryChange(event) {
+  //   this.setState({ organization: event.target.value })
+  // }
+
+  handleOrganizationQueryChange(value) {
+    console.log("value here:", value)
+    this.setState({ organization: value })
   }
 
   handleMinQueryChange(event) {
@@ -125,6 +133,21 @@ class InstitutionsPage extends React.Component {
   }
 
   componentDidMount() {
+
+    getAllOrganizations(null, null).then(res => {
+    console.log(res.results)
+    let newResults = [];
+    for (let i in res.results){
+      console.log(i);
+      let label = res.results[i].Organization;
+      let value = res.results[i].Organization;
+      let d = {label: label, value: value};
+      newResults.push(d);
+    }
+    console.log(newResults);
+    this.setState({ organizations: newResults})
+    console.log('set state')
+  })
 
     getBestAuthors().then(res => {
       console.log(res.results)
@@ -161,7 +184,9 @@ class InstitutionsPage extends React.Component {
             <Row>
                 <Col flex={2}><FormGroup style={{ width: '20vw', margin: '0 auto' }}>
                     <label>Organization</label>
-                    <FormInput placeholder="organization" value={this.state.organization} onChange={this.handleOrganizationQueryChange} />
+                    <Select style={{ width: '20vw', margin: '0 auto' }} defaultValue="Tsinghua University" options={this.state.organizations} onChange={this.handleOrganizationQueryChange}></Select>
+
+                    {/* <FormInput placeholder="organization" value={this.state.organization} onChange={this.handleOrganizationQueryChange} /> */}
                 </FormGroup></Col>
                 <Col flex={2}><FormGroup style={{ width: '10vw' }}>
                     <Button style={{ marginTop: '4vh' }} onClick={this.updateSearchResults}>Search</Button>

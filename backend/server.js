@@ -17,6 +17,9 @@ app.use(cors({
 app.use(express.json());
 
 // Query 14 - register as GET
+app.get('/organizations', routes.getOrganizations)
+
+// Query 14 - register as GET
 app.get('/countries', routes.getCountries)
 
 // Query 13 - register as GET
