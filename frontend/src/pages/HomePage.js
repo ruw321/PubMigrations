@@ -20,50 +20,51 @@ const migrationColumns = [
     title: 'ORCID',
     dataIndex: 'ORCID',
     key: 'ORCID',
-    // sorter: (a, b) => a.ORCID.localeCompare(b.ORCID),
+    sorter: (a, b) => a.ORCID.localeCompare(b.ORCID),
     // render: (text, row) => <a href={`/players?id=${row.PlayerId}`}>{text}</a>
   },
   {
     title: 'PhdYear',
     dataIndex: 'PhdYear',
     key: 'PhdYear',
-    // sorter: (a, b) => a.Nationality.localeCompare(b.Nationality)
+    sorter: (a, b) => a.PhdYear - b.PhdYear
   },
   {
     title: 'Country2016',
     dataIndex: 'Country2016',
     key: 'Country2016',
-    // sorter: (a, b) => a.Rating - b.Rating
-    
+    sorter: (a, b) => a.Country2016 - b.Country2016    
   },
-  // TASK 7: add a column for Potential, with the ability to (numerically) sort ,
   {
     title: 'EarliestYear',
     dataIndex: 'EarliestYear',
     key: 'EarliestYear',
-    // sorter: (a, b) => a.Potential - b.Potential
+    sorter: (a, b) => a.EarliestYear - b.EarliestYear    
   },
   // TASK 8: add a column for Club, with the ability to (alphabetically) sort 
   {
     title: 'EarliestCountry',
-    dataIndex: 'Club',
-    key: 'Club',
-    // sorter: (a, b) => a.Club.localeCompare(b.Club)
+    dataIndex: 'EarliestCountry',
+    key: 'EarliestCountry',
+    sorter: (a, b) => a.EarliestCountry.localeCompare(b.EarliestCountry)
   },
   {
     title: 'HasPhd',
     dataIndex: 'HasPhd',
-    key: 'HasPhd'
+    key: 'HasPhd',
+    sorter: (a, b) => a.HasPhd - b.HasPhd    
   },
   {
     title: 'PhdCountry',
     dataIndex: 'PhdCountry',
-    key: 'PhdCountry'
+    key: 'PhdCountry',
+    sorter: (a, b) => a.PhdCountry.localeCompare(b.PhdCountry)
   },
   {
     title: 'HasMigrated',
     dataIndex: 'HasMigrated',
-    key: 'HasMigrated'
+    key: 'HasMigrated',
+    sorter: (a, b) => a.HasMigrated - b.HasMigrated    
   }
 
 ];
@@ -74,18 +75,18 @@ class HomePage extends React.Component {
     super(props)
 
     this.state = {
-      // matchesResults: [],
       matchesPageNumber: 1,
       matchesPageSize: 10,
       playersResults: [],
       pagination: null,
 
-      phdYear: null,
-      earliestYear: null,
-      hasPhd: null,
-      hasMigrated: null,
+      phdYear: "",
+      earliestYear: "",
+      hasPhd: 1,
+      hasMigrated: 1,
       migrationsResults: []  
     }
+    console.log('original state:', this.state);
 
     this.handlePhdYearQueryChange = this.handlePhdYearQueryChange.bind(this)
     this.handleEarliestYearQueryChange = this.handleEarliestYearQueryChange.bind(this)
@@ -112,19 +113,23 @@ class HomePage extends React.Component {
   }
 
   updateSearchResults() {
+    console.log('state:', this.state);
     console.log('phd year: ',this.state.phdYear);
     console.log('earliest year: ',this.state.earliestYear);
     console.log('has phd:' , this.state.hasPhd);
     console.log('has migrated:', this.state.hasMigrated);
-    //TASK 11: call getMatchSearch and update matchesResults in state. See componentDidMount() for a hint
+
     getSearchMigrations(this.state.phdYear, this.state.earliestYear, this.state.hasPhd, this.state.hasMigrated,
       null, null).then( res => {
         this.setState({ migrationsResults: res.results })
     })
     console.log('done with updating search results');
+
   }
 
   componentDidMount() {
+
+    console.log('mount state:', this.state);
 
     getAllMigrations().then(res => {
       console.log(res.results)
@@ -152,12 +157,11 @@ class HomePage extends React.Component {
                 </FormGroup></Col>
                 <Col flex={2}><FormGroup style={{ width: '20vw', margin: '0 auto' }}>
                     <label>Has PhD</label>
-                    <Select defaultValue="True" options={[{label:"True", value:1},{label:"False", value:0}]} onChange={this.handleHasPhdQueryChange}></Select>
+                    <Select style={{ width: '20vw', margin: '0 auto' }} defaultValue="True" options={[{label:"True", value:1},{label:"False", value:0}]} onChange={this.handleHasPhdQueryChange}/>
                 </FormGroup></Col>
                 <Col flex={2}><FormGroup style={{ width: '20vw', margin: '0 auto' }}>
                     <label>Has Migrated</label>
-                    {/* <FormInput placeholder="hasMigrated" value={this.state.hasMigrated} onChange={this.handleHasMigratedQueryChange} /> */}
-                    <Select defaultValue="True" options={[{label:"True", value:1},{label:"False", value:0}]} onChange={this.handleHasMigratedQueryChange}></Select>
+                    <Select style={{ width: '20vw', margin: '0 auto' }} defaultValue="True" options={[{label:"True", value:1},{label:"False", value:0}]} onChange={this.handleHasMigratedQueryChange}/>
                 </FormGroup></Col>
                 <Col flex={2}><FormGroup style={{ width: '10vw' }}>
                     <Button style={{ marginTop: '4vh' }} onClick={this.updateSearchResults}>Search</Button>
@@ -174,4 +178,5 @@ class HomePage extends React.Component {
 }
 
 export default HomePage
+
 
