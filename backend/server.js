@@ -58,6 +58,8 @@ app.post('/login', routes.login)
 // signup
 app.post('/signup', routes.signup)
 
+app.get('/visualdata', routes.getVisualData)
+
 app.listen(config.server_port, () => {
     console.log(`Server running at http://${config.server_host}:${config.server_port}/`);
 });

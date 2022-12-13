@@ -22,7 +22,7 @@ async function login(req, res) {
   // check if the email exists
   try {
     const collection = client.db("CIS550").collection("Users");
-    const result = await collection.findOne({Email: email});
+    const result = await collection.findOne({ Email: email });
     if (!result) {
       res.status(404).json({ error: "email doesn't exist" });
     } else {
@@ -43,11 +43,11 @@ async function login(req, res) {
 async function signup(req, res) {
   try {
     const collection = client.db("CIS550").collection("Users");
-    await collection.createIndex( { "Email": 1 }, { unique: true } );
+    await collection.createIndex({ "Email": 1 }, { unique: true });
     const result = await collection.insertOne({
-      FirstName: req.body.FirstName, 
-      LastName: req.body.LastName, 
-      Email: req.body.email, 
+      FirstName: req.body.FirstName,
+      LastName: req.body.LastName,
+      Email: req.body.email,
       Password: req.body.password
     });
     res.status(201).json({ InsertedID: result.insertedId });
@@ -61,9 +61,9 @@ async function signup(req, res) {
 // helper function
 function processSearchWords(words) {
   let wordList = words.split(',');
-  wordList.forEach(function(part, index, theArray) {
+  wordList.forEach(function (part, index, theArray) {
     theArray[index] = `'${theArray[index]}'`;
-  }); 
+  });
   return wordList.toString();
 }
 
@@ -84,59 +84,59 @@ function multipleWhere(req, integerProperty, sqlQuery) {
           sqlQuery += `AND ${propName} = ${req.query[propName]} `;
         } else {
           sqlQuery += `AND ${propName} = '${req.query[propName]}' `;
-        }      
+        }
       }
     }
   }
   return sqlQuery;
 }
 
-// create the views when the server starts
-async function createTempTable() {
-  let sqlQuery = `
-    CREATE TEMPORARY TABLE PmidAndidInfo AS (
-      WITH AuthorCountriesOrgYear AS (
-        SELECT ANDID, BeginYear, Country, Organization
-        FROM Employment
-        UNION
-        (SELECT ANDID, BeginYear, Country, Organization
-        FROM Education)
-        ORDER BY ANDID ASC, BeginYear DESC
-      ),
-      temp1 AS (
-        SELECT * FROM Papers
-        NATURAL JOIN Writes
-        WHERE AuOrder = 1
-      ),
-      temp2 AS (
-        SELECT PMID, temp1.ANDID AS ANDID, PubYear, BeginYear, Country, Organization
-        FROM temp1, AuthorCountriesOrgYear
-        WHERE temp1.ANDID = AuthorCountriesOrgYear.ANDID
-        AND temp1.PubYear >= AuthorCountriesOrgYear.BeginYear
-      ),
-      temp3 AS (
-        SELECT PMID, ANDID, MAX(BeginYear) AS BeginYear
-        FROM temp2
-        GROUP BY ANDID, PMID
-      )
-      SELECT PMID, ANDID, BeginYear, Country, Organization
-      FROM temp2
-      WHERE (PMID, ANDID, BeginYear) IN (SELECT * FROM temp3)   
-    ) 
-  `;
+// // create the views when the server starts
+// async function createTempTable() {
+//   let sqlQuery = `
+//     CREATE TEMPORARY TABLE PmidAndidInfo AS (
+//       WITH AuthorCountriesOrgYear AS (
+//         SELECT ANDID, BeginYear, Country, Organization
+//         FROM Employment
+//         UNION
+//         (SELECT ANDID, BeginYear, Country, Organization
+//         FROM Education)
+//         ORDER BY ANDID ASC, BeginYear DESC
+//       ),
+//       temp1 AS (
+//         SELECT * FROM Papers
+//         NATURAL JOIN Writes
+//         WHERE AuOrder = 1
+//       ),
+//       temp2 AS (
+//         SELECT PMID, temp1.ANDID AS ANDID, PubYear, BeginYear, Country, Organization
+//         FROM temp1, AuthorCountriesOrgYear
+//         WHERE temp1.ANDID = AuthorCountriesOrgYear.ANDID
+//         AND temp1.PubYear >= AuthorCountriesOrgYear.BeginYear
+//       ),
+//       temp3 AS (
+//         SELECT PMID, ANDID, MAX(BeginYear) AS BeginYear
+//         FROM temp2
+//         GROUP BY ANDID, PMID
+//       )
+//       SELECT PMID, ANDID, BeginYear, Country, Organization
+//       FROM temp2
+//       WHERE (PMID, ANDID, BeginYear) IN (SELECT * FROM temp3)   
+//     ) 
+//   `;
 
-  // we have implemented this for you to see how to return results by querying the database
-  connection.query(sqlQuery,
-    function (error, results, fields) {
-      if (error) {
-        console.log(error);
-      } else if (results) {
-        console.log("Temporary Table is created");
-      }
-    }
-  );
-}
-createTempTable();
+//   // we have implemented this for you to see how to return results by querying the database
+//   connection.query(sqlQuery,
+//     function (error, results, fields) {
+//       if (error) {
+//         console.log(error);
+//       } else if (results) {
+//         console.log("Temporary Table is created");
+//       }
+//     }
+//   );
+// }
+// createTempTable();
 
 // Query 13
 async function getBestAuthors(req, res) {
@@ -166,7 +166,7 @@ async function getBestAuthors(req, res) {
     function (error, results, fields) {
       if (error) {
         console.log(error)
-        res.json({error : error})
+        res.json({ error: error })
       } else if (results) {
         res.json({ results: results })
       }
@@ -194,7 +194,7 @@ async function mostEmployedCities(req, res) {
     function (error, results, fields) {
       if (error) {
         console.log(error);
-        res.json({error : error});
+        res.json({ error: error });
       } else if (results) {
         res.json({ results: results });
       }
@@ -268,7 +268,7 @@ async function mostBenefitedOrg(req, res) {
     function (error, results, fields) {
       if (error) {
         console.log(error)
-        res.json({error : error})
+        res.json({ error: error })
       } else if (results) {
         res.json({ results: results })
       }
@@ -303,7 +303,7 @@ async function topBioEdByCountry(req, res) {
     function (error, results, fields) {
       if (error) {
         console.log(error);
-        res.json({error : error});
+        res.json({ error: error });
       } else if (results) {
         res.json({ results: results });
       }
@@ -336,7 +336,7 @@ async function topInstituteByCountry(req, res) {
     function (error, results, fields) {
       if (error) {
         console.log(error);
-        res.json({error : error});
+        res.json({ error: error });
       } else if (results) {
         res.json({ results: results });
       }
@@ -378,7 +378,7 @@ async function filterResearchers(req, res) {
   let firstProperty = true;
   for (var propName in req.query) {
     if (req.query.hasOwnProperty(propName)) {
-      sqlQuery += `JOIN ${propName} ${temp} ON ${temp}.ANDID = au.ANDID `;    
+      sqlQuery += `JOIN ${propName} ${temp} ON ${temp}.ANDID = au.ANDID `;
       if (!firstProperty) {
         where += 'AND ';
       }
@@ -391,7 +391,7 @@ async function filterResearchers(req, res) {
     }
     temp = String.fromCharCode(temp.charCodeAt(0) + 1);
   }
-  
+
   if (where.length > 6) {
     sqlQuery += where;
   }
@@ -567,11 +567,77 @@ async function getCountries(req, res) {
   }
 }
 
+async function getVisualData(req, res) {
+  let sqlQuery = `WITH temp1 AS (
+    SELECT ORCID, EarliestCountry, Country2016
+    FROM Migrations
+    WHERE HasMigrated = 1
+    ),
+    temp2 AS (
+        SELECT EarliestCountry, Country2016, ANDID
+        FROM temp1
+        NATURAL JOIN ORCIDs
+    ),
+    temp3 AS (
+        SELECT ANDID, PMID
+        FROM Writes
+    )
+    SELECT ANDID, EarliestCountry, Country2016, COUNT(PMID) AS Count
+    FROM temp2
+    NATURAL JOIN temp3
+    WHERE EarliestCountry != Country2016 AND EarliestCountry != '??' AND Country2016 != '??'
+    GROUP BY ANDID, EarliestCountry, Country2016
+    ORDER BY Count DESC
+    LIMIT 150;
+  `
+  // let sqlQuery = `WITH temp1 AS (
+  //   SELECT ORCID, c1.name AS EarliestCountry, c2.name AS Country2016
+  //   FROM Migrations
+  //   INNER JOIN Countries c1
+  //   ON Migrations.EarliestCountry = c1.Alpha2Code
+  //   INNER JOIN Countries c2
+  //   ON Migrations.Country2016 = c2.Alpha2Code
+  //   WHERE HasMigrated = 1
+  //   ),
+  //   temp2 AS (
+  //     SELECT EarliestCountry, Country2016, ANDID
+  //     FROM temp1
+  //     NATURAL JOIN ORCIDs
+  //   ),
+  //   temp3 AS (
+  //     SELECT ANDID, PMID
+  //     FROM Writes
+  //   )
+  //   SELECT ANDID, EarliestCountry, Country2016, COUNT(PMID) AS Count
+  //   FROM temp2
+  //   NATURAL JOIN temp3
+  //   WHERE EarliestCountry != Country2016 AND EarliestCountry != 'Unknown' AND Country2016 != 'Unknown'
+  //   GROUP BY ANDID, EarliestCountry, Country2016
+  //   ORDER BY Count DESC
+  //   LIMIT 150;`;
+
+  if (req.query.page && !isNaN(req.query.page)) {
+    // TODO: add the page feature 
+  } else {
+    // we have implemented this for you to see how to return results by querying the database
+    connection.query(sqlQuery,
+      function (error, results, fields) {
+        if (error) {
+          console.log(error);
+          res.json({ error: error });
+        } else if (results) {
+          res.json({ results: results });
+        }
+      }
+    );
+  }
+}
+
 
 module.exports = {
-  getMigrations, 
-  filterResearchers, 
-  filterPaperWords, 
+  getMigrations,
+  filterResearchers,
+  filterPaperWords,
   filterPaperPublication,
   topResearcher,
   getTotalPaperByCountry,
@@ -582,5 +648,6 @@ module.exports = {
   topInstituteByCountry,
   login,
   signup,
-  getCountries  
+  getCountries,
+  getVisualData
 };

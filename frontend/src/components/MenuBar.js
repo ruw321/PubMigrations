@@ -52,6 +52,11 @@ class MenuBar extends React.Component {
               Countries
             </NavLink>
           </NavItem>
+          <NavItem>
+            <NavLink active href="/visualization" >
+              Visualization
+            </NavLink>
+          </NavItem>
           <NavItem className="border-left pl-2 ml-auto">
             <NavLink onClick={handleLinkClick} active href="/login" >
               Logout
