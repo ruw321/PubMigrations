@@ -136,7 +136,7 @@ async function createTempTable() {
     }
   );
 }
-createTempTable();
+// createTempTable();
 
 // Query 13
 async function getBestAuthors(req, res) {
@@ -374,26 +374,39 @@ async function getMigrations(req, res) {
 async function filterResearchers(req, res) {
 
   console.log("filter researchers");
+  console.log(req.query.employment);
+  console.log(req.query.education);
+  console.log(req.query.pmid);
 
-  let sqlQuery = `SELECT au.ANDID AS ANDID, LastName, Initials, au.BeginYear as BeginYear,
-  GROUP_CONCAT(Employment.Organization) AS Employment,
-  GROUP_CONCAT(Education.Organization) AS Education,
-  GROUP_CONCAT(Writes.PMID) AS Papers
+  let sqlQuery = `WITH temp1 AS (
+    SELECT ANDID, GROUP_CONCAT(PMID SEPARATOR ', ') AS Papers
+    FROM Writes
+    GROUP BY ANDID
+  ),
+  temp2 AS (
+    SELECT ANDID, GROUP_CONCAT(Organization SEPARATOR ', ') AS Education
+    FROM Education
+    GROUP BY ANDID
+  ),
+  temp3 AS (
+    SELECT ANDID, GROUP_CONCAT(Organization SEPARATOR ', ') AS Employment
+    FROM Employment
+    GROUP BY ANDID
+  )
+  SELECT au.ANDID AS ANDID, LastName, Initials, au.BeginYear as BeginYear,
+  Employment, Education, Papers
   FROM Authors au
-  JOIN Writes
-  ON au.ANDID = Writes.ANDID
-  JOIN Employment
-  ON au.ANDID = Employment.ANDID
-  JOIN Education
-  ON au.ANDID = Education.ANDID
+  NATURAL JOIN temp1
+  NATURAL JOIN temp2
+  NATURAL JOIN temp3
   WHERE 1 = 1 `;
 
   if (req.query.employment) {
     sqlQuery += `AND EXISTS (
       SELECT *
-      FROM Employment em
-      WHERE em.ANDID = au.ANDID
-      AND em.Organization = ${req.query.employment}
+      FROM temp3
+      WHERE temp3.ANDID = au.ANDID
+      AND temp3.Employment LIKE "%${req.query.employment}%"
       
     )`
   }
@@ -401,20 +414,48 @@ async function filterResearchers(req, res) {
   if (req.query.education) {
     sqlQuery += `AND EXISTS (
       SELECT *
-      FROM Education ed
-      WHERE ed.ANDID = au.ANDID
-      AND ed.Organization = ${req.query.education}
+      FROM temp2
+      WHERE temp2.ANDID = au.ANDID
+      AND temp2.Education LIKE "%${req.query.education}%"
     ) `
   }
 
   if (req.query.pmid) {
     sqlQuery += `AND EXISTS (
       SELECT *
-      FROM Writes wr
-      WHERE wr.ANDID = au.ANDID
-      AND wr.PMID = '{pmid}'
+      FROM temp1
+      WHERE temp1.ANDID = au.ANDID
+      AND temp1.Papers LIKE "%${req.query.pmid}%"
     ) `
   }
+
+  // if (req.query.employment) {
+  //   sqlQuery += `AND EXISTS (
+  //     SELECT *
+  //     FROM Employment em
+  //     WHERE em.ANDID = au.ANDID
+  //     AND em.Organization = "${req.query.employment}"
+      
+  //   )`
+  // }
+
+  // if (req.query.education) {
+  //   sqlQuery += `AND EXISTS (
+  //     SELECT *
+  //     FROM Education ed
+  //     WHERE ed.ANDID = au.ANDID
+  //     AND ed.Organization = "${req.query.education}"
+  //   ) `
+  // }
+
+  // if (req.query.pmid) {
+  //   sqlQuery += `AND EXISTS (
+  //     SELECT *
+  //     FROM Writes wr
+  //     WHERE wr.ANDID = au.ANDID
+  //     AND wr.PMID = "${req.query.pmid}"
+  //   ) `
+  // }
 
   sqlQuery += `GROUP BY au.ANDID, LastName, Initials, au.BeginYear
                 LIMIT 100;`;
@@ -425,6 +466,7 @@ async function filterResearchers(req, res) {
         console.log(error);
         res.json({ error: error });
       } else if (results) {
+        console.log("finished query");
         res.json({ results: results });
       }
     }

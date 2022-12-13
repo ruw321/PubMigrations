@@ -63,7 +63,7 @@ const getResearchers = async(employment, education, pmid) => {
 
     url += employment !== "" ? `&employment=${employment}` : "";
     url += education !== "" ? `&education=${education}` : "";
-    url += pmid !== "" ? `&writes=${pmid}` : "";
+    url += pmid !== "" ? `&pmid=${pmid}` : "";
 
     var res = await fetch(url, {
         method: 'GET',

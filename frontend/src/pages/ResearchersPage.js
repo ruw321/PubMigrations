@@ -1,11 +1,11 @@
 import React from 'react';
 import {
   Table,
-  // Pagination,
+  Pagination,
   Select,
   Row,
   Col,
-  // Divider
+  Divider
 } from 'antd'
 import { Form, FormInput, FormGroup, Button } from "shards-react";
 
@@ -70,38 +70,46 @@ class ResearchersPage extends React.Component {
       matchesPageSize: 10,
       pagination: null,
 
-      education: "",
-      employment: "",
-      pmid: "",
-      // organization: null,
+      education: '',
+      employment: '',
+      pmid: '',
       researchersResults: []  
     }
 
     this.handlePmidChange = this.handlePmidChange.bind(this);
     this.handleEmploymentChange = this.handleEmploymentChange.bind(this);
     this.handleEducationChange = this.handleEducationChange.bind(this);
+    this.updateSearchResults = this.updateSearchResults.bind(this);
 
   }
 
   handlePmidChange(event) {
-    this.setState({ pmid: event.target.value })
+    this.setState({ pmid: event.target.value });
+    // console.log(this.state.pmid);
   }
 
   handleEmploymentChange(event) {
-    this.setState({ employment: event.target.value })
+    this.setState({ employment: event.target.value });
+    // console.log(this.state.employment);
   }
 
   handleEducationChange(event) {
-    this.setState({ education: event.target.value })
+    this.setState({ education: event.target.value });
+    // console.log(this.state.education);
   }
 
   updateSearchResults() {
-
+    // console.log("here1");
+    console.log(this.state.education);
+    console.log(this.state.pmid);
+    console.log(this.state.employment);
+    // console.log("here2");
+    
     getResearchers(this.state.employment, this.state.education, this.state.pmid).then( res => {
         this.setState({ researchersResults: res.results })
     })
-    console.log(this.researchersResults);
-    console.log('Done updating search results');
+    // console.log(this.researchersResults);
+    // console.log('Done updating search results');
   }
 
   componentDidMount() {
@@ -142,7 +150,7 @@ class ResearchersPage extends React.Component {
         </Form>
       <div style={{ width: '70vw', margin: '0 auto', marginTop: '5vh' }}>
         <h3>Researchers</h3>
-        <Table dataSource={this.state.researchersResults} columns={researchersColumns} pagination={{ pageSizeOptions:[5, 10], defaultPageSize: 5, showQuickJumper:true }}/>
+        <Table rowKey="ANDID" dataSource={this.state.researchersResults} columns={researchersColumns} pagination={{ pageSizeOptions:[5, 10], defaultPageSize: 5, showQuickJumper:true }}/>
       </div>
     </div>
     )
