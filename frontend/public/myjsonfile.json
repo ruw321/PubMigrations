@@ -1,0 +1,792 @@
+{
+  "nodes": [
+    {
+      "id": "Poland",
+      "group": 4
+    },
+    {
+      "id": "United States",
+      "group": 5
+    },
+    {
+      "id": "Italy",
+      "group": 4
+    },
+    {
+      "id": "France",
+      "group": 4
+    },
+    {
+      "id": "United Kingdom",
+      "group": 4
+    },
+    {
+      "id": "Sweden",
+      "group": 4
+    },
+    {
+      "id": "Singapore",
+      "group": 3
+    },
+    {
+      "id": "China",
+      "group": 3
+    },
+    {
+      "id": "India",
+      "group": 3
+    },
+    {
+      "id": "Canada",
+      "group": 5
+    },
+    {
+      "id": "South Korea",
+      "group": 3
+    },
+    {
+      "id": "Lithuania",
+      "group": 4
+    },
+    {
+      "id": "Russia",
+      "group": 4
+    },
+    {
+      "id": "Germany",
+      "group": 4
+    },
+    {
+      "id": "Spain",
+      "group": 4
+    },
+    {
+      "id": "Ireland",
+      "group": 4
+    },
+    {
+      "id": "Australia"
+    },
+    {
+      "id": "Belgium",
+      "group": 4
+    },
+    {
+      "id": "Qatar",
+      "group": 3
+    },
+    {
+      "id": "Austria",
+      "group": 4
+    },
+    {
+      "id": "Uruguay",
+      "group": 6
+    },
+    {
+      "id": "Thailand",
+      "group": 3
+    },
+    {
+      "id": "Israel",
+      "group": 3
+    },
+    {
+      "id": "Netherlands",
+      "group": 4
+    },
+    {
+      "id": "Saudi Arabia",
+      "group": 3
+    },
+    {
+      "id": "Taiwan",
+      "group": 3
+    },
+    {
+      "id": "Argentina",
+      "group": 6
+    },
+    {
+      "id": "Cyprus",
+      "group": 4
+    },
+    {
+      "id": "Colombia",
+      "group": 6
+    },
+    {
+      "id": "Iraq",
+      "group": 3
+    },
+    {
+      "id": "Hungary",
+      "group": 4
+    },
+    {
+      "id": "New Zealand"
+    },
+    {
+      "id": "Finland",
+      "group": 4
+    },
+    {
+      "id": "Jamaica",
+      "group": 5
+    },
+    {
+      "id": "Brazil",
+      "group": 6
+    },
+    {
+      "id": "Japan",
+      "group": 3
+    },
+    {
+      "id": "Switzerland",
+      "group": 4
+    },
+    {
+      "id": "Hong Kong",
+      "group": 3
+    },
+    {
+      "id": "Czech Republic",
+      "group": 4
+    },
+    {
+      "id": "South Africa",
+      "group": 1
+    },
+    {
+      "id": "Guatemala",
+      "group": 5
+    },
+    {
+      "id": "Lesotho",
+      "group": 1
+    },
+    {
+      "id": "Mexico",
+      "group": 5
+    },
+    {
+      "id": "Slovakia",
+      "group": 4
+    },
+    {
+      "id": "Armenia",
+      "group": 3
+    },
+    {
+      "id": "Denmark",
+      "group": 4
+    },
+    {
+      "id": "Serbia",
+      "group": 4
+    }
+  ],
+  "links": [
+    {
+      "source": "Poland",
+      "target": "United States"
+    },
+    {
+      "source": "Italy",
+      "target": "France"
+    },
+    {
+      "source": "United Kingdom",
+      "target": "United States"
+    },
+    {
+      "source": "Sweden",
+      "target": "United Kingdom"
+    },
+    {
+      "source": "United Kingdom",
+      "target": "Singapore"
+    },
+    {
+      "source": "United Kingdom",
+      "target": "France"
+    },
+    {
+      "source": "France",
+      "target": "United States"
+    },
+    {
+      "source": "China",
+      "target": "United States"
+    },
+    {
+      "source": "United Kingdom",
+      "target": "United States"
+    },
+    {
+      "source": "Italy",
+      "target": "United States"
+    },
+    {
+      "source": "India",
+      "target": "United States"
+    },
+    {
+      "source": "Canada",
+      "target": "United States"
+    },
+    {
+      "source": "South Korea",
+      "target": "United States"
+    },
+    {
+      "source": "Lithuania",
+      "target": "Russia"
+    },
+    {
+      "source": "United Kingdom",
+      "target": "United States"
+    },
+    {
+      "source": "China",
+      "target": "United States"
+    },
+    {
+      "source": "Germany",
+      "target": "Spain"
+    },
+    {
+      "source": "United States",
+      "target": "Spain"
+    },
+    {
+      "source": "China",
+      "target": "Ireland"
+    },
+    {
+      "source": "China",
+      "target": "Canada"
+    },
+    {
+      "source": "Germany",
+      "target": "Spain"
+    },
+    {
+      "source": "India",
+      "target": "Australia"
+    },
+    {
+      "source": "Belgium",
+      "target": "Qatar"
+    },
+    {
+      "source": "Australia",
+      "target": "United States"
+    },
+    {
+      "source": "Belgium",
+      "target": "Austria"
+    },
+    {
+      "source": "Uruguay",
+      "target": "United States"
+    },
+    {
+      "source": "Canada",
+      "target": "United States"
+    },
+    {
+      "source": "United States",
+      "target": "United Kingdom"
+    },
+    {
+      "source": "United Kingdom",
+      "target": "United States"
+    },
+    {
+      "source": "United Kingdom",
+      "target": "Australia"
+    },
+    {
+      "source": "Australia",
+      "target": "Canada"
+    },
+    {
+      "source": "Australia",
+      "target": "Thailand"
+    },
+    {
+      "source": "United Kingdom",
+      "target": "Canada"
+    },
+    {
+      "source": "United Kingdom",
+      "target": "Qatar"
+    },
+    {
+      "source": "Israel",
+      "target": "Netherlands"
+    },
+    {
+      "source": "Netherlands",
+      "target": "Australia"
+    },
+    {
+      "source": "United Kingdom",
+      "target": "Australia"
+    },
+    {
+      "source": "United Kingdom",
+      "target": "United States"
+    },
+    {
+      "source": "United States",
+      "target": "Canada"
+    },
+    {
+      "source": "Saudi Arabia",
+      "target": "Taiwan"
+    },
+    {
+      "source": "United Kingdom",
+      "target": "United States"
+    },
+    {
+      "source": "Argentina",
+      "target": "United States"
+    },
+    {
+      "source": "Belgium",
+      "target": "United States"
+    },
+    {
+      "source": "United Kingdom",
+      "target": "Cyprus"
+    },
+    {
+      "source": "United States",
+      "target": "Australia"
+    },
+    {
+      "source": "France",
+      "target": "Colombia"
+    },
+    {
+      "source": "Belgium",
+      "target": "Australia"
+    },
+    {
+      "source": "Iraq",
+      "target": "United States"
+    },
+    {
+      "source": "United Kingdom",
+      "target": "Germany"
+    },
+    {
+      "source": "United Kingdom",
+      "target": "United States"
+    },
+    {
+      "source": "United Kingdom",
+      "target": "United States"
+    },
+    {
+      "source": "Hungary",
+      "target": "United States"
+    },
+    {
+      "source": "Argentina",
+      "target": "United States"
+    },
+    {
+      "source": "China",
+      "target": "Germany"
+    },
+    {
+      "source": "New Zealand",
+      "target": "United Kingdom"
+    },
+    {
+      "source": "United Kingdom",
+      "target": "United States"
+    },
+    {
+      "source": "United States",
+      "target": "Singapore"
+    },
+    {
+      "source": "Canada",
+      "target": "United Kingdom"
+    },
+    {
+      "source": "United Kingdom",
+      "target": "Canada"
+    },
+    {
+      "source": "Australia",
+      "target": "United Kingdom"
+    },
+    {
+      "source": "Germany",
+      "target": "Spain"
+    },
+    {
+      "source": "Canada",
+      "target": "United States"
+    },
+    {
+      "source": "Finland",
+      "target": "United States"
+    },
+    {
+      "source": "Jamaica",
+      "target": "France"
+    },
+    {
+      "source": "Spain",
+      "target": "France"
+    },
+    {
+      "source": "United States",
+      "target": "Canada"
+    },
+    {
+      "source": "Sweden",
+      "target": "Brazil"
+    },
+    {
+      "source": "Japan",
+      "target": "United States"
+    },
+    {
+      "source": "United States",
+      "target": "Canada"
+    },
+    {
+      "source": "Italy",
+      "target": "United States"
+    },
+    {
+      "source": "United States",
+      "target": "Australia"
+    },
+    {
+      "source": "New Zealand",
+      "target": "Japan"
+    },
+    {
+      "source": "New Zealand",
+      "target": "United Kingdom"
+    },
+    {
+      "source": "Switzerland",
+      "target": "Netherlands"
+    },
+    {
+      "source": "Australia",
+      "target": "United States"
+    },
+    {
+      "source": "United States",
+      "target": "Hong Kong"
+    },
+    {
+      "source": "Australia",
+      "target": "United States"
+    },
+    {
+      "source": "United States",
+      "target": "New Zealand"
+    },
+    {
+      "source": "United States",
+      "target": "Sweden"
+    },
+    {
+      "source": "Czech Republic",
+      "target": "Canada"
+    },
+    {
+      "source": "Russia",
+      "target": "Spain"
+    },
+    {
+      "source": "India",
+      "target": "United States"
+    },
+    {
+      "source": "Germany",
+      "target": "Switzerland"
+    },
+    {
+      "source": "South Africa",
+      "target": "United Kingdom"
+    },
+    {
+      "source": "United States",
+      "target": "Canada"
+    },
+    {
+      "source": "United Kingdom",
+      "target": "United States"
+    },
+    {
+      "source": "Switzerland",
+      "target": "Canada"
+    },
+    {
+      "source": "United Kingdom",
+      "target": "France"
+    },
+    {
+      "source": "United Kingdom",
+      "target": "United States"
+    },
+    {
+      "source": "United Kingdom",
+      "target": "Japan"
+    },
+    {
+      "source": "United Kingdom",
+      "target": "Canada"
+    },
+    {
+      "source": "United Kingdom",
+      "target": "New Zealand"
+    },
+    {
+      "source": "India",
+      "target": "United States"
+    },
+    {
+      "source": "Spain",
+      "target": "United States"
+    },
+    {
+      "source": "United Kingdom",
+      "target": "United States"
+    },
+    {
+      "source": "Sweden",
+      "target": "Finland"
+    },
+    {
+      "source": "France",
+      "target": "United States"
+    },
+    {
+      "source": "United Kingdom",
+      "target": "United States"
+    },
+    {
+      "source": "Poland",
+      "target": "United States"
+    },
+    {
+      "source": "Germany",
+      "target": "Sweden"
+    },
+    {
+      "source": "Canada",
+      "target": "France"
+    },
+    {
+      "source": "United Kingdom",
+      "target": "United States"
+    },
+    {
+      "source": "Canada",
+      "target": "United States"
+    },
+    {
+      "source": "United Kingdom",
+      "target": "United States"
+    },
+    {
+      "source": "Guatemala",
+      "target": "United States"
+    },
+    {
+      "source": "Australia",
+      "target": "New Zealand"
+    },
+    {
+      "source": "Russia",
+      "target": "United States"
+    },
+    {
+      "source": "United Kingdom",
+      "target": "Canada"
+    },
+    {
+      "source": "France",
+      "target": "Italy"
+    },
+    {
+      "source": "Netherlands",
+      "target": "United Kingdom"
+    },
+    {
+      "source": "Russia",
+      "target": "France"
+    },
+    {
+      "source": "Germany",
+      "target": "Sweden"
+    },
+    {
+      "source": "United States",
+      "target": "Australia"
+    },
+    {
+      "source": "Ireland",
+      "target": "United States"
+    },
+    {
+      "source": "Lesotho",
+      "target": "United Kingdom"
+    },
+    {
+      "source": "United Kingdom",
+      "target": "United States"
+    },
+    {
+      "source": "United States",
+      "target": "Canada"
+    },
+    {
+      "source": "Hungary",
+      "target": "United States"
+    },
+    {
+      "source": "Brazil",
+      "target": "United Kingdom"
+    },
+    {
+      "source": "Germany",
+      "target": "Spain"
+    },
+    {
+      "source": "Australia",
+      "target": "Canada"
+    },
+    {
+      "source": "Belgium",
+      "target": "Mexico"
+    },
+    {
+      "source": "Germany",
+      "target": "Canada"
+    },
+    {
+      "source": "Ireland",
+      "target": "United Kingdom"
+    },
+    {
+      "source": "Australia",
+      "target": "United States"
+    },
+    {
+      "source": "Canada",
+      "target": "United States"
+    },
+    {
+      "source": "United Kingdom",
+      "target": "Australia"
+    },
+    {
+      "source": "Argentina",
+      "target": "United States"
+    },
+    {
+      "source": "United Kingdom",
+      "target": "United States"
+    },
+    {
+      "source": "France",
+      "target": "Australia"
+    },
+    {
+      "source": "United States",
+      "target": "Italy"
+    },
+    {
+      "source": "United States",
+      "target": "United Kingdom"
+    },
+    {
+      "source": "United States",
+      "target": "Taiwan"
+    },
+    {
+      "source": "Slovakia",
+      "target": "Czech Republic"
+    },
+    {
+      "source": "United States",
+      "target": "United Kingdom"
+    },
+    {
+      "source": "Armenia",
+      "target": "Russia"
+    },
+    {
+      "source": "Hong Kong",
+      "target": "United States"
+    },
+    {
+      "source": "Israel",
+      "target": "United States"
+    },
+    {
+      "source": "Denmark",
+      "target": "United States"
+    },
+    {
+      "source": "United Kingdom",
+      "target": "Canada"
+    },
+    {
+      "source": "Mexico",
+      "target": "United States"
+    },
+    {
+      "source": "Canada",
+      "target": "Australia"
+    },
+    {
+      "source": "Canada",
+      "target": "United States"
+    },
+    {
+      "source": "South Africa",
+      "target": "United Kingdom"
+    },
+    {
+      "source": "United Kingdom",
+      "target": "France"
+    },
+    {
+      "source": "India",
+      "target": "United States"
+    },
+    {
+      "source": "Canada",
+      "target": "United States"
+    },
+    {
+      "source": "France",
+      "target": "United States"
+    },
+    {
+      "source": "Serbia",
+      "target": "United States"
+    },
+    {
+      "source": "United Kingdom",
+      "target": "United States"
+    }
+  ]
+}

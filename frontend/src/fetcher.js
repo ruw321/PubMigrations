@@ -166,6 +166,13 @@ const getMostEmployedCities = async(page, pagesize) => {
     return res.json()
 }
 
+const getVisualData = async() => {
+  var res = await fetch(`http://${config.server_host}:${config.server_port}/visualdata`, {
+      method: 'GET',
+  })
+  return res.json()
+}
+
 export {
     postLogin,
     getAllMigrations,
@@ -183,6 +190,8 @@ export {
     getTopBioEdByCountry,
     getMostEmployedCities,
     getAllCountries,
+    postSignup,
+    getVisualData,
     getAllOrganizations,
     postSignup
 }
