@@ -33,11 +33,28 @@ const researchersColumns = [
     // sorter: (a, b) => a.Rating - b.Rating
     
   },
-  // TASK 7: add a column for Potential, with the ability to (numerically) sort ,
   {
     title: 'BeginYear',
     dataIndex: 'BeginYear',
     key: 'BeginYear',
+    // sorter: (a, b) => a.Potential - b.Potential
+  },
+  {
+    title: 'Employment',
+    dataIndex: 'Employment',
+    key: 'Employment',
+    // sorter: (a, b) => a.Potential - b.Potential
+  },
+  {
+    title: 'Education',
+    dataIndex: 'Education',
+    key: 'Education',
+    // sorter: (a, b) => a.Potential - b.Potential
+  },
+  {
+    title: 'Papers',
+    dataIndex: 'Papers',
+    key: 'Papers',
     // sorter: (a, b) => a.Potential - b.Potential
   }
 ];
@@ -60,6 +77,10 @@ class ResearchersPage extends React.Component {
       researchersResults: []  
     }
 
+    this.handlePmidChange = this.handlePmidChange.bind(this);
+    this.handleEmploymentChange = this.handleEmploymentChange.bind(this);
+    this.handleEducationChange = this.handleEducationChange.bind(this);
+
   }
 
   handlePmidChange(event) {
@@ -75,6 +96,7 @@ class ResearchersPage extends React.Component {
   }
 
   updateSearchResults() {
+
     getResearchers(this.state.employment, this.state.education, this.state.pmid).then( res => {
         this.setState({ researchersResults: res.results })
     })
@@ -84,7 +106,7 @@ class ResearchersPage extends React.Component {
 
   componentDidMount() {
 
-    getResearchers().then(res => {
+    getResearchers("", "", "").then(res => {
       console.log(res.results)
       this.setState({ researchersResults: res.results})
       console.log('set state')
@@ -103,15 +125,15 @@ class ResearchersPage extends React.Component {
             <Row>
                 <Col flex={2}><FormGroup style={{ width: '20vw', margin: '0 auto' }}>
                     <label>Employment</label>
-                    <FormInput placeholder="andid" value={this.state.andid} onChange={this.handleEmploymentChange} />
+                    <FormInput placeholder="Employment" value={this.state.employment} onChange={this.handleEmploymentChange} />
                 </FormGroup></Col>
                 <Col flex={2}><FormGroup style={{ width: '20vw', margin: '0 auto' }}>
                     <label>Education</label>
-                    <FormInput placeholder="pmid" value={this.state.pmid} onChange={this.handleEducationChange} />
+                    <FormInput placeholder="Education" value={this.state.education} onChange={this.handleEducationChange} />
                 </FormGroup></Col>
                 <Col flex={2}><FormGroup style={{ width: '20vw', margin: '0 auto' }}>
                     <label>Paper ID (PMID)</label>
-                    <FormInput placeholder="AuOrder" value={this.state.auOrder} onChange={this.handlePmidChange} />
+                    <FormInput placeholder="PMID" value={this.state.pmid} onChange={this.handlePmidChange} />
                 </FormGroup></Col>
                 <Col flex={2}><FormGroup style={{ width: '10vw' }}>
                     <Button style={{ marginTop: '4vh' }} onClick={this.updateSearchResults}>Search</Button>

@@ -61,9 +61,9 @@ const getResearchers = async(employment, education, pmid) => {
     
     let url = `http://${config.server_host}:${config.server_port}/filterResearchers?`;
 
-    url += employment !== "" ? `&Employment=${employment}` : "";
-    url += education !== "" ? `&Education=${education}` : "";
-    url += pmid !== "" ? `&Writes=${pmid}` : "";
+    url += employment !== "" ? `&employment=${employment}` : "";
+    url += education !== "" ? `&education=${education}` : "";
+    url += pmid !== "" ? `&writes=${pmid}` : "";
 
     var res = await fetch(url, {
         method: 'GET',
