@@ -568,6 +568,28 @@ async function getCountries(req, res) {
 }
 
 
+// example request: http://localhost:8000/organizations?
+async function getOrganizations(req, res) {
+  let sqlQuery = `SELECT DISTINCT Organization FROM PmidAndidInfo `;
+
+  if (req.query.page && !isNaN(req.query.page)) {
+    // TODO: add the page feature 
+  } else {
+    // we have implemented this for you to see how to return results by querying the database
+    connection.query(sqlQuery,
+      function (error, results, fields) {
+        if (error) {
+          console.log(error);
+          res.json({ error: error });
+        } else if (results) {
+          res.json({ results: results });
+        }
+      }
+    );
+  }
+}
+
+
 module.exports = {
   getMigrations, 
   filterResearchers, 
@@ -582,5 +604,6 @@ module.exports = {
   topInstituteByCountry,
   login,
   signup,
-  getCountries  
+  getCountries,
+  getOrganizations,
 };
