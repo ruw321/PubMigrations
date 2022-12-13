@@ -20,14 +20,13 @@ const papersByCountriesColumns = [
     title: 'Country',
     dataIndex: 'Country',
     key: 'Country',
-    // sorter: (a, b) => a.Name.localeCompare(b.Name),
-    // render: (text, row) => <a href={`/players?id=${row.PlayerId}`}>{text}</a>
+    sorter: (a, b) => a.Country.localeCompare(b.Country),
   },
   {
     title: 'NumPapers',
     dataIndex: 'NumPapers',
     key: 'NumPapers',
-    // sorter: (a, b) => a.Nationality.localeCompare(b.Nationality)
+    sorter: (a, b) => a.NumPapers - b.NumPapers
   }
 ];
 
@@ -36,16 +35,19 @@ const topInstitutionsByCountryColumns = [
     title: 'Country',
     dataIndex: 'Country',
     key: 'Country',
+    sorter: (a, b) => a.Country.localeCompare(b.Country),
   },
   {
     title: 'NumPapers',
     dataIndex: 'NumPapers',
     key: 'NumPapers',
+    sorter: (a, b) => a.NumPapers - b.NumPapers
   },
   {
     title: 'Organization',
     dataIndex: 'Organization',
     key: 'Organization',
+    sorter: (a, b) => a.Organization.localeCompare(b.Organization),
   }
 ];
 
@@ -54,11 +56,13 @@ const topBioEdByCountryColumns = [
     title: 'Mention',
     dataIndex: 'Mention',
     key: 'Mention',
+    sorter: (a, b) => a.Mention.localeCompare(b.Mention),
   },
   {
     title: 'Count',
     dataIndex: 'Count',
     key: 'Count',
+    sorter: (a, b) => a.Count - b.Count
   }
 ];
 
@@ -67,11 +71,13 @@ const mostEmployedCitiesColumns = [
     title: 'City',
     dataIndex: 'City',
     key: 'City',
+    sorter: (a, b) => a.City.localeCompare(b.City),
   },
   {
-    title: 'count',
+    title: 'Count',
     dataIndex: 'count',
     key: 'count',
+    sorter: (a, b) => a.count - b.count
   }
 ];
 
@@ -85,7 +91,7 @@ class CountriesPage extends React.Component {
       matchesPageNumber: 1,
       matchesPageSize: 10,
       pagination: null,
-      country: "IT",
+      country: "",
       
       countries: [],
       papersByCountries: [],
@@ -133,35 +139,30 @@ class CountriesPage extends React.Component {
         newResults.push(d);
       }
       console.log(newResults);
-      // TASK 1: set the correct state attribute to res.results
       this.setState({ countries: newResults})
       console.log('set state')
     })
 
     getTotalPapersByCountry(null, null).then(res => {
       console.log(res.results)
-      // TASK 1: set the correct state attribute to res.results
       this.setState({ papersByCountries: res.results})
       console.log('set state')
     })
 
     getTopInstituteByCountry(this.state.country, null, null).then(res => {
       console.log(res.results)
-      // TASK 1: set the correct state attribute to res.results
       this.setState({ topInstituteByCountry: res.results})
       console.log('set state')
     })
 
     getTopBioEdByCountry(this.state.country, null, null).then(res => {
       console.log(res.results)
-      // TASK 1: set the correct state attribute to res.results
       this.setState({ topBioEdByCountry: res.results})
       console.log('set state')
     })
 
     getMostEmployedCities(null, null).then(res => {
       console.log(res.results)
-      // TASK 1: set the correct state attribute to res.results
       this.setState({ mostEmployedCities: res.results})
       console.log('set state')
     })
@@ -181,7 +182,7 @@ class CountriesPage extends React.Component {
             <Row>
                 <Col flex={2}><FormGroup style={{ width: '20vw', margin: '0 auto' }}>
                     <label>Country</label>
-                    <Select defaultValue="" options={this.state.countries} onChange={this.handleCountryQueryChange}></Select>
+                    <Select style={{ width: '20vw', margin: '0 auto' }} defaultValue="" options={this.state.countries} onChange={this.handleCountryQueryChange}></Select>
                 </FormGroup></Col>
                 <Col flex={2}><FormGroup style={{ width: '10vw' }}>
                     <Button style={{ marginTop: '4vh' }} onClick={this.updateSearchResults}>Search</Button>

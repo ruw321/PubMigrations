@@ -35,6 +35,14 @@ const getAllCountries = async(page, pagesize) => {
     return res.json()
 }
 
+const getAllOrganizations = async(page, pagesize) => {
+    var res = await fetch(`http://${config.server_host}:${config.server_port}/organizations`, {
+        method: 'GET',
+    })
+    return res.json()
+}
+
+
 const getAllMigrations = async(page, pagesize) => {
     var res = await fetch(`http://${config.server_host}:${config.server_port}/migration`, {
         method: 'GET',
@@ -84,6 +92,7 @@ const getSearchPublications = async(andid, pmid, auorder, pubyear, page, pagesiz
     url += pmid !== "" ? `&PMID=${pmid}` : "";
     url += auorder !== "" ? `&AuOrder=${auorder}` : "";
     url += pubyear !== "" ? `&PubYear=${pubyear}` : "";
+    console.log(url);
     var res = await fetch(url, {
         method: 'GET',
     })
@@ -166,5 +175,6 @@ export {
     getTopBioEdByCountry,
     getMostEmployedCities,
     getAllCountries,
+    getAllOrganizations,
     postSignup
 }
