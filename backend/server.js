@@ -9,7 +9,7 @@ const app = express();
 // whitelist localhost 8000
 app.use(cors({ 
   credentials: true, 
-  origin: ['http://localhost:8000'],
+  origin: ['http://localhost:3000'],
   methods: "GET,PUT,POST,DELETE",
 }));
 
