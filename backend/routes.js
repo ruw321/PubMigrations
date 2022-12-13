@@ -22,7 +22,7 @@ async function login(req, res) {
   // check if the email exists
   try {
     const collection = client.db("CIS550").collection("Users");
-    const result = await collection.findOne({Email: email});
+    const result = await collection.findOne({ Email: email });
     if (!result) {
       res.status(404).json({ error: "email doesn't exist" });
     } else {
@@ -43,11 +43,11 @@ async function login(req, res) {
 async function signup(req, res) {
   try {
     const collection = client.db("CIS550").collection("Users");
-    await collection.createIndex( { "Email": 1 }, { unique: true } );
+    await collection.createIndex({ "Email": 1 }, { unique: true });
     const result = await collection.insertOne({
-      FirstName: req.body.FirstName, 
-      LastName: req.body.LastName, 
-      Email: req.body.email, 
+      FirstName: req.body.FirstName,
+      LastName: req.body.LastName,
+      Email: req.body.email,
       Password: req.body.password
     });
     res.status(201).json({ InsertedID: result.insertedId });
@@ -61,9 +61,9 @@ async function signup(req, res) {
 // helper function
 function processSearchWords(words) {
   let wordList = words.split(',');
-  wordList.forEach(function(part, index, theArray) {
+  wordList.forEach(function (part, index, theArray) {
     theArray[index] = `'${theArray[index]}'`;
-  }); 
+  });
   return wordList.toString();
 }
 
@@ -84,7 +84,7 @@ function multipleWhere(req, integerProperty, sqlQuery) {
           sqlQuery += `AND ${propName} = ${req.query[propName]} `;
         } else {
           sqlQuery += `AND ${propName} = '${req.query[propName]}' `;
-        }      
+        }
       }
     }
   }
@@ -136,7 +136,7 @@ async function createTempTable() {
     }
   );
 }
-createTempTable();
+// createTempTable();
 
 // Query 13
 async function getBestAuthors(req, res) {
@@ -166,7 +166,7 @@ async function getBestAuthors(req, res) {
     function (error, results, fields) {
       if (error) {
         console.log(error)
-        res.json({error : error})
+        res.json({ error: error })
       } else if (results) {
         res.json({ results: results })
       }
@@ -194,7 +194,7 @@ async function mostEmployedCities(req, res) {
     function (error, results, fields) {
       if (error) {
         console.log(error);
-        res.json({error : error});
+        res.json({ error: error });
       } else if (results) {
         res.json({ results: results });
       }
@@ -268,7 +268,7 @@ async function mostBenefitedOrg(req, res) {
     function (error, results, fields) {
       if (error) {
         console.log(error)
-        res.json({error : error})
+        res.json({ error: error })
       } else if (results) {
         res.json({ results: results })
       }
@@ -303,7 +303,7 @@ async function topBioEdByCountry(req, res) {
     function (error, results, fields) {
       if (error) {
         console.log(error);
-        res.json({error : error});
+        res.json({ error: error });
       } else if (results) {
         res.json({ results: results });
       }
@@ -336,7 +336,7 @@ async function topInstituteByCountry(req, res) {
     function (error, results, fields) {
       if (error) {
         console.log(error);
-        res.json({error : error});
+        res.json({ error: error });
       } else if (results) {
         res.json({ results: results });
       }
@@ -372,47 +372,154 @@ async function getMigrations(req, res) {
 // example request is: http://localhost:8000/filterResearchers?Education=Tsinghua University&Employment=Tsinghua University&Writes=1726147
 // TODO: note that the frontend will have to deal with different number of columns depending on how many tables we are joining
 async function filterResearchers(req, res) {
-  let sqlQuery = `SELECT * FROM Authors au `;
-  let where = `WHERE `;
-  let temp = 'a';
-  let firstProperty = true;
-  for (var propName in req.query) {
-    if (req.query.hasOwnProperty(propName)) {
-      sqlQuery += `JOIN ${propName} ${temp} ON ${temp}.ANDID = au.ANDID `;    
-      if (!firstProperty) {
-        where += 'AND ';
-      }
-      if (propName == 'Writes') {
-        where += `${temp}.PMID = ${req.query[propName]} `;
-      } else {
-        where += `${temp}.Organization = '${req.query[propName]}' `;
-      }
-      firstProperty = false;
-    }
-    temp = String.fromCharCode(temp.charCodeAt(0) + 1);
-  }
-  
-  if (where.length > 6) {
-    sqlQuery += where;
-  }
-  sqlQuery += `\nLIMIT 100`;
 
-  if (req.query.page && !isNaN(req.query.page)) {
-    // TODO: add the page feature 
-  } else {
-    // we have implemented this for you to see how to return results by querying the database
-    connection.query(sqlQuery,
-      function (error, results, fields) {
-        if (error) {
-          console.log(error);
-          res.json({ error: error });
-        } else if (results) {
-          res.json({ results: results });
-        }
-      }
-    );
+  console.log("filter researchers");
+  console.log(req.query.employment);
+  console.log(req.query.education);
+  console.log(req.query.pmid);
+
+  let sqlQuery = `WITH temp1 AS (
+    SELECT ANDID, GROUP_CONCAT(PMID SEPARATOR ', ') AS Papers
+    FROM Writes
+    GROUP BY ANDID
+  ),
+  temp2 AS (
+    SELECT ANDID, GROUP_CONCAT(Organization SEPARATOR ', ') AS Education
+    FROM Education
+    GROUP BY ANDID
+  ),
+  temp3 AS (
+    SELECT ANDID, GROUP_CONCAT(Organization SEPARATOR ', ') AS Employment
+    FROM Employment
+    GROUP BY ANDID
+  )
+  SELECT au.ANDID AS ANDID, LastName, Initials, au.BeginYear as BeginYear,
+  Employment, Education, Papers
+  FROM Authors au
+  NATURAL JOIN temp1
+  NATURAL JOIN temp2
+  NATURAL JOIN temp3
+  WHERE 1 = 1 `;
+
+  if (req.query.employment) {
+    sqlQuery += `AND EXISTS (
+      SELECT *
+      FROM temp3
+      WHERE temp3.ANDID = au.ANDID
+      AND temp3.Employment LIKE "%${req.query.employment}%"
+      
+    )`
   }
+
+  if (req.query.education) {
+    sqlQuery += `AND EXISTS (
+      SELECT *
+      FROM temp2
+      WHERE temp2.ANDID = au.ANDID
+      AND temp2.Education LIKE "%${req.query.education}%"
+    ) `
+  }
+
+  if (req.query.pmid) {
+    sqlQuery += `AND EXISTS (
+      SELECT *
+      FROM temp1
+      WHERE temp1.ANDID = au.ANDID
+      AND temp1.Papers LIKE "%${req.query.pmid}%"
+    ) `
+  }
+
+  // if (req.query.employment) {
+  //   sqlQuery += `AND EXISTS (
+  //     SELECT *
+  //     FROM Employment em
+  //     WHERE em.ANDID = au.ANDID
+  //     AND em.Organization = "${req.query.employment}"
+      
+  //   )`
+  // }
+
+  // if (req.query.education) {
+  //   sqlQuery += `AND EXISTS (
+  //     SELECT *
+  //     FROM Education ed
+  //     WHERE ed.ANDID = au.ANDID
+  //     AND ed.Organization = "${req.query.education}"
+  //   ) `
+  // }
+
+  // if (req.query.pmid) {
+  //   sqlQuery += `AND EXISTS (
+  //     SELECT *
+  //     FROM Writes wr
+  //     WHERE wr.ANDID = au.ANDID
+  //     AND wr.PMID = "${req.query.pmid}"
+  //   ) `
+  // }
+
+  sqlQuery += `GROUP BY au.ANDID, LastName, Initials, au.BeginYear
+                LIMIT 100;`;
+
+  connection.query(sqlQuery,
+    function (error, results, fields) {
+      if (error) {
+        console.log(error);
+        res.json({ error: error });
+      } else if (results) {
+        console.log("finished query");
+        res.json({ results: results });
+      }
+    }
+  );
+
 }
+
+
+// async function filterResearchers(req, res) {
+
+//   console.log("filter researchers");
+
+//   let sqlQuery = `SELECT * FROM Authors au `;
+//   let where = `WHERE `;
+//   let temp = 'a';
+//   let firstProperty = true;
+//   for (var propName in req.query) {
+//     if (req.query.hasOwnProperty(propName)) {
+//       sqlQuery += `JOIN ${propName} ${temp} ON ${temp}.ANDID = au.ANDID `;    
+//       if (!firstProperty) {
+//         where += 'AND ';
+//       }
+//       if (propName == 'Writes') {
+//         where += `${temp}.PMID = ${req.query[propName]} `;
+//       } else {
+//         where += `${temp}.Organization = '${req.query[propName]}' `;
+//       }
+//       firstProperty = false;
+//     }
+//     temp = String.fromCharCode(temp.charCodeAt(0) + 1);
+//   }
+
+//   if (where.length > 6) {
+//     sqlQuery += where;
+//   }
+//   sqlQuery += `\nLIMIT 100`;
+
+//   if (req.query.page && !isNaN(req.query.page)) {
+//     // TODO: add the page feature 
+//   } else {
+//     // we have implemented this for you to see how to return results by querying the database
+//     connection.query(sqlQuery,
+//       function (error, results, fields) {
+//         if (error) {
+//           console.log(error);
+//           res.json({ error: error });
+//         } else if (results) {
+//           res.json({ results: results });
+//         }
+//       }
+//     );
+//   }
+// }
 
 // example request: http://localhost:8000/paper/words?words=brain,neurology
 async function filterPaperWords(req, res) {
@@ -488,6 +595,8 @@ async function filterPaperPublication(req, res) {
     );
   }
 }
+
+
 
 // example request: http://localhost:8000/researchers/top?Organization=Tsinghua University
 // this one takes about 2 minutes 
@@ -591,9 +700,9 @@ async function getOrganizations(req, res) {
 
 
 module.exports = {
-  getMigrations, 
-  filterResearchers, 
-  filterPaperWords, 
+  getMigrations,
+  filterResearchers,
+  filterPaperWords,
   filterPaperPublication,
   topResearcher,
   getTotalPaperByCountry,
@@ -605,5 +714,5 @@ module.exports = {
   login,
   signup,
   getCountries,
-  getOrganizations,
+  getOrganizations
 };
