@@ -19,6 +19,7 @@ import BioEntitiesSearcherPage from './pages/BioEntitiesSearcherPage';
 import PublicationsPage from './pages/PublicationsPage';
 import InstitutionsPage from './pages/InstitutionsPage';
 import CountriesPage from './pages/CountriesPage';
+import TwoCountriesPage from './pages/TwoCountriesPage';
 
 ReactDOM.render(
   <div>
@@ -40,37 +41,44 @@ ReactDOM.render(
             <LoginPage />
           )} />
         <Route exact
-			path="/migrations"
-			render={() => (
-				<MigrationsPage />
-			)}/>
+          path="/migrations"
+          render={() => (
+            <MigrationsPage />
+          )} />
         <Route exact
-			path="/researchers"
-			render={() => (
-				<ResearchersPage />
-			)}/>
+          path="/researchers"
+          render={() => (
+            <ResearchersPage />
+          )} />
         <Route exact
-			path="/bioentities"
-			render={() => (
-				<BioEntitiesSearcherPage />
-			)}/>
-		<Route exact
-			path="/publications"
-			render={() => (
-				<PublicationsPage />
-			)}/>
-		<Route exact
-			path="/institutions"
-			render={() => (
-				<InstitutionsPage />
-			)}/>
-		<Route exact
-			path="/countries"
-			render={() => (
-				<CountriesPage />
-			)}/>
+          path="/bioentities"
+          render={() => (
+            <BioEntitiesSearcherPage />
+          )} />
+        <Route exact
+          path="/publications"
+          render={() => (
+            <PublicationsPage />
+          )} />
+        <Route exact
+          path="/institutions"
+          render={() => (
+            <InstitutionsPage />
+          )} />
+        <Route exact
+          path="/countries"
+          render={() => (
+            <CountriesPage />
+          )} />
+        <Route exact
+          path="/twocountries"
+          render={() => (
+            <TwoCountriesPage />
+          )} />
       </Switch>
     </Router>
+
+
   </div>,
   document.getElementById('root')
 );

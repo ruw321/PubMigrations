@@ -166,6 +166,72 @@ const getMostEmployedCities = async(page, pagesize) => {
     return res.json()
 }
 
+const getPapersMoved2C = async(andid, pmid, auorder, pubyear, page, pagesize) => {
+    let url = `http://${config.server_host}:${config.server_port}/paper/publications?`;
+    url += andid !== "" ? `&ANDID=${andid}` : "";
+    url += pmid !== "" ? `&PMID=${pmid}` : "";
+    url += auorder !== "" ? `&AuOrder=${auorder}` : "";
+    url += pubyear !== "" ? `&PubYear=${pubyear}` : "";
+    console.log(url);
+    var res = await fetch(url, {
+        method: 'GET',
+    })
+    return res.json()
+}
+
+const getBioentitiesMoved2c = async(andid, pmid, auorder, pubyear, page, pagesize) => {
+    let url = `http://${config.server_host}:${config.server_port}/paper/publications?`;
+    url += andid !== "" ? `&ANDID=${andid}` : "";
+    url += pmid !== "" ? `&PMID=${pmid}` : "";
+    url += auorder !== "" ? `&AuOrder=${auorder}` : "";
+    url += pubyear !== "" ? `&PubYear=${pubyear}` : "";
+    console.log(url);
+    var res = await fetch(url, {
+        method: 'GET',
+    })
+    return res.json()
+}
+
+const getMovement2c = async(andid, pmid, auorder, pubyear, page, pagesize) => {
+    let url = `http://${config.server_host}:${config.server_port}/paper/publications?`;
+    url += andid !== "" ? `&ANDID=${andid}` : "";
+    url += pmid !== "" ? `&PMID=${pmid}` : "";
+    url += auorder !== "" ? `&AuOrder=${auorder}` : "";
+    url += pubyear !== "" ? `&PubYear=${pubyear}` : "";
+    console.log(url);
+    var res = await fetch(url, {
+        method: 'GET',
+    })
+    return res.json()
+}
+
+const getSharedBioentities2c = async(andid, pmid, auorder, pubyear, page, pagesize) => {
+    let url = `http://${config.server_host}:${config.server_port}/paper/publications?`;
+    url += andid !== "" ? `&ANDID=${andid}` : "";
+    url += pmid !== "" ? `&PMID=${pmid}` : "";
+    url += auorder !== "" ? `&AuOrder=${auorder}` : "";
+    url += pubyear !== "" ? `&PubYear=${pubyear}` : "";
+    console.log(url);
+    var res = await fetch(url, {
+        method: 'GET',
+    })
+    return res.json()
+}
+
+const getPapersBoth2c = async(andid, pmid, auorder, pubyear, page, pagesize) => {
+    let url = `http://${config.server_host}:${config.server_port}/paper/publications?`;
+    url += andid !== "" ? `&ANDID=${andid}` : "";
+    url += pmid !== "" ? `&PMID=${pmid}` : "";
+    url += auorder !== "" ? `&AuOrder=${auorder}` : "";
+    url += pubyear !== "" ? `&PubYear=${pubyear}` : "";
+    console.log(url);
+    var res = await fetch(url, {
+        method: 'GET',
+    })
+    return res.json()
+}
+
+
 export {
     postLogin,
     getAllMigrations,
@@ -184,5 +250,10 @@ export {
     getMostEmployedCities,
     getAllCountries,
     getAllOrganizations,
-    postSignup
+    postSignup,
+    getPapersMoved2C,
+    getBioentitiesMoved2c,
+    getMovement2c,
+    getSharedBioentities2c,
+    getPapersBoth2c
 }
