@@ -29,45 +29,6 @@ const responseFacebook = (response) => {
   window.location = '/';
 }
 
-function SigninOptions(props) {
-  return (
-    <div>
-      &nbsp;
-      <Typography variant="body1" color="text.secondary" align="center" {...props}>
-        {'OR'}
-      </Typography>
-      &nbsp;
-      <Typography variant="body1" color="text.secondary" align="center" {...props}>
-
-        <GoogleOAuthProvider clientId={clientId}>
-          <GoogleLogin
-            size="large"
-            onSuccess={() => {
-              window.localStorage.setItem('Authenticated', 'True');
-              window.location = '/';
-            }}
-            onError={() => {
-              window.localStorage.setItem('Authenticated', 'False');
-            }}
-          />
-        </GoogleOAuthProvider>
-
-        <FacebookLogin
-          appId={appID}
-          autoLoad={false}
-          fields="name,email,picture"
-          onClick={componentClicked}
-          callback={responseFacebook}
-          size={'small'}
-        />
-      </Typography>
-    </div>
-  );
-}
-/* <Typography variant="body1" color="text.secondary" align="center" {...props}>
-  {'OR'}
-</Typography> */
-
 const theme = createTheme();
 
 export default function LoginPage() {

@@ -1,19 +1,14 @@
 import React from 'react';
 import {
   Table,
-  Pagination,
   Select,
   Row,
   Col,
-  Divider
 } from 'antd'
-import { Form, FormInput, FormGroup, Button, Card, CardBody, CardTitle, Progress } from "shards-react";
+import { Form, FormInput, FormGroup, Button } from "shards-react";
 
 import MenuBar from '../components/MenuBar';
 import { getMostBenefitedOrg, searchMostBenefitedOrg, getTopInstitutions, getBestAuthors, getAllOrganizations } from '../fetcher'
-
-const { Column, ColumnGroup } = Table;
-const { Option } = Select;
 
 const institutionsColumns = [
   {
@@ -22,7 +17,6 @@ const institutionsColumns = [
     key: 'ANDID',
     sorter: (a, b) => a.ANDID - b.ANDID
 
-    // sorter: (a, b) => a.Nationality.localeCompare(b.Nationality)
   },
   {
     title: 'NumPapers',

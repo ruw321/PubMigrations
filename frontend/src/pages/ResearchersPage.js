@@ -1,11 +1,8 @@
 import React from 'react';
 import {
   Table,
-  Pagination,
-  Select,
   Row,
-  Col,
-  Divider
+  Col
 } from 'antd'
 import { Form, FormInput, FormGroup, Button } from "shards-react";
 
@@ -18,7 +15,6 @@ const researchersColumns = [
     dataIndex: 'ANDID',
     key: 'ANDID',
     sorter: (a, b) => a.ANDID - b.ANDID
-    // render: (text, row) => <a href={`/players?id=${row.PlayerId}`}>{text}</a>
   },
   {
     title: 'LastName',
