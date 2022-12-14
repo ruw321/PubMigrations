@@ -339,44 +339,57 @@ async function filterResearchers(req, res) {
     SELECT ANDID, GROUP_CONCAT(Organization SEPARATOR ', ') AS Employment
     FROM Employment
     GROUP BY ANDID
-  )
-  SELECT au.ANDID AS ANDID, LastName, Initials, au.BeginYear as BeginYear,
-  Employment, Education, Papers
-  FROM Authors au
-  NATURAL JOIN temp1
-  NATURAL JOIN temp2
-  NATURAL JOIN temp3
-  WHERE 1 = 1 `;
+  )`;
+
+  if (req.query.pmid) {
+    sqlQuery += `, temp4 AS (
+      SELECT * FROM temp1 WHERE Papers LIKE '%${req.query.pmid}'
+    )`
+  }
 
   if (req.query.employment) {
-    sqlQuery += `AND EXISTS (
-      SELECT *
-      FROM temp3
-      WHERE temp3.ANDID = au.ANDID
-      AND temp3.Employment LIKE "%${req.query.employment}%"
-      
+    sqlQuery += `, temp5 AS (
+      SELECT * FROM temp2 WHERE Education LIKE '%${req.query.education}%'
     )`
   }
 
   if (req.query.education) {
-    sqlQuery += `AND EXISTS (
-      SELECT *
-      FROM temp2
-      WHERE temp2.ANDID = au.ANDID
-      AND temp2.Education LIKE "%${req.query.education}%"
-    ) `
+    sqlQuery += `, temp6 AS (
+      SELECT * FROM temp3 WHERE Employment LIKE '%${req.query.employment}%'
+    )`
   }
+
+  sqlQuery += `
+  SELECT au.ANDID AS ANDID, LastName, Initials, au.BeginYear as BeginYear,
+  Employment, Education, Papers
+  FROM Authors au`
 
   if (req.query.pmid) {
-    sqlQuery += `AND EXISTS (
-      SELECT *
-      FROM temp1
-      WHERE temp1.ANDID = au.ANDID
-      AND temp1.Papers LIKE "%${req.query.pmid}%"
-    ) `
+    sqlQuery += `
+    NATURAL JOIN temp4`
+  } else {
+    sqlQuery += `
+    NATURAL JOIN temp1`
+  }
+  if (req.query.employment) {
+    sqlQuery += `
+    NATURAL JOIN temp5`
+  } else {
+    sqlQuery += `
+    NATURAL JOIN temp2`
+  }
+  if (req.query.education) {
+    sqlQuery += `
+    NATURAL JOIN temp6`
+  } else {
+    sqlQuery += `
+    NATURAL JOIN temp3`
   }
 
-  sqlQuery += `GROUP BY au.ANDID, LastName, Initials, au.BeginYear
+  sqlQuery += `
+    WHERE 1 = 1`
+  sqlQuery += `
+                GROUP BY au.ANDID, LastName, Initials, au.BeginYear
                 LIMIT 100;`;
 
   connection.query(sqlQuery,
@@ -385,7 +398,7 @@ async function filterResearchers(req, res) {
         console.log(error);
         res.json({ error: error });
       } else if (results) {
-        console.log("finished query");
+        console.log("Query complete");
         res.json({ results: results });
       }
     }
