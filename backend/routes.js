@@ -708,7 +708,7 @@ async function PapersMoved2C(req, res) {
     SELECT ANDID FROM temp1
     NATURAL JOIN ORCIDs
   )
-  SELECT COUNT(*) FROM temp2
+  SELECT COUNT(*) AS count FROM temp2
   NATURAL JOIN PmidAndidInfo `;
 
 
@@ -815,10 +815,10 @@ async function sharedBioentities2c(req, res) {
     ORDER BY Count DESC
     LIMIT 100
   )
-  SELECT temp1.Mention as Mention, temp1.Count + temp2.Count as TotalCount
+  SELECT temp1.Mention as Mention, temp1.Count + temp2.Count as Count
   FROM temp1 INNER JOIN temp2
   ON temp1.Mention = temp2.mention
-  ORDER BY TotalCount DESC
+  ORDER BY Count DESC
   LIMIT 100;`;
 
 
@@ -836,7 +836,15 @@ async function sharedBioentities2c(req, res) {
 }
 
 async function papersBoth2c(req, res) {
-  let sqlQuery = ` WITH temp1 AS (
+  let sqlQuery = ` WITH AuthorCountriesOrgYear AS (
+    SELECT ANDID, BeginYear, Country, Organization
+    FROM Employment
+    UNION
+    (SELECT ANDID, BeginYear, Country, Organization
+    FROM Education)
+    ORDER BY ANDID ASC, BeginYear DESC
+  ),
+  temp1 AS (
     SELECT * FROM Papers
     NATURAL JOIN Writes
   ),
@@ -861,10 +869,10 @@ async function papersBoth2c(req, res) {
       AND Country = "${req.query.country2}"
     )
   )
-  SELECT PMID, GROUP_CONCAT(ANDID) AS Authors
+  SELECT PMID, GROUP_CONCAT(ANDID SEPARATOR ', ') AS Authors
   FROM temp3
   GROUP BY PMID
-  LIMIT {search limit};`;
+  LIMIT 100;`;
 
 
   connection.query(sqlQuery,

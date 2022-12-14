@@ -166,69 +166,49 @@ const getMostEmployedCities = async(page, pagesize) => {
     return res.json()
 }
 
-const getPapersMoved2C = async(andid, pmid, auorder, pubyear, page, pagesize) => {
-    let url = `http://${config.server_host}:${config.server_port}/paper/publications?`;
-    url += andid !== "" ? `&ANDID=${andid}` : "";
-    url += pmid !== "" ? `&PMID=${pmid}` : "";
-    url += auorder !== "" ? `&AuOrder=${auorder}` : "";
-    url += pubyear !== "" ? `&PubYear=${pubyear}` : "";
+const getPapersMoved2C = async(country1, country2) => {
+    let url = `http://${config.server_host}:${config.server_port}/twocountries/papersmoved?country1=${country1}&country2=${country2}`;
     console.log(url);
     var res = await fetch(url, {
         method: 'GET',
     })
-    return res.json()
+    return res.json();
 }
 
-const getBioentitiesMoved2c = async(andid, pmid, auorder, pubyear, page, pagesize) => {
-    let url = `http://${config.server_host}:${config.server_port}/paper/publications?`;
-    url += andid !== "" ? `&ANDID=${andid}` : "";
-    url += pmid !== "" ? `&PMID=${pmid}` : "";
-    url += auorder !== "" ? `&AuOrder=${auorder}` : "";
-    url += pubyear !== "" ? `&PubYear=${pubyear}` : "";
+const getBioentitiesMoved2c = async(country1, country2) => {
+    let url = `http://${config.server_host}:${config.server_port}/twocountries/bioentitiesmoved?country1=${country1}&country2=${country2}`;
     console.log(url);
     var res = await fetch(url, {
         method: 'GET',
     })
-    return res.json()
+    return res.json();
 }
 
-const getMovement2c = async(andid, pmid, auorder, pubyear, page, pagesize) => {
-    let url = `http://${config.server_host}:${config.server_port}/paper/publications?`;
-    url += andid !== "" ? `&ANDID=${andid}` : "";
-    url += pmid !== "" ? `&PMID=${pmid}` : "";
-    url += auorder !== "" ? `&AuOrder=${auorder}` : "";
-    url += pubyear !== "" ? `&PubYear=${pubyear}` : "";
+const getMovement2c = async(country1, country2) => {
+    let url = `http://${config.server_host}:${config.server_port}/twocountries/movement?country1=${country1}&country2=${country2}`;
     console.log(url);
     var res = await fetch(url, {
         method: 'GET',
     })
-    return res.json()
+    return res.json();
 }
 
-const getSharedBioentities2c = async(andid, pmid, auorder, pubyear, page, pagesize) => {
-    let url = `http://${config.server_host}:${config.server_port}/paper/publications?`;
-    url += andid !== "" ? `&ANDID=${andid}` : "";
-    url += pmid !== "" ? `&PMID=${pmid}` : "";
-    url += auorder !== "" ? `&AuOrder=${auorder}` : "";
-    url += pubyear !== "" ? `&PubYear=${pubyear}` : "";
+const getSharedBioentities2c = async(country1, country2) => {
+    let url = `http://${config.server_host}:${config.server_port}/twocountries/sharedbioentities?country1=${country1}&country2=${country2}`;
     console.log(url);
     var res = await fetch(url, {
         method: 'GET',
     })
-    return res.json()
+    return res.json();
 }
 
-const getPapersBoth2c = async(andid, pmid, auorder, pubyear, page, pagesize) => {
-    let url = `http://${config.server_host}:${config.server_port}/paper/publications?`;
-    url += andid !== "" ? `&ANDID=${andid}` : "";
-    url += pmid !== "" ? `&PMID=${pmid}` : "";
-    url += auorder !== "" ? `&AuOrder=${auorder}` : "";
-    url += pubyear !== "" ? `&PubYear=${pubyear}` : "";
+const getPapersBoth2c = async(country1, country2) => {
+    let url = `http://${config.server_host}:${config.server_port}/twocountries/papersboth?country1=${country1}&country2=${country2}`;
     console.log(url);
     var res = await fetch(url, {
         method: 'GET',
     })
-    return res.json()
+    return res.json();
 }
 
 

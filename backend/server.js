@@ -56,19 +56,19 @@ app.get('/researchers/top', routes.topResearcher)
 app.get('/paper/totalbycountry', routes.getTotalPaperByCountry)
 
 // Route Compare Countries 1
-app.get('/paper/PapersMoved2C', routes.PapersMoved2C)
+app.get('/twocountries/papersmoved', routes.PapersMoved2C)
 
 // Route Compare Countries 2
-app.get('/paper/bioentitiesMoved2c', routes.bioentitiesMoved2c)
+app.get('/twocountries/bioentitiesmoved', routes.bioentitiesMoved2c)
 
 // Route Compare Countries 3
-app.get('/paper/movement2c', routes.movement2c)
+app.get('/twocountries/movement', routes.movement2c)
 
 // Route Compare Countries 4
-app.get('/paper/sharedBioentities2c', routes.sharedBioentities2c)
+app.get('/twocountries/sharedbioentities', routes.sharedBioentities2c)
 
 // Route Compare Countries 5
-app.get('/paper/papersBoth2c', routes.papersBoth2c)
+app.get('/twocountries/papersboth', routes.papersBoth2c)
 
 // login
 app.post('/login', routes.login)
