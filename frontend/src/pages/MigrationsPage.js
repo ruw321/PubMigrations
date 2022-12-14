@@ -18,7 +18,6 @@ const migrationColumns = [
     dataIndex: 'ORCID',
     key: 'ORCID',
     sorter: (a, b) => a.ORCID.localeCompare(b.ORCID),
-    // render: (text, row) => <a href={`/players?id=${row.PlayerId}`}>{text}</a>
   },
   {
     title: 'PhdYear',
@@ -84,7 +83,6 @@ class MigrationsPage extends React.Component {
       hasMigrated: 1,
       migrationsResults: []  
     }
-    console.log('original state:', this.state);
 
     this.handlePhdYearQueryChange = this.handlePhdYearQueryChange.bind(this)
     this.handleEarliestYearQueryChange = this.handleEarliestYearQueryChange.bind(this)
@@ -127,11 +125,7 @@ class MigrationsPage extends React.Component {
   }
 
   componentDidMount() {
-
-    console.log('mount state:', this.state);
-
     getAllMigrations().then(res => {
-      console.log(res.results)
       this.setState({ migrationsResults: res.results})
       this.setState({ loadingMigrations: false })
     })
@@ -170,7 +164,7 @@ class MigrationsPage extends React.Component {
         </Form>
       <div style={{ width: '70vw', margin: '0 auto', marginTop: '5vh' }}>
         <h3>Migrations</h3>
-        <Table bordered loading={{ indicator: <div><Spin size="large" /></div>, spinning:this.state.loadingMigrations}} dataSource={this.state.migrationsResults} columns={migrationColumns} pagination={{ pageSizeOptions:[5, 10], defaultPageSize: 5, showQuickJumper:true }}/>
+        <Table bordered loading={{ indicator: <div><Spin size="large" /></div>, spinning:this.state.loadingMigrations}} rowKey="ORCID" dataSource={this.state.migrationsResults} columns={migrationColumns} pagination={{ pageSizeOptions:[5, 10], defaultPageSize: 5, showQuickJumper:true }}/>
       </div>
     </div>
     )
