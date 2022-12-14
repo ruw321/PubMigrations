@@ -35,6 +35,14 @@ const getAllCountries = async(page, pagesize) => {
     return res.json()
 }
 
+const getAllOrganizations = async(page, pagesize) => {
+    var res = await fetch(`http://${config.server_host}:${config.server_port}/organizations`, {
+        method: 'GET',
+    })
+    return res.json()
+}
+
+
 const getAllMigrations = async(page, pagesize) => {
     var res = await fetch(`http://${config.server_host}:${config.server_port}/migration`, {
         method: 'GET',
@@ -57,10 +65,18 @@ const getSearchMigrations = async(phdYear, earliestYear, hasPhd, hasMigrated, pa
     return res.json()
 }
 
-const getAllResearchers = async(page, pagesize) => {
-    var res = await fetch(`http://${config.server_host}:${config.server_port}/filterResearchers`, {
+const getResearchers = async(employment, education, pmid) => {
+    
+    let url = `http://${config.server_host}:${config.server_port}/filterResearchers?`;
+
+    url += employment !== "" ? `&employment=${employment}` : "";
+    url += education !== "" ? `&education=${education}` : "";
+    url += pmid !== "" ? `&pmid=${pmid}` : "";
+
+    var res = await fetch(url, {
         method: 'GET',
     })
+
     return res.json()
 }
 
@@ -84,6 +100,7 @@ const getSearchPublications = async(andid, pmid, auorder, pubyear, page, pagesiz
     url += pmid !== "" ? `&PMID=${pmid}` : "";
     url += auorder !== "" ? `&AuOrder=${auorder}` : "";
     url += pubyear !== "" ? `&PubYear=${pubyear}` : "";
+    console.log(url);
     var res = await fetch(url, {
         method: 'GET',
     })
@@ -129,6 +146,7 @@ const getTotalPapersByCountry = async(page, pagesize) => {
 }
 
 const getTopInstituteByCountry = async(country, page, pagesize) => {
+    console.log(country);
     var res = await fetch(`http://${config.server_host}:${config.server_port}/topInstituteByCountry?country=${country}`, {
         method: 'GET',
     })
@@ -149,11 +167,65 @@ const getMostEmployedCities = async(page, pagesize) => {
     return res.json()
 }
 
+const getPapersMoved2C = async(country1, country2) => {
+    let url = `http://${config.server_host}:${config.server_port}/twocountries/papersmoved?country1=${country1}&country2=${country2}`;
+    console.log(url);
+    var res = await fetch(url, {
+        method: 'GET',
+    })
+    return res.json();
+}
+
+const getBioentitiesMoved2c = async(country1, country2) => {
+    let url = `http://${config.server_host}:${config.server_port}/twocountries/bioentitiesmoved?country1=${country1}&country2=${country2}`;
+    console.log(url);
+    var res = await fetch(url, {
+        method: 'GET',
+    })
+    return res.json();
+}
+
+const getMovement2c = async(country1, country2) => {
+    let url = `http://${config.server_host}:${config.server_port}/twocountries/movement?country1=${country1}&country2=${country2}`;
+    console.log(url);
+    var res = await fetch(url, {
+        method: 'GET',
+    })
+    return res.json();
+}
+
+const getSharedBioentities2c = async(country1, country2) => {
+    let url = `http://${config.server_host}:${config.server_port}/twocountries/sharedbioentities?country1=${country1}&country2=${country2}`;
+    console.log(url);
+    var res = await fetch(url, {
+        method: 'GET',
+    })
+    return res.json();
+}
+
+const getPapersBoth2c = async(country1, country2) => {
+    let url = `http://${config.server_host}:${config.server_port}/twocountries/papersboth?country1=${country1}&country2=${country2}`;
+    console.log(url);
+    var res = await fetch(url, {
+        method: 'GET',
+    })
+    return res.json();
+}
+
+
+
+const getVisualData = async() => {
+  var res = await fetch(`http://${config.server_host}:${config.server_port}/visualdata`, {
+      method: 'GET',
+  })
+  return res.json()
+}
+
 export {
     postLogin,
     getAllMigrations,
     getSearchMigrations,
-    getAllResearchers,
+    getResearchers,
     getPaperWords,
     getPublications,
     getSearchPublications,
@@ -166,5 +238,12 @@ export {
     getTopBioEdByCountry,
     getMostEmployedCities,
     getAllCountries,
-    postSignup
+    getVisualData,
+    getAllOrganizations,
+    postSignup,
+    getPapersMoved2C,
+    getBioentitiesMoved2c,
+    getMovement2c,
+    getSharedBioentities2c,
+    getPapersBoth2c
 }

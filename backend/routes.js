@@ -22,7 +22,7 @@ async function login(req, res) {
   // check if the email exists
   try {
     const collection = client.db("CIS550").collection("Users");
-    const result = await collection.findOne({Email: email});
+    const result = await collection.findOne({ Email: email });
     if (!result) {
       res.status(404).json({ error: "email doesn't exist" });
     } else {
@@ -43,11 +43,11 @@ async function login(req, res) {
 async function signup(req, res) {
   try {
     const collection = client.db("CIS550").collection("Users");
-    await collection.createIndex( { "Email": 1 }, { unique: true } );
+    await collection.createIndex({ "Email": 1 }, { unique: true });
     const result = await collection.insertOne({
-      FirstName: req.body.FirstName, 
-      LastName: req.body.LastName, 
-      Email: req.body.email, 
+      FirstName: req.body.FirstName,
+      LastName: req.body.LastName,
+      Email: req.body.email,
       Password: req.body.password
     });
     res.status(201).json({ InsertedID: result.insertedId });
@@ -61,9 +61,9 @@ async function signup(req, res) {
 // helper function
 function processSearchWords(words) {
   let wordList = words.split(',');
-  wordList.forEach(function(part, index, theArray) {
+  wordList.forEach(function (part, index, theArray) {
     theArray[index] = `'${theArray[index]}'`;
-  }); 
+  });
   return wordList.toString();
 }
 
@@ -84,59 +84,12 @@ function multipleWhere(req, integerProperty, sqlQuery) {
           sqlQuery += `AND ${propName} = ${req.query[propName]} `;
         } else {
           sqlQuery += `AND ${propName} = '${req.query[propName]}' `;
-        }      
+        }
       }
     }
   }
   return sqlQuery;
 }
-
-// create the views when the server starts
-async function createTempTable() {
-  let sqlQuery = `
-    CREATE TEMPORARY TABLE PmidAndidInfo AS (
-      WITH AuthorCountriesOrgYear AS (
-        SELECT ANDID, BeginYear, Country, Organization
-        FROM Employment
-        UNION
-        (SELECT ANDID, BeginYear, Country, Organization
-        FROM Education)
-        ORDER BY ANDID ASC, BeginYear DESC
-      ),
-      temp1 AS (
-        SELECT * FROM Papers
-        NATURAL JOIN Writes
-        WHERE AuOrder = 1
-      ),
-      temp2 AS (
-        SELECT PMID, temp1.ANDID AS ANDID, PubYear, BeginYear, Country, Organization
-        FROM temp1, AuthorCountriesOrgYear
-        WHERE temp1.ANDID = AuthorCountriesOrgYear.ANDID
-        AND temp1.PubYear >= AuthorCountriesOrgYear.BeginYear
-      ),
-      temp3 AS (
-        SELECT PMID, ANDID, MAX(BeginYear) AS BeginYear
-        FROM temp2
-        GROUP BY ANDID, PMID
-      )
-      SELECT PMID, ANDID, BeginYear, Country, Organization
-      FROM temp2
-      WHERE (PMID, ANDID, BeginYear) IN (SELECT * FROM temp3)   
-    ) 
-  `;
-
-  // we have implemented this for you to see how to return results by querying the database
-  connection.query(sqlQuery,
-    function (error, results, fields) {
-      if (error) {
-        console.log(error);
-      } else if (results) {
-        console.log("Temporary Table is created");
-      }
-    }
-  );
-}
-createTempTable();
 
 // Query 13
 async function getBestAuthors(req, res) {
@@ -166,7 +119,7 @@ async function getBestAuthors(req, res) {
     function (error, results, fields) {
       if (error) {
         console.log(error)
-        res.json({error : error})
+        res.json({ error: error })
       } else if (results) {
         res.json({ results: results })
       }
@@ -194,7 +147,7 @@ async function mostEmployedCities(req, res) {
     function (error, results, fields) {
       if (error) {
         console.log(error);
-        res.json({error : error});
+        res.json({ error: error });
       } else if (results) {
         res.json({ results: results });
       }
@@ -268,7 +221,7 @@ async function mostBenefitedOrg(req, res) {
     function (error, results, fields) {
       if (error) {
         console.log(error)
-        res.json({error : error})
+        res.json({ error: error })
       } else if (results) {
         res.json({ results: results })
       }
@@ -303,7 +256,7 @@ async function topBioEdByCountry(req, res) {
     function (error, results, fields) {
       if (error) {
         console.log(error);
-        res.json({error : error});
+        res.json({ error: error });
       } else if (results) {
         res.json({ results: results });
       }
@@ -336,7 +289,7 @@ async function topInstituteByCountry(req, res) {
     function (error, results, fields) {
       if (error) {
         console.log(error);
-        res.json({error : error});
+        res.json({ error: error });
       } else if (results) {
         res.json({ results: results });
       }
@@ -372,46 +325,81 @@ async function getMigrations(req, res) {
 // example request is: http://localhost:8000/filterResearchers?Education=Tsinghua University&Employment=Tsinghua University&Writes=1726147
 // TODO: note that the frontend will have to deal with different number of columns depending on how many tables we are joining
 async function filterResearchers(req, res) {
-  let sqlQuery = `SELECT * FROM Authors au `;
-  let where = `WHERE `;
-  let temp = 'a';
-  let firstProperty = true;
-  for (var propName in req.query) {
-    if (req.query.hasOwnProperty(propName)) {
-      sqlQuery += `JOIN ${propName} ${temp} ON ${temp}.ANDID = au.ANDID `;    
-      if (!firstProperty) {
-        where += 'AND ';
-      }
-      if (propName == 'Writes') {
-        where += `${temp}.PMID = ${req.query[propName]} `;
-      } else {
-        where += `${temp}.Organization = '${req.query[propName]}' `;
-      }
-      firstProperty = false;
-    }
-    temp = String.fromCharCode(temp.charCodeAt(0) + 1);
-  }
-  
-  if (where.length > 6) {
-    sqlQuery += where;
-  }
-  sqlQuery += `\nLIMIT 100`;
+  let sqlQuery = `WITH temp1 AS (
+    SELECT ANDID, GROUP_CONCAT(PMID SEPARATOR ', ') AS Papers
+    FROM Writes
+    GROUP BY ANDID
+  ),
+  temp2 AS (
+    SELECT ANDID, GROUP_CONCAT(Organization SEPARATOR ', ') AS Education
+    FROM Education
+    GROUP BY ANDID
+  ),
+  temp3 AS (
+    SELECT ANDID, GROUP_CONCAT(Organization SEPARATOR ', ') AS Employment
+    FROM Employment
+    GROUP BY ANDID
+  )`;
 
-  if (req.query.page && !isNaN(req.query.page)) {
-    // TODO: add the page feature 
-  } else {
-    // we have implemented this for you to see how to return results by querying the database
-    connection.query(sqlQuery,
-      function (error, results, fields) {
-        if (error) {
-          console.log(error);
-          res.json({ error: error });
-        } else if (results) {
-          res.json({ results: results });
-        }
-      }
-    );
+  if (req.query.pmid) {
+    sqlQuery += `, temp4 AS (
+      SELECT * FROM temp1 WHERE Papers LIKE '%${req.query.pmid}%'
+    )`
   }
+
+  if (req.query.education) {
+    sqlQuery += `, temp5 AS (
+      SELECT * FROM temp2 WHERE Education LIKE '%${req.query.education}%'
+    )`
+  }
+
+  if (req.query.employment) {
+    sqlQuery += `, temp6 AS (
+      SELECT * FROM temp3 WHERE Employment LIKE '%${req.query.employment}%'
+    )`
+  }
+
+  sqlQuery += `
+  SELECT au.ANDID AS ANDID, LastName, Initials, au.BeginYear as BeginYear,
+  Employment, Education, Papers
+  FROM Authors au`
+
+  if (req.query.pmid) {
+    sqlQuery += `
+    NATURAL JOIN temp4`
+  } else {
+    sqlQuery += `
+    NATURAL JOIN temp1`
+  }
+  if (req.query.education) {
+    sqlQuery += `
+    NATURAL JOIN temp5`
+  } else {
+    sqlQuery += `
+    NATURAL JOIN temp2`
+  }
+  if (req.query.employment) {
+    sqlQuery += `
+    NATURAL JOIN temp6`
+  } else {
+    sqlQuery += `
+    NATURAL JOIN temp3`
+  }
+  sqlQuery += `
+                GROUP BY au.ANDID, LastName, Initials, au.BeginYear
+                LIMIT 100;`;
+
+  connection.query(sqlQuery,
+    function (error, results, fields) {
+      if (error) {
+        console.log(error);
+        res.json({ error: error });
+      } else if (results) {
+        res.json({ results: results });
+      }
+    }
+  );
+
 }
 
 // example request: http://localhost:8000/paper/words?words=brain,neurology
@@ -488,6 +476,8 @@ async function filterPaperPublication(req, res) {
     );
   }
 }
+
+
 
 // example request: http://localhost:8000/researchers/top?Organization=Tsinghua University
 // this one takes about 2 minutes 
@@ -567,11 +557,267 @@ async function getCountries(req, res) {
   }
 }
 
+async function getVisualData(req, res) {
+  let sqlQuery = `WITH temp1 AS (
+    SELECT ORCID, EarliestCountry, Country2016
+    FROM Migrations
+    WHERE HasMigrated = 1
+    ),
+    temp2 AS (
+        SELECT EarliestCountry, Country2016, ANDID
+        FROM temp1
+        NATURAL JOIN ORCIDs
+    ),
+    temp3 AS (
+        SELECT ANDID, PMID
+        FROM Writes
+    )
+    SELECT ANDID, EarliestCountry, Country2016, COUNT(PMID) AS Count
+    FROM temp2
+    NATURAL JOIN temp3
+    WHERE EarliestCountry != Country2016 AND EarliestCountry != '??' AND Country2016 != '??'
+    GROUP BY ANDID, EarliestCountry, Country2016
+    ORDER BY Count DESC
+    LIMIT 150;
+  `
+
+  if (req.query.page && !isNaN(req.query.page)) {
+    // TODO: add the page feature 
+  } else {
+    // we have implemented this for you to see how to return results by querying the database
+    connection.query(sqlQuery,
+      function (error, results, fields) {
+        if (error) {
+          console.log(error);
+          res.json({ error: error });
+        } else if (results) {
+          res.json({ results: results });
+        }
+      }
+    );
+  }
+}
+
+
+// example request: http://localhost:8000/organizations?
+async function getOrganizations(req, res) {
+  let sqlQuery = `SELECT DISTINCT Organization FROM PmidAndidInfo `;
+
+  if (req.query.page && !isNaN(req.query.page)) {
+    // TODO: add the page feature 
+  } else {
+    // we have implemented this for you to see how to return results by querying the database
+    connection.query(sqlQuery,
+      function (error, results, fields) {
+        if (error) {
+          console.log(error);
+          res.json({ error: error });
+        } else if (results) {
+          res.json({ results: results });
+        }
+      }
+    );
+  }
+}
+
+async function PapersMoved2C(req, res) {
+  let sqlQuery = ` WITH temp1 AS (
+    SELECT ORCID FROM Migrations
+    WHERE EarliestCountry = "${req.query.country1}"
+    AND Country2016 = "${req.query.country2}"
+  ),
+  temp2 AS (
+    SELECT ANDID FROM temp1
+    NATURAL JOIN ORCIDs
+  )
+  SELECT COUNT(*) AS count FROM temp2
+  NATURAL JOIN PmidAndidInfo `;
+
+
+  connection.query(sqlQuery,
+    function (error, results, fields) {
+      if (error) {
+        console.log(error);
+        res.json({ error: error });
+      } else if (results) {
+        res.json({ results: results });
+      }
+    }
+  );
+
+}
+
+async function bioentitiesMoved2c(req, res) {
+  let sqlQuery = ` WITH temp1 AS (
+    SELECT ORCID
+    FROM Migrations
+    WHERE EarliestCountry = "${req.query.country1}"
+    AND Country2016 = "${req.query.country2}"
+  ),
+  temp2 AS (
+    SELECT ANDID
+    FROM temp1
+    NATURAL JOIN ORCIDs
+  ),
+  temp3 AS (
+    SELECT *
+    FROM temp2
+    NATURAL JOIN PmidAndidInfo
+  )
+  SELECT Mention, COUNT(*) as Count
+  FROM temp3
+  NATURAL JOIN BioEntities
+  GROUP BY Mention
+  ORDER BY Count DESC
+  LIMIT 100; `;
+
+
+  connection.query(sqlQuery,
+    function (error, results, fields) {
+      if (error) {
+        console.log(error);
+        res.json({ error: error });
+      } else if (results) {
+        res.json({ results: results });
+      }
+    }
+  );
+
+}
+
+async function movement2c(req, res) {
+  let sqlQuery = ` WITH temp1 AS (
+    SELECT COUNT(*) AS Count
+    FROM Migrations
+    WHERE EarliestCountry = "${req.query.country1}"
+    AND Country2016 = "${req.query.country2}"
+  ),
+  temp2 AS (
+    SELECT COUNT(*) AS Count
+    FROM Migrations
+    WHERE EarliestCountry = "${req.query.country2}"
+    AND Country2016 = "${req.query.country1}"
+  )
+  SELECT temp1.count - temp2.count AS Count
+  FROM temp1, temp2
+   `;
+
+
+  connection.query(sqlQuery,
+    function (error, results, fields) {
+      if (error) {
+        console.log(error);
+        res.json({ error: error });
+      } else if (results) {
+        res.json({ results: results });
+      }
+    }
+  );
+
+}
+
+async function sharedBioentities2c(req, res) {
+  let sqlQuery = ` WITH temp1 AS(
+    SELECT Mention, Count(*) as Count
+    FROM PmidAndidInfo
+    INNER JOIN BioEntities
+    ON PmidAndidInfo.PMID = BioEntities.PMID
+    WHERE Country = "${req.query.country1}"
+    GROUP BY Mention
+    ORDER BY Count DESC
+    LIMIT 100
+  ),
+  temp2 AS (
+    SELECT Mention, Count(*) as Count
+    FROM PmidAndidInfo
+    INNER JOIN BioEntities
+    ON PmidAndidInfo.PMID = BioEntities.PMID
+    WHERE Country = "${req.query.country2}"
+    GROUP BY Mention
+    ORDER BY Count DESC
+    LIMIT 100
+  )
+  SELECT temp1.Mention as Mention, temp1.Count + temp2.Count as Count
+  FROM temp1 INNER JOIN temp2
+  ON temp1.Mention = temp2.mention
+  ORDER BY Count DESC
+  LIMIT 100;`;
+
+
+  connection.query(sqlQuery,
+    function (error, results, fields) {
+      if (error) {
+        console.log(error);
+        res.json({ error: error });
+      } else if (results) {
+        res.json({ results: results });
+      }
+    }
+  );
+
+}
+
+async function papersBoth2c(req, res) {
+  let sqlQuery = ` WITH AuthorCountriesOrgYear AS (
+    SELECT ANDID, BeginYear, Country, Organization
+    FROM Employment
+    UNION
+    (SELECT ANDID, BeginYear, Country, Organization
+    FROM Education)
+    ORDER BY ANDID ASC, BeginYear DESC
+  ),
+  temp1 AS (
+    SELECT * FROM Papers
+    NATURAL JOIN Writes
+  ),
+  temp2 AS (
+    SELECT PMID, temp1.ANDID AS ANDID, Country
+    FROM temp1
+    INNER JOIN AuthorCountriesOrgYear
+    ON temp1.ANDID = AuthorCountriesOrgYear.ANDID
+    WHERE Country = "${req.query.country1}"
+    OR Country = "${req.query.country2}"
+  ),
+  temp3 AS (
+    SELECT PMID, ANDID FROM temp2 t1
+    WHERE EXISTS (
+      SELECT * FROM temp2 t2
+      WHERE t1.PMID = t2.PMID
+      AND Country = "${req.query.country1}"
+    )
+    AND EXISTS (
+      SELECT * FROM PmidAndidInfo t3
+      WHERE t1.PMID = t3.PMID
+      AND Country = "${req.query.country2}"
+    )
+  )
+  SELECT PMID, GROUP_CONCAT(ANDID SEPARATOR ', ') AS Authors
+  FROM temp3
+  GROUP BY PMID
+  LIMIT 100;`;
+
+
+  connection.query(sqlQuery,
+    function (error, results, fields) {
+      if (error) {
+        console.log(error);
+        res.json({ error: error });
+      } else if (results) {
+        res.json({ results: results });
+      }
+    }
+  );
+
+}
+
+
+
+
 
 module.exports = {
-  getMigrations, 
-  filterResearchers, 
-  filterPaperWords, 
+  getMigrations,
+  filterResearchers,
+  filterPaperWords,
   filterPaperPublication,
   topResearcher,
   getTotalPaperByCountry,
@@ -582,5 +828,13 @@ module.exports = {
   topInstituteByCountry,
   login,
   signup,
-  getCountries  
+  getCountries,
+  getOrganizations,
+  PapersMoved2C,
+  bioentitiesMoved2c,
+  movement2c,
+  sharedBioentities2c,
+  papersBoth2c,
+  getVisualData,
+  getOrganizations
 };

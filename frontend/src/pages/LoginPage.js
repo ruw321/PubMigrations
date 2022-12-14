@@ -13,74 +13,59 @@ import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { postLogin } from '../fetcher';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { GoogleLogin } from '@react-oauth/google';
-import FacebookLogin from 'react-facebook-login';
+import LoginGithub from 'react-login-github';
 
 const { createHash } = require('crypto');
+// google client id
 const clientId = '140984611088-pm8bh960crv1jd1u4lsb634s8qft40qn.apps.googleusercontent.com';
-const appID = '1187958105181399';
+
+// hashing function for hasing the password
 function hash(string) {
   return createHash('sha256').update(string).digest('hex');
 }
 
-function componentClicked() {
-}
-const responseFacebook = (response) => {
-  window.localStorage.setItem('Authenticated', 'True');
-  window.location = '/';
+// on success function for github login
+const onSuccess = (response) => {
+  if (response.code) {
+    window.localStorage.setItem('Authenticated', 'True');
+    window.location = '/';
+  }
 }
 
-function SigninOptions(props) {
-  return (
-    <div>
-      &nbsp;
-      <Typography variant="body1" color="text.secondary" align="center" {...props}>
-        {'OR'}
-      </Typography>
-      &nbsp;
-      <Typography variant="body1" color="text.secondary" align="center" {...props}>
-
-        <GoogleOAuthProvider clientId={clientId}>
-          <GoogleLogin
-            size="large"
-            onSuccess={() => {
-              window.localStorage.setItem('Authenticated', 'True');
-              window.location = '/';
-            }}
-            onError={() => {
-              window.localStorage.setItem('Authenticated', 'False');
-            }}
-          />
-        </GoogleOAuthProvider>
-
-        <FacebookLogin
-          appId={appID}
-          autoLoad={false}
-          fields="name,email,picture"
-          onClick={componentClicked}
-          callback={responseFacebook}
-          size={'small'}
-        />
-      </Typography>
-    </div>
-  );
-}
-/* <Typography variant="body1" color="text.secondary" align="center" {...props}>
-  {'OR'}
-</Typography> */
+// on failure function for github login
+const onFailure = response => console.error(response);
 
 const theme = createTheme();
 
 export default function LoginPage() {
+  // these are the states for setting the error messages
+  const [emailError, setemailError] = React.useState("");
+  const [passError, setpassError] = React.useState("");
+  const [error, setError] = React.useState(false);
+  const [error2, setError2] = React.useState(false);
+
+  // handles login button click
   const handleSubmit = async (event) => {
+    setemailError("");
+    setpassError("");
+    setError(false);
+    setError2(false);
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    const hashedPassword = hash(data.get('password')) // hash created previously created upon sign up
+    const hashedPassword = hash(data.get('password'));
     const result = await postLogin(data.get('email'), hashedPassword);
     if (result.result === "user successfully logged in") {
       window.localStorage.setItem('Authenticated', 'True');
       window.location = '/';
     } else {
       window.localStorage.setItem('Authenticated', 'False');
+      if (result.error === "email doesn't exist") {
+        setemailError("This email doesn't exists.");
+        setError(true);
+      } else {
+        setpassError("Wrong password.");
+        setError2(true);
+      }
     }
   };
 
@@ -104,6 +89,7 @@ export default function LoginPage() {
           </Typography>
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
             <TextField
+              error={error}
               margin="normal"
               required
               fullWidth
@@ -112,8 +98,10 @@ export default function LoginPage() {
               name="email"
               autoComplete="email"
               autoFocus
+              helperText= {emailError}
             />
             <TextField
+              error={error2}
               margin="normal"
               required
               fullWidth
@@ -122,6 +110,7 @@ export default function LoginPage() {
               type="password"
               id="password"
               autoComplete="current-password"
+              helperText= {passError}
             />
             <Button
               type="submit"
@@ -132,11 +121,6 @@ export default function LoginPage() {
               Sign In
             </Button>
             <Grid container>
-              <Grid item xs>
-                <Link href="#" variant="body2">
-                  Forgot password?
-                </Link>
-              </Grid>
               <Grid item>
                 <Link href="/signup" variant="body2">
                   {"Don't have an account? Sign Up"}
@@ -174,18 +158,13 @@ export default function LoginPage() {
               />
             </GoogleOAuthProvider>
           </Grid>
-          <Grid item style={{height:'100%', width:'60%'}}>
-            <FacebookLogin
-              appId={appID}
-              autoLoad={false}
-              fields="name,email,picture"
-              onClick={componentClicked}
-              callback={responseFacebook}
-              size={'small'}
+          <Grid item style={{height:'100%', width:'50%'}}>
+            <LoginGithub clientId="0fad65dfb33efe6c9950"
+              onSuccess={onSuccess}
+              onFailure={onFailure}
             />
           </Grid>
         </Grid>
-
       </Container>
     </ThemeProvider>
   );

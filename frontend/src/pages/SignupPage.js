@@ -14,6 +14,7 @@ import { postSignup } from '../fetcher';
 
 const { createHash } = require('crypto');
 
+// hash function for hashing the password before sending to the backend
 function hash(string) {
   return createHash('sha256').update(string).digest('hex');
 }
@@ -21,10 +22,13 @@ function hash(string) {
 const theme = createTheme();
 
 export default function SignUp() {
+
+  // handles sign up button click
   const handleSubmit = async (event) => {
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    const hashedPassword = hash(data.get('password')) // hash created previously created upon sign up
+    // hash the password before storing in the database
+    const hashedPassword = hash(data.get('password'));
     const result = await postSignup(data.get('email'), hashedPassword, data.get('firstName'), data.get('lastName'));
     if (result.InsertedID) {
       window.localStorage.setItem('Authenticated', 'True');

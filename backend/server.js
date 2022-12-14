@@ -17,6 +17,9 @@ app.use(cors({
 app.use(express.json());
 
 // Query 14 - register as GET
+app.get('/organizations', routes.getOrganizations)
+
+// Query 14 - register as GET
 app.get('/countries', routes.getCountries)
 
 // Query 13 - register as GET
@@ -52,11 +55,28 @@ app.get('/researchers/top', routes.topResearcher)
 // // Route 6 - register as GET 
 app.get('/paper/totalbycountry', routes.getTotalPaperByCountry)
 
+// Route Compare Countries 1
+app.get('/twocountries/papersmoved', routes.PapersMoved2C)
+
+// Route Compare Countries 2
+app.get('/twocountries/bioentitiesmoved', routes.bioentitiesMoved2c)
+
+// Route Compare Countries 3
+app.get('/twocountries/movement', routes.movement2c)
+
+// Route Compare Countries 4
+app.get('/twocountries/sharedbioentities', routes.sharedBioentities2c)
+
+// Route Compare Countries 5
+app.get('/twocountries/papersboth', routes.papersBoth2c)
+
 // login
 app.post('/login', routes.login)
 
 // signup
 app.post('/signup', routes.signup)
+
+app.get('/visualdata', routes.getVisualData)
 
 app.listen(config.server_port, () => {
     console.log(`Server running at http://${config.server_host}:${config.server_port}/`);
