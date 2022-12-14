@@ -299,7 +299,7 @@ async function topInstituteByCountry(req, res) {
 
 // example request: http://localhost:8000/migration?PhdYear=2000&EarliestYear=2000&HasPhd=1
 async function getMigrations(req, res) {
-  let sqlQuery = `SELECT * FROM Migrations `;
+  let sqlQuery = `SELECT ORCID, PhdYear, Country2016, EarliestYear, EarliestCountry, HasPhd, PhdCountry, HasMigrated FROM Migrations `;
   const integerProperty = ["PhdYear", "EarliestYear", "HasPhd", "HasMigrated"];
   sqlQuery = multipleWhere(req, integerProperty, sqlQuery);
 
@@ -343,19 +343,19 @@ async function filterResearchers(req, res) {
 
   if (req.query.pmid) {
     sqlQuery += `, temp4 AS (
-      SELECT * FROM temp1 WHERE Papers LIKE '%${req.query.pmid}%'
+      SELECT ANDID, Papers FROM temp1 WHERE Papers LIKE '%${req.query.pmid}%'
     )`
   }
 
   if (req.query.education) {
     sqlQuery += `, temp5 AS (
-      SELECT * FROM temp2 WHERE Education LIKE '%${req.query.education}%'
+      SELECT ANDID, Education FROM temp2 WHERE Education LIKE '%${req.query.education}%'
     )`
   }
 
   if (req.query.employment) {
     sqlQuery += `, temp6 AS (
-      SELECT * FROM temp3 WHERE Employment LIKE '%${req.query.employment}%'
+      SELECT ANDID, Employment FROM temp3 WHERE Employment LIKE '%${req.query.employment}%'
     )`
   }
 
@@ -398,7 +398,7 @@ async function filterResearchers(req, res) {
         console.log(error);
         res.json({ error: error });
       } else if (results) {
-        console.log(sqlQuery);
+        console.log("query completed");
         res.json({ results: results });
       }
     }
@@ -448,14 +448,14 @@ async function filterPaperWords(req, res) {
 // example request: http://localhost:8000/paper/publications?PubYear=1975&PMID=1
 async function filterPaperPublication(req, res) {
   let sqlQuery = `WITH temp1 AS (
-    SELECT * FROM Papers
+    SELECT PMID, PubYear FROM Papers
     NATURAL JOIN Writes
     ),
     temp2 AS (
       SELECT ANDID, LastName, Initials
       FROM Authors
     )
-    SELECT * FROM temp1
+    SELECT PMID, PubYear FROM temp1
     NATURAL JOIN temp2      
     `;
 
@@ -542,7 +542,7 @@ async function getTotalPaperByCountry(req, res) {
 
 // example request: http://localhost:8000/countries?
 async function getCountries(req, res) {
-  let sqlQuery = `SELECT * FROM Countries `;
+  let sqlQuery = `SELECT Name, Alpha2Code FROM Countries `;
 
   if (req.query.page && !isNaN(req.query.page)) {
     // TODO: add the page feature 
@@ -664,7 +664,7 @@ async function bioentitiesMoved2c(req, res) {
     NATURAL JOIN ORCIDs
   ),
   temp3 AS (
-    SELECT *
+    SELECT ANDID
     FROM temp2
     NATURAL JOIN PmidAndidInfo
   )
@@ -771,7 +771,7 @@ async function papersBoth2c(req, res) {
     ORDER BY ANDID ASC, BeginYear DESC
   ),
   temp1 AS (
-    SELECT * FROM Papers
+    SELECT PMIDFROM Papers
     NATURAL JOIN Writes
   ),
   temp2 AS (
@@ -785,12 +785,12 @@ async function papersBoth2c(req, res) {
   temp3 AS (
     SELECT PMID, ANDID FROM temp2 t1
     WHERE EXISTS (
-      SELECT * FROM temp2 t2
+      SELECT PMID, ANDID, Country FROM temp2 t2
       WHERE t1.PMID = t2.PMID
       AND Country = "${req.query.country1}"
     )
     AND EXISTS (
-      SELECT * FROM PmidAndidInfo t3
+      SELECT PMID, ANDID, BeginYear, Country, Organization FROM PmidAndidInfo t3
       WHERE t1.PMID = t3.PMID
       AND Country = "${req.query.country2}"
     )
