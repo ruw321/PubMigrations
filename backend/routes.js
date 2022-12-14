@@ -343,7 +343,7 @@ async function filterResearchers(req, res) {
 
   if (req.query.pmid) {
     sqlQuery += `, temp4 AS (
-      SELECT * FROM temp1 WHERE Papers LIKE '%${req.query.pmid}'
+      SELECT * FROM temp1 WHERE Papers LIKE '%${req.query.pmid}%'
     )`
   }
 
