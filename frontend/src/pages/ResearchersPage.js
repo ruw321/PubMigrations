@@ -61,7 +61,6 @@ class ResearchersPage extends React.Component {
     super(props)
 
     this.state = {
-      matchesResults: [],
       matchesPageNumber: 1,
       matchesPageSize: 10,
       pagination: null,
@@ -112,12 +111,6 @@ class ResearchersPage extends React.Component {
 
   componentDidMount() {
 
-    getResearchers("", "", "").then(res => {
-      console.log(res.results)
-      this.setState({ researchersResults: res.results})
-      console.log('set state')
-      this.setState({ loadingResearchers: false})
-    })
   }
 
   render() {
