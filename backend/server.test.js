@@ -48,6 +48,12 @@ describe('testing get requests', () => {
 	expect(JSON.parse(response.text).results[0]).toHaveProperty('PMID',489746);
 	console.log(JSON.parse(response.text).results[0]);
     });
+    test('testing filter paper words no query params', async () => {
+       const response = await request(webapp).get('/paper/words');
+	expect(response.status).toEqual(200);
+	expect(JSON.parse(response.text)).toHaveProperty('error','search query is empty');
+    });
+
     test('testing filter paper publication', async () => {
        const response = await request(webapp).get('/paper/publications?PubYear=1975&PMID=1');
 	expect(response.status).toEqual(200);
@@ -73,12 +79,26 @@ describe('testing get requests', () => {
 	expect(JSON.parse(response.text).results[0]).toHaveProperty('Count',657);
 	console.log(JSON.parse(response.text).results[0]);
     });
+    test('testing bio education by country with limit', async () => {
+       const response = await request(webapp).get('/topBioEdByCountry?countries=US&limit=10');
+	expect(response.status).toEqual(200);
+	expect(JSON.parse(response.text).results).toHaveLength(10);
+	console.log(JSON.parse(response.text).results[0]);
+    });
+
     test('testing top institute by country', async () => {
        const response = await request(webapp).get('/topInstituteByCountry?Country=US');
 	expect(response.status).toEqual(200);
 	expect(JSON.parse(response.text).results[0]).toHaveProperty('NumPapers',320);
 	console.log(JSON.parse(response.text).results[0]);
     });
+    test('testing top institute by country  with limit', async () => {
+       const response = await request(webapp).get('/topInstituteByCountry?Country=US&limit=10');
+	expect(response.status).toEqual(200);
+	expect(JSON.parse(response.text).results).toHaveLength(10);
+	console.log(JSON.parse(response.text).results[0]);
+    });
+
     test('testing total paper by country', async () => {
        const response = await request(webapp).get('/paper/totalbycountry');
 	expect(response.status).toEqual(200);
@@ -127,18 +147,38 @@ describe('testing get requests', () => {
 	expect(JSON.parse(response.text).results[0]).toHaveProperty('Count',675);
 	console.log(JSON.parse(response.text).results[0]);
     });
-    // test('testing papers both', async () => {
-    //    const response = await request(webapp).get('/twocountries/papersboth?country1=US&country2=IN');
-    // 	expect(response.status).toEqual(200);
-    // 	expect(JSON.parse(response.text).results[0]).toHaveProperty('PMID',151666);
-    // 	console.log(JSON.parse(response.text).results[0]);
-    // });
-
-    test('testing most benefitted org', async () => {
-       const response = await request(webapp).get('/mostBenefitedOrg');
+    test('testing get best authors with limit', async () => {
+       const response = await request(webapp).get('/getBestAuthors?limit=1');
 	expect(response.status).toEqual(200);
-	expect(JSON.parse(response.text).results[0]).toHaveProperty('Organization',"Perdana University");
+	expect(JSON.parse(response.text).results[0]).toHaveProperty('count',11904);
 	console.log(JSON.parse(response.text).results[0]);
+    });
+    test('testing most employed cities', async () => {
+       const response = await request(webapp).get('/mostEmployedCities?limit=1');
+	expect(response.status).toEqual(200);
+	expect(JSON.parse(response.text).results[0]).toHaveProperty('count',6606);
+	console.log(JSON.parse(response.text).results[0]);
+    });
+
+    test('testing papers both', async () => {
+       const response = await request(webapp).get('/twocountries/papersboth?country1=US&country2=IN');
+    	expect(response.status).toEqual(200);
+    	expect(JSON.parse(response.text).results[0]).toHaveProperty('PMID',151666);
+    	console.log(JSON.parse(response.text).results[0]);
+    });
+
+    test('testing most benefitted org with range', async () => {
+       const response = await request(webapp).get('/mostBenefitedOrg?min=0&max=0.4');
+    	expect(response.status).toEqual(200);
+    	expect(JSON.parse(response.text).results[0]).toHaveProperty('Organization',"Shanghai Jiao Tong University School of Medicine");
+    	console.log(JSON.parse(response.text).results[0]);
+    });
+
+    test('testing filter researchers', async () => {
+       const response = await request(webapp).get('/filterResearchers?Education=Tsinghua%20University&Employment=Tsinghua%20University&pmid=1341789');
+    	expect(response.status).toEqual(200);
+    	expect(JSON.parse(response.text).results[0]).toHaveProperty('ANDID',97327);
+    	console.log(JSON.parse(response.text).results[0]);
     });
 
 });
