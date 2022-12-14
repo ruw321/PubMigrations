@@ -385,9 +385,6 @@ async function filterResearchers(req, res) {
     sqlQuery += `
     NATURAL JOIN temp3`
   }
-
-  sqlQuery += `
-    WHERE 1 = 1`
   sqlQuery += `
                 GROUP BY au.ANDID, LastName, Initials, au.BeginYear
                 LIMIT 100;`;
@@ -398,7 +395,6 @@ async function filterResearchers(req, res) {
         console.log(error);
         res.json({ error: error });
       } else if (results) {
-        console.log(sqlQuery);
         res.json({ results: results });
       }
     }

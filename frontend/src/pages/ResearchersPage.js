@@ -64,12 +64,12 @@ class ResearchersPage extends React.Component {
       matchesPageNumber: 1,
       matchesPageSize: 10,
       pagination: null,
-      loadingResearchers: true,
+      loadingResearchers: false,
 
       education: '',
       employment: '',
       pmid: '',
-      researchersResults: []  
+      researchersResults: []
     }
 
     this.handlePmidChange = this.handlePmidChange.bind(this);
@@ -100,16 +100,15 @@ class ResearchersPage extends React.Component {
     console.log(this.state.pmid);
     console.log(this.state.employment);
     // console.log("here2");
-    this.setState({ loadingResearchers: true});
-    getResearchers(this.state.employment, this.state.education, this.state.pmid).then( res => {
+    if (this.state.employment === '' || this.state.education === '') {
+      alert("Employment and Education are required");
+    } else {
+      this.setState({ loadingResearchers: true });
+      getResearchers(this.state.employment, this.state.education, this.state.pmid).then(res => {
         this.setState({ researchersResults: res.results });
-        this.setState({ loadingResearchers: false});
-    })
-    // console.log(this.researchersResults);
-    // console.log('Done updating search results');
-  }
-
-  componentDidMount() {
+        this.setState({ loadingResearchers: false });
+      })
+    }
 
   }
 
@@ -120,31 +119,31 @@ class ResearchersPage extends React.Component {
     }
     return (
       <div>
-      <MenuBar />
-      <Form style={{ width: '80vw', margin: '0 auto', marginTop: '5vh' }}>
-            <Row>
-                <Col flex={2}><FormGroup style={{ width: '20vw', margin: '0 auto' }}>
-                    <label>Employment</label>
-                    <FormInput placeholder="Employment" value={this.state.employment} onChange={this.handleEmploymentChange} />
-                </FormGroup></Col>
-                <Col flex={2}><FormGroup style={{ width: '20vw', margin: '0 auto' }}>
-                    <label>Education</label>
-                    <FormInput placeholder="Education" value={this.state.education} onChange={this.handleEducationChange} />
-                </FormGroup></Col>
-                <Col flex={2}><FormGroup style={{ width: '20vw', margin: '0 auto' }}>
-                    <label>Paper ID (PMID)</label>
-                    <FormInput type="number" placeholder="PMID" value={this.state.pmid} onChange={this.handlePmidChange} />
-                </FormGroup></Col>
-                <Col flex={2}><FormGroup style={{ width: '10vw' }}>
-                    <Button style={{ marginTop: '4vh' }} onClick={this.updateSearchResults}>Search</Button>
-                </FormGroup></Col>
-            </Row>
+        <MenuBar />
+        <Form style={{ width: '80vw', margin: '0 auto', marginTop: '5vh' }}>
+          <Row>
+            <Col flex={2}><FormGroup style={{ width: '20vw', margin: '0 auto' }}>
+              <label>Employment (required)</label>
+              <FormInput placeholder="Employment" value={this.state.employment} onChange={this.handleEmploymentChange} />
+            </FormGroup></Col>
+            <Col flex={2}><FormGroup style={{ width: '20vw', margin: '0 auto' }}>
+              <label>Education (required)</label>
+              <FormInput placeholder="Education" value={this.state.education} onChange={this.handleEducationChange} />
+            </FormGroup></Col>
+            <Col flex={2}><FormGroup style={{ width: '20vw', margin: '0 auto' }}>
+              <label>Paper ID (PMID)</label>
+              <FormInput type="number" placeholder="PMID" value={this.state.pmid} onChange={this.handlePmidChange} />
+            </FormGroup></Col>
+            <Col flex={2}><FormGroup style={{ width: '10vw' }}>
+              <Button style={{ marginTop: '4vh' }} onClick={this.updateSearchResults}>Search</Button>
+            </FormGroup></Col>
+          </Row>
         </Form>
-      <div style={{ width: '70vw', margin: '0 auto', marginTop: '5vh' }}>
-        <h3>Researchers</h3>
-        <Table bordered loading={{ indicator: <div><Spin size="large" /></div>, spinning:this.state.loadingResearchers}} rowKey="ANDID" dataSource={this.state.researchersResults} columns={researchersColumns} pagination={{ pageSizeOptions:[5, 10], defaultPageSize: 10, showQuickJumper:true }}/>
+        <div style={{ width: '70vw', margin: '0 auto', marginTop: '5vh' }}>
+          <h3>Researchers</h3>
+          <Table bordered loading={{ indicator: <div><Spin size="large" /></div>, spinning: this.state.loadingResearchers }} rowKey="ANDID" dataSource={this.state.researchersResults} columns={researchersColumns} pagination={{ pageSizeOptions: [5, 10], defaultPageSize: 10, showQuickJumper: true }} />
+        </div>
       </div>
-    </div>
     )
   }
 }
