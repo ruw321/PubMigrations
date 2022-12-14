@@ -771,7 +771,7 @@ async function papersBoth2c(req, res) {
     ORDER BY ANDID ASC, BeginYear DESC
   ),
   temp1 AS (
-    SELECT PMIDFROM Papers
+    SELECT PMID, PubYear FROM Papers
     NATURAL JOIN Writes
   ),
   temp2 AS (
