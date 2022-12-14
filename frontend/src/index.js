@@ -19,6 +19,7 @@ import BioEntitiesSearcherPage from './pages/BioEntitiesSearcherPage';
 import PublicationsPage from './pages/PublicationsPage';
 import InstitutionsPage from './pages/InstitutionsPage';
 import CountriesPage from './pages/CountriesPage';
+import VisualizationPage from './pages/VisualizationPage';
 
 ReactDOM.render(
   <div>
@@ -68,6 +69,11 @@ ReactDOM.render(
 			path="/countries"
 			render={() => (
 				<CountriesPage />
+			)}/>
+    <Route exact
+			path="/visualization"
+			render={() => (
+				<VisualizationPage />
 			)}/>
       </Switch>
     </Router>

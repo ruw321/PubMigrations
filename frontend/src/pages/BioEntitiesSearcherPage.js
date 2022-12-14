@@ -1,39 +1,34 @@
 import React from 'react';
 import {
   Table,
-  Pagination,
-  Select,
   Row,
   Col,
-  Divider
 } from 'antd'
-import { Form, FormInput, FormGroup, Button, Card, CardBody, CardTitle, Progress } from "shards-react";
+import { Form, FormInput, FormGroup, Button } from "shards-react";
 
 
 import MenuBar from '../components/MenuBar';
-import { getPaperWords } from '../fetcher'
-const { Column, ColumnGroup } = Table;
-const { Option } = Select;
+import { getPaperWords } from '../fetcher';
 
 const bioEntitiesColumns = [
   {
     title: 'PMID',
     dataIndex: 'PMID',
     key: 'PMID',
-    // sorter: (a, b) => a.Name.localeCompare(b.Name),
+    sorter: (a, b) => a.PMID - b.PMID
     // render: (text, row) => <a href={`/players?id=${row.PlayerId}`}>{text}</a>
   },
   {
     title: 'TermsFound',
     dataIndex: 'TermsFound',
     key: 'TermsFound',
-    // sorter: (a, b) => a.Nationality.localeCompare(b.Nationality)
+    sorter: (a, b) => a.TermsFound.localeCompare(b.TermsFound)
   },
   {
     title: 'Count',
     dataIndex: 'Count',
-    key: 'COunt',
-    // sorter: (a, b) => a.Rating - b.Rating
+    key: 'Count',
+    sorter: (a, b) => a.Count - b.Count
   }
 ];
 

@@ -29,6 +29,9 @@ app.get('/netMovement', routes.netMovement)
 app.get('/mostSharedBioEdByCountry', routes.mostSharedBioEdByCountry)
 
 // Query 14 - register as GET
+app.get('/organizations', routes.getOrganizations)
+
+// Query 14 - register as GET
 app.get('/countries', routes.getCountries)
 
 // Query 13 - register as GET
@@ -69,6 +72,8 @@ app.post('/login', routes.login)
 
 // signup
 app.post('/signup', routes.signup)
+
+app.get('/visualdata', routes.getVisualData)
 
 app.listen(config.server_port, () => {
     console.log(`Server running at http://${config.server_host}:${config.server_port}/`);

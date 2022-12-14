@@ -1,39 +1,32 @@
 import React from 'react';
 import {
   Table,
-  Pagination,
-  Select,
   Row,
-  Col,
-  Divider
+  Col
 } from 'antd'
-import { Form, FormInput, FormGroup, Button, Card, CardBody, CardTitle, Progress } from "shards-react";
+import { Form, FormInput, FormGroup, Button } from "shards-react";
 
 import MenuBar from '../components/MenuBar';
 import { getPublications, getSearchPublications } from '../fetcher'
-
-const { Column, ColumnGroup } = Table;
-const { Option } = Select;
 
 const publicationsColumns = [
   {
     title: 'PMID',
     dataIndex: 'PMID',
     key: 'PMID',
-    // sorter: (a, b) => a.Name.localeCompare(b.Name),
-    // render: (text, row) => <a href={`/players?id=${row.PlayerId}`}>{text}</a>
+    sorter: (a, b) => a.PMID - b.PMID
   },
   {
     title: 'ANDID',
     dataIndex: 'ANDID',
     key: 'ANDID',
-    // sorter: (a, b) => a.Nationality.localeCompare(b.Nationality)
+    sorter: (a, b) => a.ANDID - b.ANDID
   },
   {
     title: 'LastName',
     dataIndex: 'LastName',
     key: 'LastName',
-    // sorter: (a, b) => a.Rating - b.Rating
+    sorter: (a, b) => a.LastName.localeCompare(b.LastName)
     
   },
   // TASK 7: add a column for Potential, with the ability to (numerically) sort ,
@@ -41,19 +34,19 @@ const publicationsColumns = [
     title: 'Initials',
     dataIndex: 'Initials',
     key: 'Initials',
-    // sorter: (a, b) => a.Potential - b.Potential
+    sorter: (a, b) => a.Initials.localeCompare(b.Initials)
   },
   {
     title: 'PubYear',
     dataIndex: 'PubYear',
     key: 'PubYear',
-    // sorter: (a, b) => a.Potential - b.Potential
+    sorter: (a, b) => a.PubYear - b.PubYear
   },
   {
     title: 'AuOrder',
     dataIndex: 'AuOrder',
     key: 'AuOrder',
-    // sorter: (a, b) => a.Potential - b.Potential
+    sorter: (a, b) => a.AuOrder - b.AuOrder
   }
 ];
 
@@ -68,10 +61,10 @@ class PublicationsPage extends React.Component {
       matchesPageSize: 10,
       pagination: null,
 
-      andid: null,
-      pmid: null,
-      auOrder: null,
-      pubYear: null,
+      andid: "",
+      pmid: "",
+      auOrder: "",
+      pubYear: "",
       publicationsResults: []  
     }
 
