@@ -14,7 +14,7 @@ class MenuBar extends React.Component {
     };
 
     return (
-      <Navbar type="dark" theme="primary" expand="md">
+      <Navbar type="dark" theme="secondary" expand="md">
         <NavbarBrand href="/">CIS 550 Project</NavbarBrand>
         <Nav navbar className="container-fluid">
           {/* <NavItem>

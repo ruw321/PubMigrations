@@ -146,6 +146,7 @@ const getTotalPapersByCountry = async(page, pagesize) => {
 }
 
 const getTopInstituteByCountry = async(country, page, pagesize) => {
+    console.log(country);
     var res = await fetch(`http://${config.server_host}:${config.server_port}/topInstituteByCountry?country=${country}`, {
         method: 'GET',
     })

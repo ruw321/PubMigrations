@@ -4,6 +4,7 @@ import {
   Select,
   Row,
   Col,
+  Spin,
 } from 'antd'
 import { Form, FormInput, FormGroup, Button } from "shards-react";
 
@@ -75,6 +76,7 @@ class MigrationsPage extends React.Component {
       matchesPageSize: 10,
       playersResults: [],
       pagination: null,
+      loadingMigrations: true,
 
       phdYear: "",
       earliestYear: "",
@@ -109,6 +111,7 @@ class MigrationsPage extends React.Component {
   }
 
   updateSearchResults() {
+    this.setState({ loadingMigrations: true })
     console.log('state:', this.state);
     console.log('phd year: ',this.state.phdYear);
     console.log('earliest year: ',this.state.earliestYear);
@@ -118,9 +121,9 @@ class MigrationsPage extends React.Component {
     getSearchMigrations(this.state.phdYear, this.state.earliestYear, this.state.hasPhd, this.state.hasMigrated,
       null, null).then( res => {
         this.setState({ migrationsResults: res.results })
+        this.setState({ loadingMigrations: false })
     })
     console.log('done with updating search results');
-
   }
 
   componentDidMount() {
@@ -130,6 +133,7 @@ class MigrationsPage extends React.Component {
     getAllMigrations().then(res => {
       console.log(res.results)
       this.setState({ migrationsResults: res.results})
+      this.setState({ loadingMigrations: false })
     })
   }
 
@@ -166,7 +170,7 @@ class MigrationsPage extends React.Component {
         </Form>
       <div style={{ width: '70vw', margin: '0 auto', marginTop: '5vh' }}>
         <h3>Migrations</h3>
-        <Table dataSource={this.state.migrationsResults} columns={migrationColumns} pagination={{ pageSizeOptions:[5, 10], defaultPageSize: 5, showQuickJumper:true }}/>
+        <Table bordered loading={{ indicator: <div><Spin size="large" /></div>, spinning:this.state.loadingMigrations}} dataSource={this.state.migrationsResults} columns={migrationColumns} pagination={{ pageSizeOptions:[5, 10], defaultPageSize: 5, showQuickJumper:true }}/>
       </div>
     </div>
     )
