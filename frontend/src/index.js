@@ -20,6 +20,7 @@ import PublicationsPage from './pages/PublicationsPage';
 import InstitutionsPage from './pages/InstitutionsPage';
 import CountriesPage from './pages/CountriesPage';
 import TwoCountriesPage from './pages/TwoCountriesPage';
+import VisualizationPage from './pages/VisualizationPage';
 
 ReactDOM.render(
   <div>
@@ -75,6 +76,11 @@ ReactDOM.render(
           render={() => (
             <TwoCountriesPage />
           )} />
+    <Route exact
+			path="/visualization"
+			render={() => (
+				<VisualizationPage />
+			)}/>
       </Switch>
     </Router>
 

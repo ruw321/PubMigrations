@@ -1,19 +1,13 @@
 import React from 'react';
 import {
   Table,
-  Pagination,
-  Select,
   Row,
-  Col,
-  Divider
+  Col
 } from 'antd'
-import { Form, FormInput, FormGroup, Button, Card, CardBody, CardTitle, Progress } from "shards-react";
+import { Form, FormInput, FormGroup, Button } from "shards-react";
 
 import MenuBar from '../components/MenuBar';
 import { getPublications, getSearchPublications } from '../fetcher'
-
-const { Column, ColumnGroup } = Table;
-const { Option } = Select;
 
 const publicationsColumns = [
   {
@@ -126,21 +120,21 @@ class PublicationsPage extends React.Component {
       <MenuBar />
       <Form style={{ width: '80vw', margin: '0 auto', marginTop: '5vh' }}>
             <Row>
-                <Col flex={2}><FormGroup style={{ width: '20vw', margin: '0 auto' }}>
+                <Col flex={2}><FormGroup style={{ width: '15vw', margin: '0 auto' }}>
                     <label>ANDID</label>
-                    <FormInput placeholder="andid" value={this.state.andid} onChange={this.handleAndidQueryChange} />
+                    <FormInput type="number" placeholder="andid" value={this.state.andid} onChange={this.handleAndidQueryChange} />
                 </FormGroup></Col>
-                <Col flex={2}><FormGroup style={{ width: '20vw', margin: '0 auto' }}>
+                <Col flex={2}><FormGroup style={{ width: '15vw', margin: '0 auto' }}>
                     <label>PMID</label>
-                    <FormInput placeholder="pmid" value={this.state.pmid} onChange={this.handlePmidQueryChange} />
+                    <FormInput type="number" placeholder="pmid" value={this.state.pmid} onChange={this.handlePmidQueryChange} />
                 </FormGroup></Col>
-                <Col flex={2}><FormGroup style={{ width: '20vw', margin: '0 auto' }}>
+                <Col flex={2}><FormGroup style={{ width: '15vw', margin: '0 auto' }}>
                     <label>AuOrder</label>
-                    <FormInput placeholder="AuOrder" value={this.state.auOrder} onChange={this.handleAuOrderQueryChange} />
+                    <FormInput type="number" placeholder="AuOrder" value={this.state.auOrder} onChange={this.handleAuOrderQueryChange} />
                 </FormGroup></Col>
-                <Col flex={2}><FormGroup style={{ width: '20vw', margin: '0 auto' }}>
+                <Col flex={2}><FormGroup style={{ width: '15vw', margin: '0 auto' }}>
                     <label>PubYear</label>
-                    <FormInput placeholder="pubYear" value={this.state.pubYear} onChange={this.handlePubYearQueryChange} />
+                    <FormInput type="number" placeholder="pubYear" value={this.state.pubYear} onChange={this.handlePubYearQueryChange} />
                 </FormGroup></Col>
                 <Col flex={2}><FormGroup style={{ width: '10vw' }}>
                     <Button style={{ marginTop: '4vh' }} onClick={this.updateSearchResults}>Search</Button>

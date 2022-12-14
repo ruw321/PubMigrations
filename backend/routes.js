@@ -91,53 +91,6 @@ function multipleWhere(req, integerProperty, sqlQuery) {
   return sqlQuery;
 }
 
-// create the views when the server starts
-async function createTempTable() {
-  let sqlQuery = `
-    CREATE TEMPORARY TABLE PmidAndidInfo AS (
-      WITH AuthorCountriesOrgYear AS (
-        SELECT ANDID, BeginYear, Country, Organization
-        FROM Employment
-        UNION
-        (SELECT ANDID, BeginYear, Country, Organization
-        FROM Education)
-        ORDER BY ANDID ASC, BeginYear DESC
-      ),
-      temp1 AS (
-        SELECT * FROM Papers
-        NATURAL JOIN Writes
-        WHERE AuOrder = 1
-      ),
-      temp2 AS (
-        SELECT PMID, temp1.ANDID AS ANDID, PubYear, BeginYear, Country, Organization
-        FROM temp1, AuthorCountriesOrgYear
-        WHERE temp1.ANDID = AuthorCountriesOrgYear.ANDID
-        AND temp1.PubYear >= AuthorCountriesOrgYear.BeginYear
-      ),
-      temp3 AS (
-        SELECT PMID, ANDID, MAX(BeginYear) AS BeginYear
-        FROM temp2
-        GROUP BY ANDID, PMID
-      )
-      SELECT PMID, ANDID, BeginYear, Country, Organization
-      FROM temp2
-      WHERE (PMID, ANDID, BeginYear) IN (SELECT * FROM temp3)   
-    ) 
-  `;
-
-  // we have implemented this for you to see how to return results by querying the database
-  connection.query(sqlQuery,
-    function (error, results, fields) {
-      if (error) {
-        console.log(error);
-      } else if (results) {
-        console.log("Temporary Table is created");
-      }
-    }
-  );
-}
-// createTempTable();
-
 // Query 13
 async function getBestAuthors(req, res) {
   // a GET request to /getBestAuthors?limit=100
@@ -372,12 +325,6 @@ async function getMigrations(req, res) {
 // example request is: http://localhost:8000/filterResearchers?Education=Tsinghua University&Employment=Tsinghua University&Writes=1726147
 // TODO: note that the frontend will have to deal with different number of columns depending on how many tables we are joining
 async function filterResearchers(req, res) {
-
-  console.log("filter researchers");
-  console.log(req.query.employment);
-  console.log(req.query.education);
-  console.log(req.query.pmid);
-
   let sqlQuery = `WITH temp1 AS (
     SELECT ANDID, GROUP_CONCAT(PMID SEPARATOR ', ') AS Papers
     FROM Writes w1
@@ -473,53 +420,6 @@ async function filterResearchers(req, res) {
   );
 
 }
-
-
-// async function filterResearchers(req, res) {
-
-//   console.log("filter researchers");
-
-//   let sqlQuery = `SELECT * FROM Authors au `;
-//   let where = `WHERE `;
-//   let temp = 'a';
-//   let firstProperty = true;
-//   for (var propName in req.query) {
-//     if (req.query.hasOwnProperty(propName)) {
-//       sqlQuery += `JOIN ${propName} ${temp} ON ${temp}.ANDID = au.ANDID `;    
-//       if (!firstProperty) {
-//         where += 'AND ';
-//       }
-//       if (propName == 'Writes') {
-//         where += `${temp}.PMID = ${req.query[propName]} `;
-//       } else {
-//         where += `${temp}.Organization = '${req.query[propName]}' `;
-//       }
-//       firstProperty = false;
-//     }
-//     temp = String.fromCharCode(temp.charCodeAt(0) + 1);
-//   }
-
-//   if (where.length > 6) {
-//     sqlQuery += where;
-//   }
-//   sqlQuery += `\nLIMIT 100`;
-
-//   if (req.query.page && !isNaN(req.query.page)) {
-//     // TODO: add the page feature 
-//   } else {
-//     // we have implemented this for you to see how to return results by querying the database
-//     connection.query(sqlQuery,
-//       function (error, results, fields) {
-//         if (error) {
-//           console.log(error);
-//           res.json({ error: error });
-//         } else if (results) {
-//           res.json({ results: results });
-//         }
-//       }
-//     );
-//   }
-// }
 
 // example request: http://localhost:8000/paper/words?words=brain,neurology
 async function filterPaperWords(req, res) {
@@ -658,6 +558,47 @@ async function getTotalPaperByCountry(req, res) {
 // example request: http://localhost:8000/countries?
 async function getCountries(req, res) {
   let sqlQuery = `SELECT * FROM Countries `;
+
+  if (req.query.page && !isNaN(req.query.page)) {
+    // TODO: add the page feature 
+  } else {
+    // we have implemented this for you to see how to return results by querying the database
+    connection.query(sqlQuery,
+      function (error, results, fields) {
+        if (error) {
+          console.log(error);
+          res.json({ error: error });
+        } else if (results) {
+          res.json({ results: results });
+        }
+      }
+    );
+  }
+}
+
+async function getVisualData(req, res) {
+  let sqlQuery = `WITH temp1 AS (
+    SELECT ORCID, EarliestCountry, Country2016
+    FROM Migrations
+    WHERE HasMigrated = 1
+    ),
+    temp2 AS (
+        SELECT EarliestCountry, Country2016, ANDID
+        FROM temp1
+        NATURAL JOIN ORCIDs
+    ),
+    temp3 AS (
+        SELECT ANDID, PMID
+        FROM Writes
+    )
+    SELECT ANDID, EarliestCountry, Country2016, COUNT(PMID) AS Count
+    FROM temp2
+    NATURAL JOIN temp3
+    WHERE EarliestCountry != Country2016 AND EarliestCountry != '??' AND Country2016 != '??'
+    GROUP BY ANDID, EarliestCountry, Country2016
+    ORDER BY Count DESC
+    LIMIT 150;
+  `
 
   if (req.query.page && !isNaN(req.query.page)) {
     // TODO: add the page feature 
@@ -912,5 +853,7 @@ module.exports = {
   bioentitiesMoved2c,
   movement2c,
   sharedBioentities2c,
-  papersBoth2c
+  papersBoth2c,
+  getVisualData,
+  getOrganizations
 };

@@ -212,6 +212,14 @@ const getPapersBoth2c = async(country1, country2) => {
 }
 
 
+
+const getVisualData = async() => {
+  var res = await fetch(`http://${config.server_host}:${config.server_port}/visualdata`, {
+      method: 'GET',
+  })
+  return res.json()
+}
+
 export {
     postLogin,
     getAllMigrations,
@@ -229,6 +237,8 @@ export {
     getTopBioEdByCountry,
     getMostEmployedCities,
     getAllCountries,
+    postSignup,
+    getVisualData,
     getAllOrganizations,
     postSignup,
     getPapersMoved2C,
