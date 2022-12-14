@@ -5,65 +5,12 @@ import {
   Row,
   Col,
   Spin,
+  Space
 } from 'antd'
 import { Form, FormInput, FormGroup, Button } from "shards-react";
 
-
 import MenuBar from '../components/MenuBar';
 import { getAllMigrations, getSearchMigrations } from '../fetcher'
-
-const migrationColumns = [
-  {
-    title: 'ORCID',
-    dataIndex: 'ORCID',
-    key: 'ORCID',
-    sorter: (a, b) => a.ORCID.localeCompare(b.ORCID),
-  },
-  {
-    title: 'PhdYear',
-    dataIndex: 'PhdYear',
-    key: 'PhdYear',
-    sorter: (a, b) => a.PhdYear - b.PhdYear
-  },
-  {
-    title: 'Country2016',
-    dataIndex: 'Country2016',
-    key: 'Country2016',
-    sorter: (a, b) => a.Country2016 - b.Country2016    
-  },
-  {
-    title: 'EarliestYear',
-    dataIndex: 'EarliestYear',
-    key: 'EarliestYear',
-    sorter: (a, b) => a.EarliestYear - b.EarliestYear    
-  },
-  // TASK 8: add a column for Club, with the ability to (alphabetically) sort 
-  {
-    title: 'EarliestCountry',
-    dataIndex: 'EarliestCountry',
-    key: 'EarliestCountry',
-    sorter: (a, b) => a.EarliestCountry.localeCompare(b.EarliestCountry)
-  },
-  {
-    title: 'HasPhd',
-    dataIndex: 'HasPhd',
-    key: 'HasPhd',
-    sorter: (a, b) => a.HasPhd - b.HasPhd    
-  },
-  {
-    title: 'PhdCountry',
-    dataIndex: 'PhdCountry',
-    key: 'PhdCountry',
-    sorter: (a, b) => a.PhdCountry.localeCompare(b.PhdCountry)
-  },
-  {
-    title: 'HasMigrated',
-    dataIndex: 'HasMigrated',
-    key: 'HasMigrated',
-    sorter: (a, b) => a.HasMigrated - b.HasMigrated    
-  }
-
-];
 
 class MigrationsPage extends React.Component {
 
@@ -81,7 +28,7 @@ class MigrationsPage extends React.Component {
       earliestYear: "",
       hasPhd: 1,
       hasMigrated: 1,
-      migrationsResults: []  
+      migrationsResults: [],
     }
 
     this.handlePhdYearQueryChange = this.handlePhdYearQueryChange.bind(this)
@@ -104,24 +51,23 @@ class MigrationsPage extends React.Component {
   }
 
   handleHasMigratedQueryChange(value) {
-    console.log("value here:", value)
     this.setState({ hasMigrated: value })
   }
 
   updateSearchResults() {
     this.setState({ loadingMigrations: true })
-    console.log('state:', this.state);
-    console.log('phd year: ',this.state.phdYear);
-    console.log('earliest year: ',this.state.earliestYear);
-    console.log('has phd:' , this.state.hasPhd);
-    console.log('has migrated:', this.state.hasMigrated);
+    // console.log('state:', this.state);
+    // console.log('phd year: ',this.state.phdYear);
+    // console.log('earliest year: ',this.state.earliestYear);
+    // console.log('has phd:' , this.state.hasPhd);
+    // console.log('has migrated:', this.state.hasMigrated);
 
     getSearchMigrations(this.state.phdYear, this.state.earliestYear, this.state.hasPhd, this.state.hasMigrated,
       null, null).then( res => {
         this.setState({ migrationsResults: res.results })
         this.setState({ loadingMigrations: false })
     })
-    console.log('done with updating search results');
+    // console.log('done with updating search results');
   }
 
   componentDidMount() {
@@ -136,6 +82,63 @@ class MigrationsPage extends React.Component {
       // go back to the login page since you are not authenticated
       window.location = '/login';
     }
+    const migrationColumns = [
+      {
+        title: 'ORCID',
+        dataIndex: 'ORCID',
+        key: 'ORCID',
+        sorter: (a, b) => a.ORCID.localeCompare(b.ORCID),
+        render: (_, record) => (
+          <Space size="middle">
+            <a href= {`https://orcid.org/${record.ORCID}`}> {record.ORCID} </a>
+          </Space>
+        )
+      },
+      {
+        title: 'PhdYear',
+        dataIndex: 'PhdYear',
+        key: 'PhdYear',
+        sorter: (a, b) => a.PhdYear - b.PhdYear
+      },
+      {
+        title: 'Country2016',
+        dataIndex: 'Country2016',
+        key: 'Country2016',
+        sorter: (a, b) => a.Country2016 - b.Country2016    
+      },
+      {
+        title: 'EarliestYear',
+        dataIndex: 'EarliestYear',
+        key: 'EarliestYear',
+        sorter: (a, b) => a.EarliestYear - b.EarliestYear    
+      },
+      // TASK 8: add a column for Club, with the ability to (alphabetically) sort 
+      {
+        title: 'EarliestCountry',
+        dataIndex: 'EarliestCountry',
+        key: 'EarliestCountry',
+        sorter: (a, b) => a.EarliestCountry.localeCompare(b.EarliestCountry)
+      },
+      {
+        title: 'HasPhd',
+        dataIndex: 'HasPhd',
+        key: 'HasPhd',
+        sorter: (a, b) => a.HasPhd - b.HasPhd    
+      },
+      {
+        title: 'PhdCountry',
+        dataIndex: 'PhdCountry',
+        key: 'PhdCountry',
+        sorter: (a, b) => a.PhdCountry.localeCompare(b.PhdCountry)
+      },
+      {
+        title: 'HasMigrated',
+        dataIndex: 'HasMigrated',
+        key: 'HasMigrated',
+        sorter: (a, b) => a.HasMigrated - b.HasMigrated    
+      }
+    ];
+
     return (
       <div>
       <MenuBar />
