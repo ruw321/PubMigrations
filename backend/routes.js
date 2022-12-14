@@ -758,41 +758,43 @@ async function sharedBioentities2c(req, res) {
 }
 
 async function papersBoth2c(req, res) {
-  let sqlQuery = ` WITH AuthorCountriesOrgYear AS (
-    SELECT ANDID, BeginYear, Country, Organization
+  let sqlQuery = `WITH country1 AS (
+    SELECT ANDID
     FROM Employment
+    WHERE Country = '${req.query.country1}'
     UNION
-    (SELECT ANDID, BeginYear, Country, Organization
-    FROM Education)
-    ORDER BY ANDID ASC, BeginYear DESC
-  ),
+    (SELECT ANDID
+     FROM Education
+     WHERE Country = '${req.query.country1}'
+    )
+),
+country2 AS (
+    SELECT ANDID
+    FROM Employment
+    WHERE Country = '${req.query.country2}'
+    UNION
+    (SELECT ANDID
+     FROM Education
+     WHERE Country = '${req.query.country2}'
+    )
+),
   temp1 AS (
-    SELECT * FROM Papers
-    NATURAL JOIN Writes
-  ),
-  temp2 AS (
-    SELECT PMID, temp1.ANDID AS ANDID, Country
-    FROM temp1
-    INNER JOIN AuthorCountriesOrgYear
-    ON temp1.ANDID = AuthorCountriesOrgYear.ANDID
-    WHERE Country = "${req.query.country1}"
-    OR Country = "${req.query.country2}"
-  ),
-  temp3 AS (
-    SELECT PMID, ANDID FROM temp2 t1
+    SELECT PMID, ANDID FROM Writes w1
     WHERE EXISTS (
-      SELECT * FROM temp2 t2
-      WHERE t1.PMID = t2.PMID
-      AND Country = "${req.query.country1}"
+      SELECT * FROM Writes w2
+      WHERE w2.PMID = w1.PMID
+      AND w2.ANDID IN (SELECT * FROM country1)
     )
     AND EXISTS (
-      SELECT * FROM PmidAndidInfo t3
-      WHERE t1.PMID = t3.PMID
-      AND Country = "${req.query.country2}"
+      SELECT * FROM Writes w3
+      WHERE w3.PMID = w1.PMID
+      AND w3.ANDID IN (SELECT * FROM country2)
     )
+    AND (ANDID IN (SELECT * FROM country1)
+    OR ANDID IN (SELECT * FROM country2))
   )
   SELECT PMID, GROUP_CONCAT(ANDID SEPARATOR ', ') AS Authors
-  FROM temp3
+  FROM temp1
   GROUP BY PMID
   LIMIT 100;`;
 
