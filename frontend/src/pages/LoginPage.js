@@ -14,15 +14,17 @@ import { postLogin } from '../fetcher';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { GoogleLogin } from '@react-oauth/google';
 import LoginGithub from 'react-login-github';
-import { makeStyles } from '@mui/styles';
 
 const { createHash } = require('crypto');
 // google client id
 const clientId = '140984611088-pm8bh960crv1jd1u4lsb634s8qft40qn.apps.googleusercontent.com';
+
+// hashing function for hasing the password
 function hash(string) {
   return createHash('sha256').update(string).digest('hex');
 }
 
+// on success function for github login
 const onSuccess = (response) => {
   if (response.code) {
     window.localStorage.setItem('Authenticated', 'True');
@@ -30,26 +32,19 @@ const onSuccess = (response) => {
   }
 }
 
+// on failure function for github login
 const onFailure = response => console.error(response);
 
 const theme = createTheme();
 
-const helperTextStyles = makeStyles(theme => ({
-  root: {
-    margin: 4,
-    '&$error': {
-      color: 'red'
-    }
-  },
-  error: {} //<--this is required to make it work
-}));
-
 export default function LoginPage() {
+  // these are the states for setting the error messages
   const [emailError, setemailError] = React.useState("");
   const [passError, setpassError] = React.useState("");
   const [error, setError] = React.useState(false);
   const [error2, setError2] = React.useState(false);
 
+  // handles login button click
   const handleSubmit = async (event) => {
     setemailError("");
     setpassError("");
@@ -57,7 +52,7 @@ export default function LoginPage() {
     setError2(false);
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-    const hashedPassword = hash(data.get('password')) // hash created previously created upon sign up
+    const hashedPassword = hash(data.get('password'));
     const result = await postLogin(data.get('email'), hashedPassword);
     if (result.result === "user successfully logged in") {
       window.localStorage.setItem('Authenticated', 'True');
@@ -73,7 +68,6 @@ export default function LoginPage() {
       }
     }
   };
-  const classes = helperTextStyles();
 
   return (
     <ThemeProvider theme={theme}>
@@ -96,7 +90,6 @@ export default function LoginPage() {
           <Box component="form" onSubmit={handleSubmit} noValidate sx={{ mt: 1 }}>
             <TextField
               error={error}
-              className={classes.root}
               margin="normal"
               required
               fullWidth
@@ -171,14 +164,7 @@ export default function LoginPage() {
               onFailure={onFailure}
             />
           </Grid>
-          {/* <Grid item style={{height:'100%', width:'60%'}}>
-          <GithubButton
-            onClick = {}
-          />
-          </Grid> */}
-          
         </Grid>
-
       </Container>
     </ThemeProvider>
   );
