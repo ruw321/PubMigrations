@@ -143,21 +143,21 @@ class MigrationsPage extends React.Component {
       <MenuBar />
         <Form style={{ width: '80vw', margin: '0 auto', marginTop: '5vh' }}>
             <Row>
-                <Col flex={2}><FormGroup style={{ width: '20vw', margin: '0 auto' }}>
+                <Col flex={2}><FormGroup style={{ width: '15vw', margin: '0 auto' }}>
                     <label>PhD Year</label>
-                    <FormInput placeholder="phdYear" value={this.state.phdYear} onChange={this.handlePhdYearQueryChange} />
+                    <FormInput type="number" placeholder="phdYear" value={this.state.phdYear} onChange={this.handlePhdYearQueryChange} />
                 </FormGroup></Col>
-                <Col flex={2}><FormGroup style={{ width: '20vw', margin: '0 auto' }}>
+                <Col flex={2}><FormGroup style={{ width: '15vw', margin: '0 auto' }}>
                     <label>Earliest Year</label>
-                    <FormInput placeholder="earliestYear" value={this.state.earliestYear} onChange={this.handleEarliestYearQueryChange} />
+                    <FormInput type="number" placeholder="earliestYear" value={this.state.earliestYear} onChange={this.handleEarliestYearQueryChange} />
                 </FormGroup></Col>
-                <Col flex={2}><FormGroup style={{ width: '20vw', margin: '0 auto' }}>
+                <Col flex={2}><FormGroup style={{ width: '15vw', margin: '0 auto' }}>
                     <label>Has PhD</label>
-                    <Select style={{ width: '20vw', margin: '0 auto' }} defaultValue="True" options={[{label:"True", value:1},{label:"False", value:0}]} onChange={this.handleHasPhdQueryChange}/>
+                    <Select style={{ width: '15vw', margin: '0 auto' }} defaultValue="True" options={[{label:"True", value:1},{label:"False", value:0}]} onChange={this.handleHasPhdQueryChange}/>
                 </FormGroup></Col>
-                <Col flex={2}><FormGroup style={{ width: '20vw', margin: '0 auto' }}>
+                <Col flex={2}><FormGroup style={{ width: '15vw', margin: '0 auto' }}>
                     <label>Has Migrated</label>
-                    <Select style={{ width: '20vw', margin: '0 auto' }} defaultValue="True" options={[{label:"True", value:1},{label:"False", value:0}]} onChange={this.handleHasMigratedQueryChange}/>
+                    <Select style={{ width: '15vw', margin: '0 auto' }} defaultValue="True" options={[{label:"True", value:1},{label:"False", value:0}]} onChange={this.handleHasMigratedQueryChange}/>
                 </FormGroup></Col>
                 <Col flex={2}><FormGroup style={{ width: '10vw' }}>
                     <Button style={{ marginTop: '4vh' }} onClick={this.updateSearchResults}>Search</Button>

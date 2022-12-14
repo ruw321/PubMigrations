@@ -136,7 +136,7 @@ class ResearchersPage extends React.Component {
                 </FormGroup></Col>
                 <Col flex={2}><FormGroup style={{ width: '20vw', margin: '0 auto' }}>
                     <label>Paper ID (PMID)</label>
-                    <FormInput placeholder="PMID" value={this.state.pmid} onChange={this.handlePmidChange} />
+                    <FormInput type="number" placeholder="PMID" value={this.state.pmid} onChange={this.handlePmidChange} />
                 </FormGroup></Col>
                 <Col flex={2}><FormGroup style={{ width: '10vw' }}>
                     <Button style={{ marginTop: '4vh' }} onClick={this.updateSearchResults}>Search</Button>

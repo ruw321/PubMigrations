@@ -1,10 +1,12 @@
 import React from 'react';
 import {
   Table,
-  Select,
+  Pagination,
+  // Select,
   Row,
   Col,
 } from 'antd'
+import Select from 'react-select';
 import { Form, FormInput, FormGroup, Button } from "shards-react";
 
 import MenuBar from '../components/MenuBar';
