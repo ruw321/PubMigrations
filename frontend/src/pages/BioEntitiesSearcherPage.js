@@ -3,6 +3,7 @@ import {
   Table,
   Row,
   Col,
+  Spin,
 } from 'antd'
 import { Form, FormInput, FormGroup, Button } from "shards-react";
 
@@ -42,6 +43,8 @@ class BioEntitiesSearcherPage extends React.Component {
       matchesPageNumber: 1,
       matchesPageSize: 10,
       pagination: null,
+
+      loadingBioEntities: true,
       wordsList: "brain,neurology",
       bioEntitiesResults: []  
     }
@@ -56,9 +59,11 @@ class BioEntitiesSearcherPage extends React.Component {
   }
 
   updateSearchResults() {
+    this.setState({ loadingBioEntities: true })
     getPaperWords(this.state.wordsList,
       null, null).then( res => {
         this.setState({ bioEntitiesResults: res.results })
+        this.setState({ loadingBioEntities: false })
     })
     console.log('done with updating search results');
 
@@ -70,6 +75,7 @@ class BioEntitiesSearcherPage extends React.Component {
       console.log(res.results)
       this.setState({ bioEntitiesResults: res.results})
       console.log('set state')
+      this.setState({ loadingBioEntities: false })
     })
   }
 
@@ -94,7 +100,7 @@ class BioEntitiesSearcherPage extends React.Component {
         </Form>
       <div style={{ width: '70vw', margin: '0 auto', marginTop: '5vh' }}>
         <h3>Bio Entities Searcher</h3>
-        <Table dataSource={this.state.bioEntitiesResults} columns={bioEntitiesColumns} pagination={{ pageSizeOptions:[5, 10], defaultPageSize: 5, showQuickJumper:true }}/>
+        <Table bordered loading={{ indicator: <div><Spin size="large" /></div>, spinning:this.state.loadingBioEntities}} dataSource={this.state.bioEntitiesResults} columns={bioEntitiesColumns} pagination={{ pageSizeOptions:[5, 10], defaultPageSize: 5, showQuickJumper:true }}/>
       </div>
     </div>
     )

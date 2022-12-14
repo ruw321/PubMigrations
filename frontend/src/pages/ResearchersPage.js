@@ -2,7 +2,8 @@ import React from 'react';
 import {
   Table,
   Row,
-  Col
+  Col,
+  Spin,
 } from 'antd'
 import { Form, FormInput, FormGroup, Button } from "shards-react";
 
@@ -64,6 +65,7 @@ class ResearchersPage extends React.Component {
       matchesPageNumber: 1,
       matchesPageSize: 10,
       pagination: null,
+      loadingResearchers: true,
 
       education: '',
       employment: '',
@@ -99,9 +101,10 @@ class ResearchersPage extends React.Component {
     console.log(this.state.pmid);
     console.log(this.state.employment);
     // console.log("here2");
-    
+    this.setState({ loadingResearchers: true});
     getResearchers(this.state.employment, this.state.education, this.state.pmid).then( res => {
-        this.setState({ researchersResults: res.results })
+        this.setState({ researchersResults: res.results });
+        this.setState({ loadingResearchers: false});
     })
     // console.log(this.researchersResults);
     // console.log('Done updating search results');
@@ -113,6 +116,7 @@ class ResearchersPage extends React.Component {
       console.log(res.results)
       this.setState({ researchersResults: res.results})
       console.log('set state')
+      this.setState({ loadingResearchers: false})
     })
   }
 
@@ -145,7 +149,7 @@ class ResearchersPage extends React.Component {
         </Form>
       <div style={{ width: '70vw', margin: '0 auto', marginTop: '5vh' }}>
         <h3>Researchers</h3>
-        <Table rowKey="ANDID" dataSource={this.state.researchersResults} columns={researchersColumns} pagination={{ pageSizeOptions:[5, 10], defaultPageSize: 10, showQuickJumper:true }}/>
+        <Table bordered loading={{ indicator: <div><Spin size="large" /></div>, spinning:this.state.loadingResearchers}} rowKey="ANDID" dataSource={this.state.researchersResults} columns={researchersColumns} pagination={{ pageSizeOptions:[5, 10], defaultPageSize: 10, showQuickJumper:true }}/>
       </div>
     </div>
     )

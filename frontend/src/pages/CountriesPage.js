@@ -3,7 +3,8 @@ import {
   Table,
   Pagination,
   Row,
-  Col
+  Col,
+  Spin
 } from 'antd'
 import Select from 'react-select';
 import { Form, FormGroup, Button } from "shards-react";
@@ -88,13 +89,16 @@ class CountriesPage extends React.Component {
       matchesPageSize: 10,
       pagination: null,
       country: "",
+      loadingPaperByCountries: true,
+      loadingTopInstituteByCountry: true,
+      loadingTopBioEdByCountry: true,
+      loadingMostEmployedCities: true,
       
       countries: [],
       papersByCountries: [],
       topInstituteByCountry: [],
       topBioEdByCountry: [],
       mostEmployedCities: []
-
     }
 
     this.goToMatch = this.goToMatch.bind(this)
@@ -103,18 +107,28 @@ class CountriesPage extends React.Component {
 
   }
 
+  // const [loading, setLoading] = useState();
+
   handleCountryQueryChange(value) {
-    console.log("value here:", value)
-    this.setState({ country: value })
+    console.log("value here:", value.value)
+    this.setState({ country: value.value })
   }
 
   updateSearchResults() {
+    this.setState({loadingTopInstituteByCountry: true})
+    this.setState({loadingTopBioEdByCountry: true})
+    console.log("start", this.state.loadingTopBioEdByCountry);
     getTopInstituteByCountry(this.state.country, null, null).then( res => {
         this.setState({ topInstituteByCountry: res.results })
+        this.setState({loadingTopInstituteByCountry: false})
     })
     getTopBioEdByCountry(this.state.country, null, null).then( res => {
       this.setState({ topBioEdByCountry: res.results })
+      this.setState({loadingTopBioEdByCountry: false})
     })
+
+    console.log("done",this.state.loadingTopBioEdByCountry);
+
     console.log('done with updating search results');
   }
 
@@ -143,24 +157,29 @@ class CountriesPage extends React.Component {
       console.log(res.results)
       this.setState({ papersByCountries: res.results})
       console.log('set state')
+      this.setState({loadingPaperByCountries: false})
+      console.log('set loading to false')
     })
 
     getTopInstituteByCountry(this.state.country, null, null).then(res => {
       console.log(res.results)
       this.setState({ topInstituteByCountry: res.results})
       console.log('set state')
+      this.setState({loadingTopInstituteByCountry: false})
     })
 
     getTopBioEdByCountry(this.state.country, null, null).then(res => {
       console.log(res.results)
       this.setState({ topBioEdByCountry: res.results})
       console.log('set state')
+      this.setState({loadingTopBioEdByCountry: false})
     })
 
     getMostEmployedCities(null, null).then(res => {
       console.log(res.results)
       this.setState({ mostEmployedCities: res.results})
       console.log('set state')
+      this.setState({loadingMostEmployedCities: false})
     })
 
   }
@@ -170,6 +189,7 @@ class CountriesPage extends React.Component {
       // go back to the login page since you are not authenticated
       window.location = '/login';
     }
+
     return (
       <div>
       <MenuBar />
@@ -186,13 +206,13 @@ class CountriesPage extends React.Component {
             </Row>
         </Form>
         <h3>Total Papers By Country</h3>
-        <Table dataSource={this.state.papersByCountries} columns={papersByCountriesColumns} pagination={{ pageSizeOptions:[5, 10], defaultPageSize: 5, showQuickJumper:true }}/>
+        <Table bordered loading={{ indicator: <div><Spin size="large" /></div>, spinning:this.state.loadingPaperByCountries}} dataSource={this.state.papersByCountries} columns={papersByCountriesColumns} pagination={{ pageSizeOptions:[5, 10], defaultPageSize: 5, showQuickJumper:true }}/>
         <h3>Top Institutions By Country</h3>
-        <Table dataSource={this.state.topInstituteByCountry} columns={topInstitutionsByCountryColumns} pagination={{ pageSizeOptions:[5, 10], defaultPageSize: 5, showQuickJumper:true }}/>
+        <Table bordered loading={{ indicator: <div><Spin size="large" /></div>, spinning:this.state.loadingTopInstituteByCountry}} dataSource={this.state.topInstituteByCountry} columns={topInstitutionsByCountryColumns} pagination={{ pageSizeOptions:[5, 10], defaultPageSize: 5, showQuickJumper:true }}/>
         <h3>Top Education By Country</h3>
-        <Table dataSource={this.state.topBioEdByCountry} columns={topBioEdByCountryColumns} pagination={{ pageSizeOptions:[5, 10], defaultPageSize: 5, showQuickJumper:true }}/>
+        <Table bordered loading={{ indicator: <div><Spin size="large" /></div>, spinning:this.state.loadingTopBioEdByCountry}} dataSource={this.state.topBioEdByCountry} columns={topBioEdByCountryColumns} pagination={{ pageSizeOptions:[5, 10], defaultPageSize: 5, showQuickJumper:true }}/>
         <h3>Most Employed Cities</h3>
-        <Table dataSource={this.state.mostEmployedCities} columns={mostEmployedCitiesColumns} pagination={{ pageSizeOptions:[5, 10], defaultPageSize: 5, showQuickJumper:true }}/>
+        <Table bordered loading={{ indicator: <div><Spin size="large" /></div>, spinning:this.state.loadingMostEmployedCities}} dataSource={this.state.mostEmployedCities} columns={mostEmployedCitiesColumns} pagination={{ pageSizeOptions:[5, 10], defaultPageSize: 5, showQuickJumper:true }}/>
       
       </div>
     </div>

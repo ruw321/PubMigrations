@@ -2,7 +2,8 @@ import React from 'react';
 import {
   Table,
   Row,
-  Col
+  Col,
+  Spin
 } from 'antd'
 import { Form, FormInput, FormGroup, Button } from "shards-react";
 
@@ -61,6 +62,7 @@ class PublicationsPage extends React.Component {
       matchesPageSize: 10,
       pagination: null,
 
+      loadingPublications: true,
       andid: "",
       pmid: "",
       auOrder: "",
@@ -92,9 +94,11 @@ class PublicationsPage extends React.Component {
   }
 
   updateSearchResults() {
+    this.setState({ loadingPublications: true })
     getSearchPublications(this.state.andid, this.state.pmid, this.state.auOrder, this.state.pubYear,
       null, null).then( res => {
         this.setState({ publicationsResults: res.results })
+        this.setState({ loadingPublications: false })
     })
     console.log('done with updating search results');
 
@@ -107,6 +111,7 @@ class PublicationsPage extends React.Component {
       // TASK 1: set the correct state attribute to res.results
       this.setState({ publicationsResults: res.results})
       console.log('set state')
+      this.setState({ loadingPublications: false })
     })
   }
 
@@ -143,7 +148,7 @@ class PublicationsPage extends React.Component {
         </Form>
       <div style={{ width: '70vw', margin: '0 auto', marginTop: '5vh' }}>
         <h3>Publications</h3>
-        <Table dataSource={this.state.publicationsResults} columns={publicationsColumns} pagination={{ pageSizeOptions:[5, 10], defaultPageSize: 5, showQuickJumper:true }}/>
+        <Table bordered loading={{ indicator: <div><Spin size="large" /></div>, spinning:this.state.loadingPublications}} dataSource={this.state.publicationsResults} columns={publicationsColumns} pagination={{ pageSizeOptions:[5, 10], defaultPageSize: 5, showQuickJumper:true }}/>
       </div>
     </div>
     )

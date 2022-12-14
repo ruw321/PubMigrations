@@ -3,9 +3,12 @@ import {
   Table,
   Select,
   Row,
-  Col
+  Col,
+  Spin,
 } from 'antd'
 import { Form, FormInput, FormGroup, Button } from "shards-react";
+
+
 import MenuBar from '../components/MenuBar';
 import { getAllMigrations, getSearchMigrations } from '../fetcher'
 
@@ -73,6 +76,7 @@ class HomePage extends React.Component {
       matchesPageSize: 10,
       playersResults: [],
       pagination: null,
+      loadingMigrations: true,
 
       phdYear: "",
       earliestYear: "",
@@ -80,6 +84,7 @@ class HomePage extends React.Component {
       hasMigrated: 1,
       migrationsResults: []  
     }
+    console.log('original state:', this.state);
 
     this.handlePhdYearQueryChange = this.handlePhdYearQueryChange.bind(this)
     this.handleEarliestYearQueryChange = this.handleEarliestYearQueryChange.bind(this)
@@ -101,22 +106,34 @@ class HomePage extends React.Component {
   }
 
   handleHasMigratedQueryChange(value) {
+    console.log("value here:", value)
     this.setState({ hasMigrated: value })
   }
 
   updateSearchResults() {
+    this.setState({ loadingMigrations: true })
+    console.log('state:', this.state);
+    console.log('phd year: ',this.state.phdYear);
+    console.log('earliest year: ',this.state.earliestYear);
+    console.log('has phd:' , this.state.hasPhd);
+    console.log('has migrated:', this.state.hasMigrated);
 
     getSearchMigrations(this.state.phdYear, this.state.earliestYear, this.state.hasPhd, this.state.hasMigrated,
       null, null).then( res => {
         this.setState({ migrationsResults: res.results })
+        this.setState({ loadingMigrations: false })
     })
-
+    console.log('done with updating search results');
   }
 
   componentDidMount() {
 
+    console.log('mount state:', this.state);
+
     getAllMigrations().then(res => {
+      console.log(res.results)
       this.setState({ migrationsResults: res.results})
+      this.setState({ loadingMigrations: false })
     })
   }
 
@@ -153,7 +170,7 @@ class HomePage extends React.Component {
         </Form>
       <div style={{ width: '70vw', margin: '0 auto', marginTop: '5vh' }}>
         <h3>Migrations</h3>
-        <Table rowKey="ORCID" dataSource={this.state.migrationsResults} columns={migrationColumns} pagination={{ pageSizeOptions:[5, 10], defaultPageSize: 5, showQuickJumper:true }}/>
+        <Table bordered loading={{ indicator: <div><Spin size="large" /></div>, spinning:this.state.loadingMigrations}} dataSource={this.state.migrationsResults} columns={migrationColumns} pagination={{ pageSizeOptions:[5, 10], defaultPageSize: 5, showQuickJumper:true }}/>
       </div>
     </div>
     )
