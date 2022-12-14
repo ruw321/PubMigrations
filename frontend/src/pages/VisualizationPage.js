@@ -14,8 +14,11 @@ export default function VisualizationPage() {
   const contriesOnly = countriesList["countries"];
 
   useEffect(() => {
+    // we get the data from backend
+    // the first time we wrote it to a json file
+    // but after we have it already, we will just store links
+    // to keep track of number of occurrences between two nodes
     getVisualData().then(res => {
-      // console.log(res.results);
       // process the results
       const theResult = res.results;
       let dataToWrite = {"nodes":[], "links":[]}
@@ -55,6 +58,7 @@ export default function VisualizationPage() {
   }, []);
 
   if (!data) {
+    // fetch the data from the local json file
     fetch('myjsonfile.json').then(res => res.json()).then(d => {
       setData(d);
     });
