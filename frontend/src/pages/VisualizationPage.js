@@ -3,7 +3,8 @@ import MenuBar from '../components/MenuBar';
 import ForceGraph3D from 'react-force-graph-3d';
 import SpriteText from 'three-spritetext';
 import { useWindowSize } from '@react-hook/window-size';
-import { getVisualData } from '../fetcher'
+import { getVisualData } from '../fetcher';
+import { Spin } from 'antd'
 
 export default function VisualizationPage() {
   const [data, setData] = useState(0);
@@ -59,7 +60,7 @@ export default function VisualizationPage() {
     });
   }
 
-  if (data) {
+  if (data && links) {
     return (
       <div>
         <MenuBar />
@@ -112,6 +113,8 @@ export default function VisualizationPage() {
   }
   return (
     <div>
-      </div>
+      <MenuBar />
+      <Spin size="large" />
+    </div>
   );
 };
