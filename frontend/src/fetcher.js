@@ -237,7 +237,6 @@ export {
     getTopBioEdByCountry,
     getMostEmployedCities,
     getAllCountries,
-    postSignup,
     getVisualData,
     getAllOrganizations,
     postSignup,
