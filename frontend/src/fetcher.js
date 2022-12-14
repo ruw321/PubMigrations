@@ -166,6 +166,53 @@ const getMostEmployedCities = async(page, pagesize) => {
     return res.json()
 }
 
+const getPapersMoved2C = async(country1, country2) => {
+    let url = `http://${config.server_host}:${config.server_port}/twocountries/papersmoved?country1=${country1}&country2=${country2}`;
+    console.log(url);
+    var res = await fetch(url, {
+        method: 'GET',
+    })
+    return res.json();
+}
+
+const getBioentitiesMoved2c = async(country1, country2) => {
+    let url = `http://${config.server_host}:${config.server_port}/twocountries/bioentitiesmoved?country1=${country1}&country2=${country2}`;
+    console.log(url);
+    var res = await fetch(url, {
+        method: 'GET',
+    })
+    return res.json();
+}
+
+const getMovement2c = async(country1, country2) => {
+    let url = `http://${config.server_host}:${config.server_port}/twocountries/movement?country1=${country1}&country2=${country2}`;
+    console.log(url);
+    var res = await fetch(url, {
+        method: 'GET',
+    })
+    return res.json();
+}
+
+const getSharedBioentities2c = async(country1, country2) => {
+    let url = `http://${config.server_host}:${config.server_port}/twocountries/sharedbioentities?country1=${country1}&country2=${country2}`;
+    console.log(url);
+    var res = await fetch(url, {
+        method: 'GET',
+    })
+    return res.json();
+}
+
+const getPapersBoth2c = async(country1, country2) => {
+    let url = `http://${config.server_host}:${config.server_port}/twocountries/papersboth?country1=${country1}&country2=${country2}`;
+    console.log(url);
+    var res = await fetch(url, {
+        method: 'GET',
+    })
+    return res.json();
+}
+
+
+
 const getVisualData = async() => {
   var res = await fetch(`http://${config.server_host}:${config.server_port}/visualdata`, {
       method: 'GET',
@@ -193,4 +240,10 @@ export {
     postSignup,
     getVisualData,
     getAllOrganizations,
+    postSignup,
+    getPapersMoved2C,
+    getBioentitiesMoved2c,
+    getMovement2c,
+    getSharedBioentities2c,
+    getPapersBoth2c
 }

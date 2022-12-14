@@ -60,7 +60,6 @@ class ResearchersPage extends React.Component {
     super(props)
 
     this.state = {
-      matchesResults: [],
       matchesPageNumber: 1,
       matchesPageSize: 10,
       pagination: null,

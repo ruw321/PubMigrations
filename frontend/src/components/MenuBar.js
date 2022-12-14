@@ -53,6 +53,11 @@ class MenuBar extends React.Component {
             </NavLink>
           </NavItem>
           <NavItem>
+            <NavLink active href="/twocountries" >
+              Two Countries
+               </NavLink>
+          </NavItem>
+          <NavItem>
             <NavLink active href="/visualization" >
               Visualization
             </NavLink>

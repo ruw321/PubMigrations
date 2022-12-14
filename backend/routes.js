@@ -327,7 +327,7 @@ async function getMigrations(req, res) {
 async function filterResearchers(req, res) {
   let sqlQuery = `WITH temp1 AS (
     SELECT ANDID, GROUP_CONCAT(PMID SEPARATOR ', ') AS Papers
-    FROM Writes
+    FROM Writes w1
     GROUP BY ANDID
   ),
   temp2 AS (
@@ -375,6 +375,34 @@ async function filterResearchers(req, res) {
       AND temp1.Papers LIKE "%${req.query.pmid}%"
     ) `
   }
+
+  // if (req.query.employment) {
+  //   sqlQuery += `AND EXISTS (
+  //     SELECT *
+  //     FROM Employment em
+  //     WHERE em.ANDID = au.ANDID
+  //     AND em.Organization = "${req.query.employment}"
+
+  //   )`
+  // }
+
+  // if (req.query.education) {
+  //   sqlQuery += `AND EXISTS (
+  //     SELECT *
+  //     FROM Education ed
+  //     WHERE ed.ANDID = au.ANDID
+  //     AND ed.Organization = "${req.query.education}"
+  //   ) `
+  // }
+
+  // if (req.query.pmid) {
+  //   sqlQuery += `AND EXISTS (
+  //     SELECT *
+  //     FROM Writes wr
+  //     WHERE wr.ANDID = au.ANDID
+  //     AND wr.PMID = "${req.query.pmid}"
+  //   ) `
+  // }
 
   sqlQuery += `GROUP BY au.ANDID, LastName, Initials, au.BeginYear
                 LIMIT 100;`;
@@ -611,6 +639,199 @@ async function getOrganizations(req, res) {
   }
 }
 
+async function PapersMoved2C(req, res) {
+  let sqlQuery = ` WITH temp1 AS (
+    SELECT ORCID FROM Migrations
+    WHERE EarliestCountry = "${req.query.country1}"
+    AND Country2016 = "${req.query.country2}"
+  ),
+  temp2 AS (
+    SELECT ANDID FROM temp1
+    NATURAL JOIN ORCIDs
+  )
+  SELECT COUNT(*) AS count FROM temp2
+  NATURAL JOIN PmidAndidInfo `;
+
+
+  connection.query(sqlQuery,
+    function (error, results, fields) {
+      if (error) {
+        console.log(error);
+        res.json({ error: error });
+      } else if (results) {
+        res.json({ results: results });
+      }
+    }
+  );
+
+}
+
+async function bioentitiesMoved2c(req, res) {
+  let sqlQuery = ` WITH temp1 AS (
+    SELECT ORCID
+    FROM Migrations
+    WHERE EarliestCountry = "${req.query.country1}"
+    AND Country2016 = "${req.query.country2}"
+  ),
+  temp2 AS (
+    SELECT ANDID
+    FROM temp1
+    NATURAL JOIN ORCIDs
+  ),
+  temp3 AS (
+    SELECT *
+    FROM temp2
+    NATURAL JOIN PmidAndidInfo
+  )
+  SELECT Mention, COUNT(*) as Count
+  FROM temp3
+  NATURAL JOIN BioEntities
+  GROUP BY Mention
+  ORDER BY Count DESC
+  LIMIT 100; `;
+
+
+  connection.query(sqlQuery,
+    function (error, results, fields) {
+      if (error) {
+        console.log(error);
+        res.json({ error: error });
+      } else if (results) {
+        res.json({ results: results });
+      }
+    }
+  );
+
+}
+
+async function movement2c(req, res) {
+  let sqlQuery = ` WITH temp1 AS (
+    SELECT COUNT(*) AS Count
+    FROM Migrations
+    WHERE EarliestCountry = "${req.query.country1}"
+    AND Country2016 = "${req.query.country2}"
+  ),
+  temp2 AS (
+    SELECT COUNT(*) AS Count
+    FROM Migrations
+    WHERE EarliestCountry = "${req.query.country2}"
+    AND Country2016 = "${req.query.country1}"
+  )
+  SELECT temp1.count - temp2.count AS Count
+  FROM temp1, temp2
+   `;
+
+
+  connection.query(sqlQuery,
+    function (error, results, fields) {
+      if (error) {
+        console.log(error);
+        res.json({ error: error });
+      } else if (results) {
+        res.json({ results: results });
+      }
+    }
+  );
+
+}
+
+async function sharedBioentities2c(req, res) {
+  let sqlQuery = ` WITH temp1 AS(
+    SELECT Mention, Count(*) as Count
+    FROM PmidAndidInfo
+    INNER JOIN BioEntities
+    ON PmidAndidInfo.PMID = BioEntities.PMID
+    WHERE Country = "${req.query.country1}"
+    GROUP BY Mention
+    ORDER BY Count DESC
+    LIMIT 100
+  ),
+  temp2 AS (
+    SELECT Mention, Count(*) as Count
+    FROM PmidAndidInfo
+    INNER JOIN BioEntities
+    ON PmidAndidInfo.PMID = BioEntities.PMID
+    WHERE Country = "${req.query.country2}"
+    GROUP BY Mention
+    ORDER BY Count DESC
+    LIMIT 100
+  )
+  SELECT temp1.Mention as Mention, temp1.Count + temp2.Count as Count
+  FROM temp1 INNER JOIN temp2
+  ON temp1.Mention = temp2.mention
+  ORDER BY Count DESC
+  LIMIT 100;`;
+
+
+  connection.query(sqlQuery,
+    function (error, results, fields) {
+      if (error) {
+        console.log(error);
+        res.json({ error: error });
+      } else if (results) {
+        res.json({ results: results });
+      }
+    }
+  );
+
+}
+
+async function papersBoth2c(req, res) {
+  let sqlQuery = ` WITH AuthorCountriesOrgYear AS (
+    SELECT ANDID, BeginYear, Country, Organization
+    FROM Employment
+    UNION
+    (SELECT ANDID, BeginYear, Country, Organization
+    FROM Education)
+    ORDER BY ANDID ASC, BeginYear DESC
+  ),
+  temp1 AS (
+    SELECT * FROM Papers
+    NATURAL JOIN Writes
+  ),
+  temp2 AS (
+    SELECT PMID, temp1.ANDID AS ANDID, Country
+    FROM temp1
+    INNER JOIN AuthorCountriesOrgYear
+    ON temp1.ANDID = AuthorCountriesOrgYear.ANDID
+    WHERE Country = "${req.query.country1}"
+    OR Country = "${req.query.country2}"
+  ),
+  temp3 AS (
+    SELECT PMID, ANDID FROM temp2 t1
+    WHERE EXISTS (
+      SELECT * FROM temp2 t2
+      WHERE t1.PMID = t2.PMID
+      AND Country = "${req.query.country1}"
+    )
+    AND EXISTS (
+      SELECT * FROM PmidAndidInfo t3
+      WHERE t1.PMID = t3.PMID
+      AND Country = "${req.query.country2}"
+    )
+  )
+  SELECT PMID, GROUP_CONCAT(ANDID SEPARATOR ', ') AS Authors
+  FROM temp3
+  GROUP BY PMID
+  LIMIT 100;`;
+
+
+  connection.query(sqlQuery,
+    function (error, results, fields) {
+      if (error) {
+        console.log(error);
+        res.json({ error: error });
+      } else if (results) {
+        res.json({ results: results });
+      }
+    }
+  );
+
+}
+
+
+
+
 
 module.exports = {
   getMigrations,
@@ -627,6 +848,12 @@ module.exports = {
   login,
   signup,
   getCountries,
+  getOrganizations,
+  PapersMoved2C,
+  bioentitiesMoved2c,
+  movement2c,
+  sharedBioentities2c,
+  papersBoth2c,
   getVisualData,
   getOrganizations
 };
