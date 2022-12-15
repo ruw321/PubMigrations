@@ -60,7 +60,10 @@ const bestAuthorsColumns = [
       title: 'Percentage',
       dataIndex: 'Percentage',
       key: 'Percentage',
-      sorter: (a, b) => a.Percentage - b.Percentage
+      sorter: (a, b) => a.Percentage - b.Percentage,
+      render: (_, record) => (
+        <div> {parseFloat(record.Percentage*100).toFixed(2)} </div>
+      )
     }
   ];
 
@@ -101,7 +104,7 @@ class InstitutionsPage extends React.Component {
   // }
 
   handleOrganizationQueryChange(value) {
-    console.log("value here:", value)
+    //console.log("value here:", value)
     this.setState({ organization: value })
   }
 
@@ -114,8 +117,8 @@ class InstitutionsPage extends React.Component {
   }
 
   handleMinMaxQueryChange(values) {
-    console.log(values[0]/100);
-    console.log(values[1]/100);
+    //console.log(values[0]/100);
+    //console.log(values[1]/100);
     this.setState({ min: values[0]/100 })
     this.setState({ max: values[1]/100})
   }
@@ -132,7 +135,7 @@ class InstitutionsPage extends React.Component {
   }
 
   updateBenefitedSearchResults() {
-    console.log(this.state);
+    //console.log(this.state);
     this.setState({ loadingMostBenefited: true })
     searchMostBenefitedOrg(this.state.min, this.state.max,
       null, null).then( res => {
@@ -146,22 +149,22 @@ class InstitutionsPage extends React.Component {
   componentDidMount() {
 
     getAllOrganizations(null, null).then(res => {
-    console.log(res.results)
+    //console.log(res.results)
     let newResults = [];
     for (let i in res.results){
-      console.log(i);
+      //console.log(i);
       let label = res.results[i].Organization;
       let value = res.results[i].Organization;
       let d = {label: label, value: value};
       newResults.push(d);
     }
-    console.log(newResults);
+    //console.log(newResults);
     this.setState({ organizations: newResults})
-    console.log('set state')
+   // console.log('set state')
   })
 
     getBestAuthors().then(res => {
-      console.log(res.results)
+      //console.log(res.results)
       // TASK 1: set the correct state attribute to res.results
       this.setState({ bestAuthorsResults: res.results})
       console.log('set state')
@@ -169,18 +172,18 @@ class InstitutionsPage extends React.Component {
     })
 
     getTopInstitutions(this.state.organization).then(res => {
-        console.log(res.results)
+        //console.log(res.results)
         // TASK 1: set the correct state attribute to res.results
         this.setState({ institutionsResults: res.results})
-        console.log('set state')
+        //console.log('set state')
         this.setState({ loadingResearchers: false })
       })
 
     getMostBenefitedOrg().then(res => {
-      console.log(res.results)
+      //console.log(res.results)
       // TASK 1: set the correct state attribute to res.results
       this.setState({ mostBenefitedOrgResults: res.results})
-      console.log('set state')
+      //console.log('set state')
       this.setState({ loadingMostBenefited: false })
     })
   }
