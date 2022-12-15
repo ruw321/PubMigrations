@@ -104,7 +104,7 @@ class MigrationsPage extends React.Component {
         title: 'Country2016',
         dataIndex: 'Country2016',
         key: 'Country2016',
-        sorter: (a, b) => a.Country2016 - b.Country2016    
+        sorter: (a, b) => a.Country2016.localeCompare(b.Country2016)    
       },
       {
         title: 'EarliestYear',
