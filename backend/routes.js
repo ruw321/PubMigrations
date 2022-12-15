@@ -74,9 +74,9 @@ function multipleWhere(req, integerProperty, sqlQuery) {
       if (firstProperty) {
         if (integerProperty.includes(propName)) {
           sqlQuery += `WHERE ${propName} = ${req.query[propName]} `;
-        } //else {
-         // sqlQuery += `WHERE ${propName} = '${req.query[propName]}' `;
-        //}
+        } else {
+          sqlQuery += `WHERE ${propName} = '${req.query[propName]}' `;
+        }
         firstProperty = false;
       } else {
         if (integerProperty.includes(propName)) {
@@ -114,6 +114,7 @@ async function getBestAuthors(req, res) {
   connection.query(query,
     function (error, results, fields) {
       if (error) {
+        console.log(error)
         res.json({ error: error })
       } else if (results) {
         res.json({ results: results })
@@ -138,6 +139,7 @@ async function mostEmployedCities(req, res) {
   connection.query(query,
     function (error, results, fields) {
       if (error) {
+        console.log(error);
         res.json({ error: error });
       } else if (results) {
         res.json({ results: results });
@@ -206,11 +208,56 @@ async function mostBenefitedOrg(req, res) {
   WHERE om.Count / o.Count >= ${min} AND om.Count / o.Count <= ${max}
   ORDER BY om.Count / o.Count DESC
   LIMIT ${limit}
-
   `
+
+  // WITH hasMigrated AS
+  // (
+  //   SELECT ORCID FROM Migrations
+  //   WHERE HasMigrated = True
+  // ),
+  // ANDID_migrated AS
+  // (
+  //   SELECT ANDID FROM ORCIDs
+  //   WHERE ORCID IN
+  //   (
+  //     SELECT ORCID FROM hasMigrated
+  //   )
+  // ),
+  // paperCounts AS
+  // (
+  //   SELECT ANDID, COUNT(*) AS count FROM Writes
+  //   GROUP BY ANDID
+  // ),
+  // Orgnization_Paper_Count AS
+  // (
+  //   SELECT e.Organization, SUM(pc.count) AS COUNT
+  //   FROM paperCounts pc
+  //   JOIN Employment e ON e.ANDID = pc.ANDID
+  //   GROUP BY e.Organization
+  // ),
+
+  // Organization_Migration_Paper_Count AS
+  // (
+  //   SELECT e.Organization, SUM(pc.count) AS Count
+  //   FROM paperCounts pc
+  //   JOIN Employment e ON e.ANDID = pc.ANDID
+  //   WHERE e.ANDID IN
+  //   (
+  //     SELECT ANDID FROM ANDID_migrated
+  //   )
+  //   GROUP BY e.Organization
+  // )
+  // SELECT o.Organization, om.Count / o.Count AS Percentage
+  // FROM Orgnization_Paper_Count o
+  // JOIN Organization_Migration_Paper_Count om ON o.Organization = om.Organization
+  // WHERE om.Count / o.Count >= 0 AND om.Count / o.Count <= 100
+  // ORDER BY om.Count / o.Count DESC
+  // LIMIT 100
+
   connection.query(query,
     function (error, results, fields) {
       if (error) {
+        console.log(error)
         res.json({ error: error })
       } else if (results) {
         res.json({ results: results })
@@ -245,6 +292,7 @@ async function topBioEdByCountry(req, res) {
   connection.query(query,
     function (error, results, fields) {
       if (error) {
+        console.log(error);
         res.json({ error: error });
       } else if (results) {
         res.json({ results: results });
@@ -273,6 +321,7 @@ async function topInstituteByCountry(req, res) {
   connection.query(query,
     function (error, results, fields) {
       if (error) {
+        console.log(error);
         res.json({ error: error });
       } else if (results) {
         res.json({ results: results });
@@ -296,6 +345,7 @@ async function getMigrations(req, res) {
     connection.query(sqlQuery,
       function (error, results, fields) {
         if (error) {
+          console.log(error);
           res.json({ error: error });
         } else if (results) {
           res.json({ results: results });
@@ -376,6 +426,7 @@ async function filterResearchers(req, res) {
   connection.query(sqlQuery,
     function (error, results, fields) {
       if (error) {
+        console.log(error);
         res.json({ error: error });
       } else if (results) {
         res.json({ results: results });
@@ -394,9 +445,9 @@ async function filterPaperWords(req, res) {
     res.json({ error: "search query is empty" });
     return;
   }
-
+  console.log(listOfWords);
   let sqlQuery = `WITH temp1 AS (
-    SELECT DISTINCT PMID, Mention
+    SELECT PMID, Mention
     FROM BioEntities
     WHERE Mention IN (${listOfWords})
     )
@@ -414,6 +465,7 @@ async function filterPaperWords(req, res) {
     connection.query(sqlQuery,
       function (error, results, fields) {
         if (error) {
+          console.log(error);
           res.json({ error: error });
         } else if (results) {
           res.json({ results: results });
@@ -449,6 +501,7 @@ async function filterPaperPublication(req, res) {
     connection.query(sqlQuery,
       function (error, results, fields) {
         if (error) {
+          console.log(error);
           res.json({ error: error });
         } else if (results) {
           res.json({ results: results });
@@ -468,30 +521,32 @@ async function topResearcher(req, res) {
     res.json({ error: "Organization is not specified" });
     return;
   }
-  const organization = req.query.organization;
+  const SearchLimit = req.query.SearchLimit ? req.query.SearchLimit : 100;
+  const Organization = req.query.Organization;
   let sqlQuery = `
     SELECT ANDID, Count(*) AS NumPapers
     FROM PmidAndidInfo
-    WHERE Organization LIKE '%${organization}%'
+    WHERE Organization = '${Organization}'
     GROUP BY ANDID
     ORDER BY NumPapers DESC
-    LIMIT 100
+    LIMIT ${SearchLimit}
     `;
 
-
-
+  if (req.query.page && !isNaN(req.query.page)) {
+    // TODO: add the page feature 
+  } else {
     // we have implemented this for you to see how to return results by querying the database
     connection.query(sqlQuery,
       function (error, results, fields) {
         if (error) {
+          console.log(error);
           res.json({ error: error });
         } else if (results) {
           res.json({ results: results });
         }
       }
-    
-  );
-
+    );
+  }
 }
 
 async function getTotalPaperByCountry(req, res) {
@@ -509,6 +564,7 @@ async function getTotalPaperByCountry(req, res) {
     connection.query(sqlQuery,
       function (error, results, fields) {
         if (error) {
+          console.log(error);
           res.json({ error: error });
         } else if (results) {
           res.json({ results: results });
@@ -529,6 +585,7 @@ async function getCountries(req, res) {
     connection.query(sqlQuery,
       function (error, results, fields) {
         if (error) {
+          console.log(error);
           res.json({ error: error });
         } else if (results) {
           res.json({ results: results });
@@ -569,6 +626,7 @@ async function getVisualData(req, res) {
     connection.query(sqlQuery,
       function (error, results, fields) {
         if (error) {
+          console.log(error);
           res.json({ error: error });
         } else if (results) {
           res.json({ results: results });
@@ -590,6 +648,7 @@ async function getOrganizations(req, res) {
     connection.query(sqlQuery,
       function (error, results, fields) {
         if (error) {
+          console.log(error);
           res.json({ error: error });
         } else if (results) {
           res.json({ results: results });
@@ -616,6 +675,7 @@ async function PapersMoved2C(req, res) {
   connection.query(sqlQuery,
     function (error, results, fields) {
       if (error) {
+        console.log(error);
         res.json({ error: error });
       } else if (results) {
         res.json({ results: results });
@@ -653,6 +713,7 @@ async function bioentitiesMoved2c(req, res) {
   connection.query(sqlQuery,
     function (error, results, fields) {
       if (error) {
+        console.log(error);
         res.json({ error: error });
       } else if (results) {
         res.json({ results: results });
@@ -683,6 +744,7 @@ async function movement2c(req, res) {
   connection.query(sqlQuery,
     function (error, results, fields) {
       if (error) {
+        console.log(error);
         res.json({ error: error });
       } else if (results) {
         res.json({ results: results });
@@ -723,6 +785,7 @@ async function sharedBioentities2c(req, res) {
   connection.query(sqlQuery,
     function (error, results, fields) {
       if (error) {
+        console.log(error);
         res.json({ error: error });
       } else if (results) {
         res.json({ results: results });
@@ -777,6 +840,7 @@ country2 AS (
   connection.query(sqlQuery,
     function (error, results, fields) {
       if (error) {
+        console.log(error);
         res.json({ error: error });
       } else if (results) {
         res.json({ results: results });
