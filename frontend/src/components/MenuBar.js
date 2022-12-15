@@ -1,11 +1,4 @@
 import React from 'react';
-import {
-  Navbar,
-  NavbarBrand,
-  Nav,
-  NavItem,
-  NavLink
-} from "shards-react";
 
 import { Sidebar, Menu, MenuItem, SubMenu, sidebarClasses, menuClasses} from 'react-pro-sidebar';
 import { Link } from 'react-router-dom';
@@ -34,8 +27,7 @@ class MenuBar extends React.Component {
             <MenuItem icon={<FaGlobeAmericas />}routerLink={<Link to="/countries" />} > Countries </MenuItem>
             <MenuItem icon={<FaGlobeAsia />} routerLink={<Link to="/twocountries" />} > Two Countries </MenuItem>
             <MenuItem icon={<FaEye />} routerLink={<Link to="/visualization" />} > Visualization </MenuItem>
-            <MenuItem icon={<FaArrowLeft />} onClick={handleLinkClick} routerLink={<Link to="/visualization" />} > Logout </MenuItem>
-
+            <MenuItem icon={<FaArrowLeft />} onClick={handleLinkClick} routerLink={<Link to="/" />} > Logout </MenuItem>
           </Menu>
         </Sidebar>
       // </div>

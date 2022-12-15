@@ -140,7 +140,7 @@ class MigrationsPage extends React.Component {
     ];
 
     return (
-      <div style={{ display: 'flex', height: '100%' }}>
+      <div style={{ display: 'flex', height: '100vh' }}>
       <MenuBar />
       <div>
         <Form style={{ width: '80vw', margin: '0 auto', marginTop: '5vh' }}>

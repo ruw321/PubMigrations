@@ -66,7 +66,7 @@ export default function VisualizationPage() {
 
   if (data && links) {
     return (
-      <div style={{ display: 'flex', height: '100%' }}>
+      <div style={{ display: 'flex', height: '100vh' }}>
         <MenuBar />
         <div>
           <ForceGraph3D
