@@ -2,7 +2,6 @@ const config = require("./config.json");
 const mysql = require("mysql");
 const { MongoClient, ServerApiVersion } = require('mongodb');
 
-// TODO: fill in your connection details here
 const connection = mysql.createConnection({
   host: config.rds_host,
   user: config.rds_user,
@@ -92,12 +91,9 @@ function multipleWhere(req, integerProperty, sqlQuery) {
 }
 
 // Query 13
+// Get top authors by number of papers
 async function getBestAuthors(req, res) {
-  // a GET request to /getBestAuthors?limit=100
-  let limit = 100
-  if (req.query.limit) {
-    limit = req.query.limit
-  }
+  // a GET request to /getBestAuthors
 
   let query = `
   WITH temp1 AS (
@@ -112,7 +108,7 @@ async function getBestAuthors(req, res) {
   JOIN temp1 ON temp1.ANDID = temp2.ANDID
   GROUP BY temp2.Organization
   ORDER BY count DESC
-  LIMIT ${limit}
+  LIMIT 100
   `
 
   connection.query(query,

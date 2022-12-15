@@ -165,7 +165,6 @@ class InstitutionsPage extends React.Component {
 
     getBestAuthors().then(res => {
       //console.log(res.results)
-      // TASK 1: set the correct state attribute to res.results
       this.setState({ bestAuthorsResults: res.results})
       console.log('set state')
       this.setState({ loadingBestAuthors: false })
@@ -173,7 +172,6 @@ class InstitutionsPage extends React.Component {
 
     getTopInstitutions(this.state.organization).then(res => {
         //console.log(res.results)
-        // TASK 1: set the correct state attribute to res.results
         this.setState({ institutionsResults: res.results})
         //console.log('set state')
         this.setState({ loadingResearchers: false })
