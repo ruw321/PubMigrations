@@ -28,14 +28,14 @@ const postSignup = async(email, password, firstName, lastName) => {
   return res.json()
 }
 
-const getAllCountries = async(page, pagesize) => {
+const getAllCountries = async() => {
     var res = await fetch(`http://${config.server_host}:${config.server_port}/countries`, {
         method: 'GET',
     })
     return res.json()
 }
 
-const getAllOrganizations = async(page, pagesize) => {
+const getAllOrganizations = async() => {
     var res = await fetch(`http://${config.server_host}:${config.server_port}/organizations`, {
         method: 'GET',
     })
@@ -43,14 +43,14 @@ const getAllOrganizations = async(page, pagesize) => {
 }
 
 
-const getAllMigrations = async(page, pagesize) => {
+const getAllMigrations = async() => {
     var res = await fetch(`http://${config.server_host}:${config.server_port}/migration`, {
         method: 'GET',
     })
     return res.json()
 }
 
-const getSearchMigrations = async(phdYear, earliestYear, hasPhd, hasMigrated, page, pagesize) => {
+const getSearchMigrations = async(phdYear, earliestYear, hasPhd, hasMigrated) => {
     let url = `http://${config.server_host}:${config.server_port}/migration?`;
     url += phdYear !== "" ? `&PhdYear=${phdYear}` : "";
     url += earliestYear !== "" ? `&EarliestYear=${earliestYear}` : "";
@@ -80,21 +80,21 @@ const getResearchers = async(employment, education, pmid) => {
     return res.json()
 }
 
-const getPaperWords = async(wordsList, page, pagesize) => {
+const getPaperWords = async(wordsList) => {
     var res = await fetch(`http://${config.server_host}:${config.server_port}/paper/words?words=${wordsList}`, {
         method: 'GET',
     })
     return res.json()
 }
 
-const getPublications = async(page, pagesize) => {
+const getPublications = async() => {
     var res = await fetch(`http://${config.server_host}:${config.server_port}/paper/publications`, {
         method: 'GET',
     })
     return res.json()
 }
 
-const getSearchPublications = async(andid, pmid, auorder, pubyear, page, pagesize) => {
+const getSearchPublications = async(andid, pmid, auorder, pubyear) => {
     let url = `http://${config.server_host}:${config.server_port}/paper/publications?`;
     url += andid !== "" ? `&ANDID=${andid}` : "";
     url += pmid !== "" ? `&PMID=${pmid}` : "";
@@ -107,28 +107,28 @@ const getSearchPublications = async(andid, pmid, auorder, pubyear, page, pagesiz
     return res.json()
 }
 
-const getTopInstitutions = async(organization, page, pagesize) => {
+const getTopInstitutions = async(organization) => {
     var res = await fetch(`http://${config.server_host}:${config.server_port}/researchers/top?Organization=${organization}`, {
         method: 'GET',
     })
     return res.json()
 }
 
-const getBestAuthors = async(page, pagesize) => {
+const getBestAuthors = async() => {
     var res = await fetch(`http://${config.server_host}:${config.server_port}/getBestAuthors`, {
         method: 'GET',
     })
     return res.json()
 }
 
-const getMostBenefitedOrg = async(page, pagesize) => {
+const getMostBenefitedOrg = async() => {
     var res = await fetch(`http://${config.server_host}:${config.server_port}/mostBenefitedOrg`, {
         method: 'GET',
     })
     return res.json()
 }
 
-const searchMostBenefitedOrg = async(min, max, page, pagesize) => {
+const searchMostBenefitedOrg = async(min, max) => {
     let url = `http://${config.server_host}:${config.server_port}/mostBenefitedOrg?`;
     url += min !== "" ? `&min=${min}` : "";
     url += max !== "" ? `&max=${max}` : "";
@@ -138,14 +138,14 @@ const searchMostBenefitedOrg = async(min, max, page, pagesize) => {
     return res.json()
 }
 
-const getTotalPapersByCountry = async(page, pagesize) => {
-    var res = await fetch(`http://${config.server_host}:${config.server_port}/paper/totalByCountry`, {
+const getTotalPapersByCountry = async(country) => {
+    var res = await fetch(`http://${config.server_host}:${config.server_port}/paper/totalByCountry?country=${country}`, {
         method: 'GET',
     })
     return res.json()
 }
 
-const getTopInstituteByCountry = async(country, page, pagesize) => {
+const getTopInstituteByCountry = async(country) => {
     console.log(country);
     var res = await fetch(`http://${config.server_host}:${config.server_port}/topInstituteByCountry?country=${country}`, {
         method: 'GET',
@@ -153,15 +153,15 @@ const getTopInstituteByCountry = async(country, page, pagesize) => {
     return res.json()
 }
 
-const getTopBioEdByCountry = async(country, page, pagesize) => {
+const getTopBioEdByCountry = async(country) => {
     var res = await fetch(`http://${config.server_host}:${config.server_port}/topBioEdByCountry?country=${country}`, {
         method: 'GET',
     })
     return res.json()
 }
 
-const getMostEmployedCities = async(page, pagesize) => {
-    var res = await fetch(`http://${config.server_host}:${config.server_port}/mostEmployedCities`, {
+const getMostEmployedCities = async(country) => {
+    var res = await fetch(`http://${config.server_host}:${config.server_port}/mostEmployedCities?country=${country}`, {
         method: 'GET',
     })
     return res.json()

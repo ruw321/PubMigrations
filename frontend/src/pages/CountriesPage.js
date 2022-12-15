@@ -16,25 +16,19 @@ const papersByCountriesColumns = [
     title: 'Country',
     dataIndex: 'Country',
     key: 'Country',
-    sorter: (a, b) => a.Country.localeCompare(b.Country),
+    // sorter: (a, b) => a.Country.localeCompare(b.Country),
   },
   {
-    title: 'NumPapers',
+    title: 'Number of papers',
     dataIndex: 'NumPapers',
     key: 'NumPapers',
-    sorter: (a, b) => a.NumPapers - b.NumPapers
+    // sorter: (a, b) => a.NumPapers - b.NumPapers
   }
 ];
 
 const topInstitutionsByCountryColumns = [
   {
-    title: 'Country',
-    dataIndex: 'Country',
-    key: 'Country',
-    sorter: (a, b) => a.Country.localeCompare(b.Country),
-  },
-  {
-    title: 'NumPapers',
+    title: 'Number of papers',
     dataIndex: 'NumPapers',
     key: 'NumPapers',
     sorter: (a, b) => a.NumPapers - b.NumPapers
@@ -70,7 +64,7 @@ const mostEmployedCitiesColumns = [
     sorter: (a, b) => a.City.localeCompare(b.City),
   },
   {
-    title: 'Count',
+    title: 'Employed Researchers',
     dataIndex: 'count',
     key: 'count',
     sorter: (a, b) => a.count - b.count
@@ -88,11 +82,11 @@ class CountriesPage extends React.Component {
       matchesPageSize: 10,
       pagination: null,
       country: "",
-      loadingPaperByCountries: true,
-      loadingTopInstituteByCountry: true,
-      loadingTopBioEdByCountry: true,
-      loadingMostEmployedCities: true,
-      
+      loadingPaperByCountries: false,
+      loadingTopInstituteByCountry: false,
+      loadingTopBioEdByCountry: false,
+      loadingMostEmployedCities: false,
+
       countries: [],
       papersByCountries: [],
       topInstituteByCountry: [],
@@ -100,7 +94,6 @@ class CountriesPage extends React.Component {
       mostEmployedCities: []
     }
 
-    this.goToMatch = this.goToMatch.bind(this)
     this.handleCountryQueryChange = this.handleCountryQueryChange.bind(this)
     this.updateSearchResults = this.updateSearchResults.bind(this)
 
@@ -114,73 +107,51 @@ class CountriesPage extends React.Component {
   }
 
   updateSearchResults() {
-    this.setState({loadingTopInstituteByCountry: true})
-    this.setState({loadingTopBioEdByCountry: true})
-    console.log("start", this.state.loadingTopBioEdByCountry);
-    getTopInstituteByCountry(this.state.country, null, null).then( res => {
-        this.setState({ topInstituteByCountry: res.results })
-        this.setState({loadingTopInstituteByCountry: false})
+
+    this.setState({ loadingPaperByCountries: true });
+    getTotalPapersByCountry(this.state.country).then(res => {
+      console.log(res.results)
+      this.setState({ papersByCountries: res.results })
+      this.setState({ loadingPaperByCountries: false })
     })
-    getTopBioEdByCountry(this.state.country, null, null).then( res => {
+
+    this.setState({ loadingTopInstituteByCountry: true })
+    getTopInstituteByCountry(this.state.country).then(res => {
+      console.log(res.results)
+      this.setState({ topInstituteByCountry: res.results })
+      this.setState({ loadingTopInstituteByCountry: false })
+    })
+
+    this.setState({ loadingTopBioEdByCountry: true })
+    getTopBioEdByCountry(this.state.country, null, null).then(res => {
+      console.log(res.results)
       this.setState({ topBioEdByCountry: res.results })
-      this.setState({loadingTopBioEdByCountry: false})
+      this.setState({ loadingTopBioEdByCountry: false })
     })
 
-    console.log("done",this.state.loadingTopBioEdByCountry);
-
-    console.log('done with updating search results');
+    this.setState({ loadingMostEmployedCities: true })
+    getMostEmployedCities(this.state.country).then(res => {
+        console.log(res.results)
+        this.setState({ mostEmployedCities: res.results })
+        this.setState({ loadingMostEmployedCities: false })
+      })
   }
 
-
-  goToMatch(matchId) {
-    window.location = `/matches?id=${matchId}`
-  }
 
   componentDidMount() {
     getAllCountries(null, null).then(res => {
       console.log(res.results)
       let newResults = [];
-      for (let i in res.results){
-        console.log(i);
+      for (let i in res.results) {
         let label = res.results[i].Name;
         let value = res.results[i].Alpha2Code;
-        let d = {label: label, value: value};
+        let d = { label: label, value: value };
         newResults.push(d);
       }
       console.log(newResults);
-      this.setState({ countries: newResults})
+      this.setState({ countries: newResults })
       console.log('set state')
     })
-
-    getTotalPapersByCountry(null, null).then(res => {
-      console.log(res.results)
-      this.setState({ papersByCountries: res.results})
-      console.log('set state')
-      this.setState({loadingPaperByCountries: false})
-      console.log('set loading to false')
-    })
-
-    getTopInstituteByCountry(this.state.country, null, null).then(res => {
-      console.log(res.results)
-      this.setState({ topInstituteByCountry: res.results})
-      console.log('set state')
-      this.setState({loadingTopInstituteByCountry: false})
-    })
-
-    getTopBioEdByCountry(this.state.country, null, null).then(res => {
-      console.log(res.results)
-      this.setState({ topBioEdByCountry: res.results})
-      console.log('set state')
-      this.setState({loadingTopBioEdByCountry: false})
-    })
-
-    getMostEmployedCities(null, null).then(res => {
-      console.log(res.results)
-      this.setState({ mostEmployedCities: res.results})
-      console.log('set state')
-      this.setState({loadingMostEmployedCities: false})
-    })
-
   }
 
   render() {
@@ -191,30 +162,30 @@ class CountriesPage extends React.Component {
 
     return (
       <div>
-      <MenuBar />
-      <div style={{ width: '70vw', margin: '0 auto', marginTop: '5vh' }}>
-      <Form style={{ width: '80vw', margin: '0 auto', marginTop: '5vh' }}>
+        <MenuBar />
+        <div style={{ width: '70vw', margin: '0 auto', marginTop: '5vh' }}>
+          <Form style={{ width: '80vw', margin: '0 auto', marginTop: '5vh' }}>
             <Row>
-                <Col flex={2}><FormGroup style={{ width: '20vw', margin: '0 auto' }}>
-                    <label>Country</label>
-                    <Select style={{ width: '20vw', margin: '0 auto' }} defaultValue="" options={this.state.countries} onChange={this.handleCountryQueryChange}></Select>
-                </FormGroup></Col>
-                <Col flex={2}><FormGroup style={{ width: '10vw' }}>
-                    <Button style={{ marginTop: '4vh' }} onClick={this.updateSearchResults}>Search</Button>
-                </FormGroup></Col>
+              <Col flex={2}><FormGroup style={{ width: '20vw', margin: '0 auto' }}>
+                <label>Country</label>
+                <Select style={{ width: '20vw', margin: '0 auto' }} defaultValue="" options={this.state.countries} onChange={this.handleCountryQueryChange}></Select>
+              </FormGroup></Col>
+              <Col flex={2}><FormGroup style={{ width: '10vw' }}>
+                <Button style={{ marginTop: '4vh' }} onClick={this.updateSearchResults}>Search</Button>
+              </FormGroup></Col>
             </Row>
-        </Form>
-        <h3>Total Papers By Country</h3>
-        <Table bordered loading={{ indicator: <div><Spin size="large" /></div>, spinning:this.state.loadingPaperByCountries}} dataSource={this.state.papersByCountries} columns={papersByCountriesColumns} pagination={{ pageSizeOptions:[5, 10], defaultPageSize: 5, showQuickJumper:true }}/>
-        <h3>Top Institutions By Country</h3>
-        <Table bordered loading={{ indicator: <div><Spin size="large" /></div>, spinning:this.state.loadingTopInstituteByCountry}} dataSource={this.state.topInstituteByCountry} columns={topInstitutionsByCountryColumns} pagination={{ pageSizeOptions:[5, 10], defaultPageSize: 5, showQuickJumper:true }}/>
-        <h3>Top Education By Country</h3>
-        <Table bordered loading={{ indicator: <div><Spin size="large" /></div>, spinning:this.state.loadingTopBioEdByCountry}} dataSource={this.state.topBioEdByCountry} columns={topBioEdByCountryColumns} pagination={{ pageSizeOptions:[5, 10], defaultPageSize: 5, showQuickJumper:true }}/>
-        <h3>Most Employed Cities</h3>
-        <Table bordered loading={{ indicator: <div><Spin size="large" /></div>, spinning:this.state.loadingMostEmployedCities}} dataSource={this.state.mostEmployedCities} columns={mostEmployedCitiesColumns} pagination={{ pageSizeOptions:[5, 10], defaultPageSize: 5, showQuickJumper:true }}/>
-      
+          </Form>
+          <h3>Total papers</h3>
+          <Table rowKey="Country" className="my-4" bordered loading={{ indicator: <div><Spin size="large" /></div>, spinning: this.state.loadingPaperByCountries }} dataSource={this.state.papersByCountries} columns={papersByCountriesColumns} pagination={{hideOnSinglePage:true}} />
+          <h3>Top institutions by number of papers</h3>
+          <Table rowKey="Organization" className="my-4" bordered loading={{ indicator: <div><Spin size="large" /></div>, spinning: this.state.loadingTopInstituteByCountry }} dataSource={this.state.topInstituteByCountry} columns={topInstitutionsByCountryColumns} pagination={{ pageSizeOptions: [5, 10], defaultPageSize: 5, showQuickJumper: true }} />
+          <h3>Top bioentities/terms researched</h3>
+          <Table rowKey="Mention" className="my-4" bordered loading={{ indicator: <div><Spin size="large" /></div>, spinning: this.state.loadingTopBioEdByCountry }} dataSource={this.state.topBioEdByCountry} columns={topBioEdByCountryColumns} pagination={{ pageSizeOptions: [5, 10], defaultPageSize: 5, showQuickJumper: true }} />
+          <h3>Cities employing the most researchers</h3>
+          <Table rowKey="City" className="my-4" bordered loading={{ indicator: <div><Spin size="large" /></div>, spinning: this.state.loadingMostEmployedCities }} dataSource={this.state.mostEmployedCities} columns={mostEmployedCitiesColumns} pagination={{ pageSizeOptions: [5, 10], defaultPageSize: 5, showQuickJumper: true }} />
+
+        </div>
       </div>
-    </div>
     )
   }
 }

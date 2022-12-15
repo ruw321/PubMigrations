@@ -131,18 +131,15 @@ async function getBestAuthors(req, res) {
 // Query 12
 async function mostEmployedCities(req, res) {
   // a GET request to /mostEmployedCities?limit=100
-  let limit = 100;
-  if (req.query.limit) {
-    limit = req.query.limit;
-  }
-
   let query = `
   SELECT e.City, COUNT(*) as count FROM Employment e
   JOIN Authors a ON a.ANDID = e.ANDID
+  WHERE Country = '${req.query.country}'
   GROUP BY e.City
   ORDER BY count DESC 
-  LIMIT ${limit}
+  LIMIT 100
   `;
+
   connection.query(query,
     function (error, results, fields) {
       if (error) {
@@ -266,14 +263,10 @@ async function topBioEdByCountry(req, res) {
 
 // Query 9
 async function topInstituteByCountry(req, res) {
-  // a GET request to /topInstitudeByCountry?limit=100&Country="Country"
-  let limit = 100;
-  if (req.query.limit) {
-    limit = req.query.limit;
-  }
+  // a GET request to /topInstitudeByCountry?country="Country"
 
   let query = `
-  SELECT Country, Organization, COUNT(*) AS NumPapers
+  SELECT Organization, COUNT(*) AS NumPapers
   FROM PmidAndidInfo
   `;
 
@@ -283,7 +276,7 @@ async function topInstituteByCountry(req, res) {
 
   query += `GROUP BY Country, Organization
   ORDER BY NumPapers DESC 
-  LIMIT ${limit}`
+  LIMIT 100`
 
   connection.query(query,
     function (error, results, fields) {
@@ -325,6 +318,7 @@ async function getMigrations(req, res) {
 // example request is: http://localhost:8000/filterResearchers?Education=Tsinghua University&Employment=Tsinghua University&Writes=1726147
 // TODO: note that the frontend will have to deal with different number of columns depending on how many tables we are joining
 async function filterResearchers(req, res) {
+
   let sqlQuery = `WITH temp1 AS (
     SELECT ANDID, GROUP_CONCAT(PMID SEPARATOR ', ') AS Papers
     FROM Writes
@@ -517,7 +511,11 @@ async function topResearcher(req, res) {
 
 async function getTotalPaperByCountry(req, res) {
   let sqlQuery = `
-  SELECT Country, COUNT(*) as NumPapers FROM PmidAndidInfo GROUP BY Country ORDER BY NumPapers`;
+  SELECT Country, COUNT(*) as NumPapers
+  FROM PmidAndidInfo
+  WHERE COUNTRY = '${req.query.country}'
+  GROUP BY Country
+  ORDER BY NumPapers`;
 
   if (req.query.page && !isNaN(req.query.page)) {
     // TODO: add the page feature 
