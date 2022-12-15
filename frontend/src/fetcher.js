@@ -107,8 +107,8 @@ const getSearchPublications = async(andid, pmid, auorder, pubyear) => {
     return res.json()
 }
 
-const getTopInstitutions = async(organization) => {
-    var res = await fetch(`http://${config.server_host}:${config.server_port}/researchers/top?Organization=${organization}`, {
+const getTopResearchers = async(organization) => {
+    var res = await fetch(`http://${config.server_host}:${config.server_port}/researchers/top?organization=${organization}`, {
         method: 'GET',
     })
     return res.json()
@@ -229,7 +229,7 @@ export {
     getPaperWords,
     getPublications,
     getSearchPublications,
-    getTopInstitutions,
+    getTopResearchers,
     getBestAuthors,
     getMostBenefitedOrg,
     searchMostBenefitedOrg,
