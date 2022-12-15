@@ -29,7 +29,7 @@ ReactDOM.render(
         <Route exact
           path="/"
           render={() => (
-            <HomePage />
+            <MigrationsPage />
           )} />
         <Route exact
           path="/signup"
