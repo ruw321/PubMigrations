@@ -477,32 +477,27 @@ async function topResearcher(req, res) {
     res.json({ error: "Organization is not specified" });
     return;
   }
-  const SearchLimit = req.query.SearchLimit ? req.query.SearchLimit : 100;
-  const Organization = req.query.Organization;
+  const organization = req.query.organization;
   let sqlQuery = `
     SELECT ANDID, Count(*) AS NumPapers
     FROM PmidAndidInfo
-    WHERE Organization = '${Organization}'
+    WHERE Organization LIKE '%${organization}%'
     GROUP BY ANDID
     ORDER BY NumPapers DESC
-    LIMIT ${SearchLimit}
+    LIMIT 100
     `;
 
-  if (req.query.page && !isNaN(req.query.page)) {
-    // TODO: add the page feature 
-  } else {
-    // we have implemented this for you to see how to return results by querying the database
-    connection.query(sqlQuery,
-      function (error, results, fields) {
-        if (error) {
-          console.log(error);
-          res.json({ error: error });
-        } else if (results) {
-          res.json({ results: results });
-        }
+  connection.query(sqlQuery,
+    function (error, results, fields) {
+      if (error) {
+        console.log(error);
+        res.json({ error: error });
+      } else if (results) {
+        res.json({ results: results });
       }
-    );
-  }
+    }
+  );
+
 }
 
 async function getTotalPaperByCountry(req, res) {
