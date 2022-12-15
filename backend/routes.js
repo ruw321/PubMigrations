@@ -74,9 +74,9 @@ function multipleWhere(req, integerProperty, sqlQuery) {
       if (firstProperty) {
         if (integerProperty.includes(propName)) {
           sqlQuery += `WHERE ${propName} = ${req.query[propName]} `;
-        } else {
-          sqlQuery += `WHERE ${propName} = '${req.query[propName]}' `;
-        }
+        } //else {
+         // sqlQuery += `WHERE ${propName} = '${req.query[propName]}' `;
+        //}
         firstProperty = false;
       } else {
         if (integerProperty.includes(propName)) {
@@ -114,7 +114,6 @@ async function getBestAuthors(req, res) {
   connection.query(query,
     function (error, results, fields) {
       if (error) {
-        console.log(error)
         res.json({ error: error })
       } else if (results) {
         res.json({ results: results })
@@ -139,7 +138,6 @@ async function mostEmployedCities(req, res) {
   connection.query(query,
     function (error, results, fields) {
       if (error) {
-        console.log(error);
         res.json({ error: error });
       } else if (results) {
         res.json({ results: results });
@@ -213,7 +211,6 @@ async function mostBenefitedOrg(req, res) {
   connection.query(query,
     function (error, results, fields) {
       if (error) {
-        console.log(error)
         res.json({ error: error })
       } else if (results) {
         res.json({ results: results })
@@ -248,7 +245,6 @@ async function topBioEdByCountry(req, res) {
   connection.query(query,
     function (error, results, fields) {
       if (error) {
-        console.log(error);
         res.json({ error: error });
       } else if (results) {
         res.json({ results: results });
@@ -277,7 +273,6 @@ async function topInstituteByCountry(req, res) {
   connection.query(query,
     function (error, results, fields) {
       if (error) {
-        console.log(error);
         res.json({ error: error });
       } else if (results) {
         res.json({ results: results });
@@ -301,7 +296,6 @@ async function getMigrations(req, res) {
     connection.query(sqlQuery,
       function (error, results, fields) {
         if (error) {
-          console.log(error);
           res.json({ error: error });
         } else if (results) {
           res.json({ results: results });
@@ -382,7 +376,6 @@ async function filterResearchers(req, res) {
   connection.query(sqlQuery,
     function (error, results, fields) {
       if (error) {
-        console.log(error);
         res.json({ error: error });
       } else if (results) {
         res.json({ results: results });
@@ -401,7 +394,7 @@ async function filterPaperWords(req, res) {
     res.json({ error: "search query is empty" });
     return;
   }
-  console.log(listOfWords);
+
   let sqlQuery = `WITH temp1 AS (
     SELECT DISTINCT PMID, Mention
     FROM BioEntities
@@ -421,7 +414,6 @@ async function filterPaperWords(req, res) {
     connection.query(sqlQuery,
       function (error, results, fields) {
         if (error) {
-          console.log(error);
           res.json({ error: error });
         } else if (results) {
           res.json({ results: results });
@@ -457,7 +449,6 @@ async function filterPaperPublication(req, res) {
     connection.query(sqlQuery,
       function (error, results, fields) {
         if (error) {
-          console.log(error);
           res.json({ error: error });
         } else if (results) {
           res.json({ results: results });
@@ -495,7 +486,6 @@ async function topResearcher(req, res) {
     connection.query(sqlQuery,
       function (error, results, fields) {
         if (error) {
-          console.log(error);
           res.json({ error: error });
         } else if (results) {
           res.json({ results: results });
@@ -520,7 +510,6 @@ async function getTotalPaperByCountry(req, res) {
     connection.query(sqlQuery,
       function (error, results, fields) {
         if (error) {
-          console.log(error);
           res.json({ error: error });
         } else if (results) {
           res.json({ results: results });
@@ -541,7 +530,6 @@ async function getCountries(req, res) {
     connection.query(sqlQuery,
       function (error, results, fields) {
         if (error) {
-          console.log(error);
           res.json({ error: error });
         } else if (results) {
           res.json({ results: results });
@@ -582,7 +570,6 @@ async function getVisualData(req, res) {
     connection.query(sqlQuery,
       function (error, results, fields) {
         if (error) {
-          console.log(error);
           res.json({ error: error });
         } else if (results) {
           res.json({ results: results });
@@ -604,7 +591,6 @@ async function getOrganizations(req, res) {
     connection.query(sqlQuery,
       function (error, results, fields) {
         if (error) {
-          console.log(error);
           res.json({ error: error });
         } else if (results) {
           res.json({ results: results });
@@ -631,7 +617,6 @@ async function PapersMoved2C(req, res) {
   connection.query(sqlQuery,
     function (error, results, fields) {
       if (error) {
-        console.log(error);
         res.json({ error: error });
       } else if (results) {
         res.json({ results: results });
@@ -669,7 +654,6 @@ async function bioentitiesMoved2c(req, res) {
   connection.query(sqlQuery,
     function (error, results, fields) {
       if (error) {
-        console.log(error);
         res.json({ error: error });
       } else if (results) {
         res.json({ results: results });
@@ -700,7 +684,6 @@ async function movement2c(req, res) {
   connection.query(sqlQuery,
     function (error, results, fields) {
       if (error) {
-        console.log(error);
         res.json({ error: error });
       } else if (results) {
         res.json({ results: results });
@@ -741,7 +724,6 @@ async function sharedBioentities2c(req, res) {
   connection.query(sqlQuery,
     function (error, results, fields) {
       if (error) {
-        console.log(error);
         res.json({ error: error });
       } else if (results) {
         res.json({ results: results });
@@ -796,7 +778,6 @@ country2 AS (
   connection.query(sqlQuery,
     function (error, results, fields) {
       if (error) {
-        console.log(error);
         res.json({ error: error });
       } else if (results) {
         res.json({ results: results });

@@ -163,51 +163,52 @@ class TwoCountriesPage extends React.Component {
       window.location = '/login';
     }
     return (
-      <div>
+      <div style={{ display: 'flex', height: '100%' }}>
         <MenuBar />
-        <Form style={{ width: '80vw', margin: '0 auto', marginTop: '5vh' }}>
-          <Row>
-            <Col flex={2}><FormGroup style={{ width: '20vw', margin: '0 auto' }}>
-              <label>Country 1</label>
-              <Select style={{ width: '20vw', margin: '0 auto' }} defaultValue="" options={this.state.countries} onChange={this.handleCountry1Change}></Select>
-            </FormGroup></Col>
-            <Col flex={2}><FormGroup style={{ width: '20vw', margin: '0 auto' }}>
-              <label>Country 2</label>
-              <Select style={{ width: '20vw', margin: '0 auto' }} defaultValue="" options={this.state.countries} onChange={this.handleCountry2Change}></Select>
-            </FormGroup></Col>
-            <Col flex={2}><FormGroup style={{ width: '10vw' }}>
-              <Button style={{ marginTop: '4vh' }} onClick={this.updateSearchResults}>Search</Button>
-            </FormGroup></Col>
+        <div>
+          <Form style={{ width: '80vw', margin: '0 auto', marginTop: '5vh' }}>
+            <Row>
+              <Col flex={2}><FormGroup style={{ width: '20vw', margin: '0 auto' }}>
+                <label>Country 1</label>
+                <Select style={{ width: '20vw', margin: '0 auto' }} defaultValue="" options={this.state.countries} onChange={this.handleCountry1Change}></Select>
+              </FormGroup></Col>
+              <Col flex={2}><FormGroup style={{ width: '20vw', margin: '0 auto' }}>
+                <label>Country 2</label>
+                <Select style={{ width: '20vw', margin: '0 auto' }} defaultValue="" options={this.state.countries} onChange={this.handleCountry2Change}></Select>
+              </FormGroup></Col>
+              <Col flex={2}><FormGroup style={{ width: '10vw' }}>
+                <Button style={{ marginTop: '4vh' }} onClick={this.updateSearchResults}>Search</Button>
+              </FormGroup></Col>
+            </Row>
+          </Form>
+          <Row className='d-flex justify-content-around mt-5'>
+              <h4>Papers Country 1 lost to Country 2: {this.state.papersMoved2C}</h4>
           </Row>
-        </Form>
-        <Row className='d-flex justify-content-around mt-5'>
-            <h4>Papers Country 1 lost to Country 2: {this.state.papersMoved2C}</h4>
-        </Row>
-        <Row className='d-flex justify-content-around mb-4'>
-            <h4>Net migration from Country 1 to Country 2: {this.state.movement2c}</h4>
-        </Row>
-        <Row className='d-flex justify-content-around'>
-          <Col>
-            <div style={{ width: '20vw', margin: '0 auto', marginTop: '5vh' }}>
-              <h4>Top Shared BioEntities: They are researched in both countries</h4>
-              <Table bordered loading={{ indicator: <div><Spin size="large" /></div>, spinning:this.state.loadingTopSharedBioEntities}} rowKey="Mention" dataSource={this.state.sharedBioentities2c} columns={sharedBioEntitiesColumns} pagination={{ simple: true, pageSizeOptions: [5, 10], defaultPageSize: 10, showQuickJumper: false }} />
-            </div>
-          </Col >
-          <Col>
-            <div style={{ width: '20vw', margin: '0 auto', marginTop: '5vh' }}>
-              <h4>Top BioEntities transferred from Country 1 to Country 2</h4>
-              <Table bordered loading={{ indicator: <div><Spin size="large" /></div>, spinning:this.state.loadingTopBioEntitiesTransferred}} rowKey="Mention" dataSource={this.state.bioentitiesMoved2c} columns={transferredBioEntitiesColumns} pagination={{ simple: true, defaultPageSize: 10, showQuickJumper: false }} />
-            </div>
-          </Col>
-          <Col>
-            <div style={{ width: '20vw', margin: '0 auto', marginTop: '5vh' }}>
-              <h4>Papers with authors who studied/worked in both countries</h4>
-              <Table bordered loading={{ indicator: <div><Spin size="large" /></div>, spinning:this.state.loadingPapersWithAuthors}} rowKey="PMID" dataSource={this.state.papersBoth2c} columns={sharedAuthorsColumns} pagination={{ simple: true, pageSizeOptions: [5, 10], defaultPageSize: 10, showQuickJumper: false }} />
-            </div>
-          </Col>
+          <Row className='d-flex justify-content-around mb-4'>
+              <h4>Net migration from Country 1 to Country 2: {this.state.movement2c}</h4>
+          </Row>
+          <Row className='d-flex justify-content-around'>
+            <Col>
+              <div style={{ width: '20vw', margin: '0 auto', marginTop: '5vh' }}>
+                <h4>Top Shared BioEntities: They are researched in both countries</h4>
+                <Table bordered loading={{ indicator: <div><Spin size="large" /></div>, spinning:this.state.loadingTopSharedBioEntities}} rowKey="Mention" dataSource={this.state.sharedBioentities2c} columns={sharedBioEntitiesColumns} pagination={{ simple: true, pageSizeOptions: [5, 10], defaultPageSize: 10, showQuickJumper: false }} />
+              </div>
+            </Col >
+            <Col>
+              <div style={{ width: '20vw', margin: '0 auto', marginTop: '5vh' }}>
+                <h4>Top BioEntities transferred from Country 1 to Country 2</h4>
+                <Table bordered loading={{ indicator: <div><Spin size="large" /></div>, spinning:this.state.loadingTopBioEntitiesTransferred}} rowKey="Mention" dataSource={this.state.bioentitiesMoved2c} columns={transferredBioEntitiesColumns} pagination={{ simple: true, defaultPageSize: 10, showQuickJumper: false }} />
+              </div>
+            </Col>
+            <Col>
+              <div style={{ width: '20vw', margin: '0 auto', marginTop: '5vh' }}>
+                <h4>Papers with authors who studied/worked in both countries</h4>
+                <Table bordered loading={{ indicator: <div><Spin size="large" /></div>, spinning:this.state.loadingPapersWithAuthors}} rowKey="PMID" dataSource={this.state.papersBoth2c} columns={sharedAuthorsColumns} pagination={{ simple: true, pageSizeOptions: [5, 10], defaultPageSize: 10, showQuickJumper: false }} />
+              </div>
+            </Col>
 
-        </Row>
-
+          </Row>
+        </div>
       </div>
     )
   }
