@@ -193,6 +193,7 @@ class InstitutionsPage extends React.Component {
         <MenuBar />
         <div style={{ width: '70vw', margin: '0 auto', marginTop: '5vh' }}>
           {/* <Form style={{ width: '80vw', margin: '0 auto', marginTop: '5vh' }}>
+
             <Row>
               <Col flex={2}><FormGroup style={{ width: '20vw', margin: '0 auto' }}>
                 <label>Organization</label>

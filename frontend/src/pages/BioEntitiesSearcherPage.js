@@ -85,22 +85,24 @@ class BioEntitiesSearcherPage extends React.Component {
       window.location = '/login';
     }
     return (
-      <div>
+      <div style={{ display: 'flex', height: '100%' }}>
       <MenuBar />
-      <Form style={{ width: '80vw', margin: '0 auto', marginTop: '5vh' }}>
-            <Row>
-                <Col flex={2}><FormGroup style={{ width: '20vw', margin: '0 auto' }}>
-                    <label>Words (Comma Separated)</label>
-                    <FormInput placeholder="wordsList" value={this.state.wordsList} onChange={this.handleWordsListQueryChange} />
-                </FormGroup></Col>
-                <Col flex={2}><FormGroup style={{ width: '10vw' }}>
-                    <Button style={{ marginTop: '4vh' }} onClick={this.updateSearchResults}>Search</Button>
-                </FormGroup></Col>
-            </Row>
-        </Form>
-      <div style={{ width: '70vw', margin: '0 auto', marginTop: '5vh' }}>
-        <h3>Bio Entities Searcher</h3>
-        <Table bordered loading={{ indicator: <div><Spin size="large" /></div>, spinning:this.state.loadingBioEntities}} dataSource={this.state.bioEntitiesResults} columns={bioEntitiesColumns} pagination={{ pageSizeOptions:[5, 10], defaultPageSize: 5, showQuickJumper:true }}/>
+      <div>
+        <Form style={{ width: '80vw', margin: '0 auto', marginTop: '5vh' }}>
+              <Row>
+                  <Col flex={2}><FormGroup style={{ width: '20vw', margin: '0 auto' }}>
+                      <label>Words (Comma Separated)</label>
+                      <FormInput placeholder="wordsList" value={this.state.wordsList} onChange={this.handleWordsListQueryChange} />
+                  </FormGroup></Col>
+                  <Col flex={2}><FormGroup style={{ width: '10vw' }}>
+                      <Button style={{ marginTop: '4vh' }} onClick={this.updateSearchResults}>Search</Button>
+                  </FormGroup></Col>
+              </Row>
+          </Form>
+        <div style={{ width: '70vw', margin: '0 auto', marginTop: '5vh' }}>
+          <h3>Bio Entities Searcher</h3>
+          <Table bordered loading={{ indicator: <div><Spin size="large" /></div>, spinning:this.state.loadingBioEntities}} dataSource={this.state.bioEntitiesResults} columns={bioEntitiesColumns} pagination={{ pageSizeOptions:[5, 10], defaultPageSize: 5, showQuickJumper:true }}/>
+        </div>
       </div>
     </div>
     )

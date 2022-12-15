@@ -161,10 +161,10 @@ class CountriesPage extends React.Component {
     }
 
     return (
-      <div>
-        <MenuBar />
-        <div style={{ width: '70vw', margin: '0 auto', marginTop: '5vh' }}>
-          <Form style={{ width: '80vw', margin: '0 auto', marginTop: '5vh' }}>
+      <div style={{ display: 'flex', height: '100%' }}>
+      <MenuBar />
+      <div style={{ width: '70vw', margin: '0 auto', marginTop: '5vh' }}>
+      <Form style={{ width: '80vw', margin: '0 auto', marginTop: '5vh' }}>
             <Row>
               <Col flex={2}><FormGroup style={{ width: '20vw', margin: '0 auto' }}>
                 <label>Country</label>
