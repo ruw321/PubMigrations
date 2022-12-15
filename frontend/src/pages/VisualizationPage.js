@@ -72,7 +72,7 @@ export default function VisualizationPage() {
           <ForceGraph3D
             graphData={data}
             width={width}
-            height={height-68}
+            height={height}
             linkDirectionalArrowLength={3.5}
             linkDirectionalArrowRelPos={1}
 
