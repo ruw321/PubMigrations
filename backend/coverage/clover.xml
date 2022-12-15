@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1671061707478" clover="3.2.0">
-  <project timestamp="1671061707478" name="All files">
-    <metrics statements="252" coveredstatements="208" conditionals="156" coveredconditionals="82" methods="44" coveredmethods="42" elements="452" coveredelements="332" complexity="0" loc="252" ncloc="252" packages="1" files="2" classes="2"/>
+<coverage generated="1671068436966" clover="3.2.0">
+  <project timestamp="1671068436966" name="All files">
+    <metrics statements="252" coveredstatements="198" conditionals="156" coveredconditionals="75" methods="44" coveredmethods="39" elements="452" coveredelements="312" complexity="0" loc="252" ncloc="252" packages="1" files="2" classes="2"/>
     <file name="routes.js" path="/home/kevinb/Desktop/UPenn/2022_fall/cis_550/CIS5500Project/backend/routes.js">
-      <metrics statements="221" coveredstatements="177" conditionals="156" coveredconditionals="82" methods="43" coveredmethods="41"/>
+      <metrics statements="221" coveredstatements="167" conditionals="156" coveredconditionals="75" methods="43" coveredmethods="38"/>
       <line num="1" count="1" type="stmt"/>
       <line num="2" count="1" type="stmt"/>
       <line num="3" count="1" type="stmt"/>
@@ -71,10 +71,10 @@
       <line num="169" count="1" type="stmt"/>
       <line num="172" count="1" type="stmt"/>
       <line num="218" count="1" type="stmt"/>
-      <line num="220" count="1" type="cond" truecount="1" falsecount="1"/>
+      <line num="220" count="0" type="cond" truecount="0" falsecount="2"/>
       <line num="221" count="0" type="stmt"/>
-      <line num="222" count="1" type="cond" truecount="1" falsecount="1"/>
-      <line num="223" count="1" type="stmt"/>
+      <line num="222" count="0" type="cond" truecount="0" falsecount="2"/>
+      <line num="223" count="0" type="stmt"/>
       <line num="232" count="2" type="stmt"/>
       <line num="233" count="2" type="cond" truecount="2" falsecount="0"/>
       <line num="234" count="1" type="stmt"/>
@@ -128,10 +128,10 @@
       <line num="379" count="1" type="stmt"/>
       <line num="382" count="1" type="stmt"/>
       <line num="386" count="1" type="stmt"/>
-      <line num="388" count="1" type="cond" truecount="1" falsecount="1"/>
+      <line num="388" count="0" type="cond" truecount="0" falsecount="2"/>
       <line num="389" count="0" type="stmt"/>
-      <line num="390" count="1" type="cond" truecount="1" falsecount="1"/>
-      <line num="391" count="1" type="stmt"/>
+      <line num="390" count="0" type="cond" truecount="0" falsecount="2"/>
+      <line num="391" count="0" type="stmt"/>
       <line num="400" count="2" type="stmt"/>
       <line num="401" count="2" type="cond" truecount="2" falsecount="0"/>
       <line num="402" count="1" type="stmt"/>
@@ -151,9 +151,9 @@
       <line num="455" count="1" type="cond" truecount="2" falsecount="2"/>
       <line num="459" count="1" type="stmt"/>
       <line num="461" count="1" type="cond" truecount="1" falsecount="1"/>
-      <line num="462" count="0" type="stmt"/>
-      <line num="463" count="1" type="cond" truecount="1" falsecount="1"/>
-      <line num="464" count="1" type="stmt"/>
+      <line num="462" count="1" type="stmt"/>
+      <line num="463" count="0" type="cond" truecount="0" falsecount="2"/>
+      <line num="464" count="0" type="stmt"/>
       <line num="477" count="2" type="cond" truecount="2" falsecount="0"/>
       <line num="478" count="1" type="stmt"/>
       <line num="479" count="1" type="stmt"/>
@@ -219,12 +219,12 @@
       <line num="734" count="1" type="cond" truecount="1" falsecount="1"/>
       <line num="735" count="1" type="stmt"/>
       <line num="743" count="1" type="stmt"/>
-      <line num="782" count="1" type="stmt"/>
-      <line num="784" count="1" type="cond" truecount="1" falsecount="1"/>
-      <line num="785" count="0" type="stmt"/>
-      <line num="786" count="1" type="cond" truecount="1" falsecount="1"/>
-      <line num="787" count="1" type="stmt"/>
-      <line num="798" count="1" type="stmt"/>
+      <line num="784" count="1" type="stmt"/>
+      <line num="786" count="0" type="cond" truecount="0" falsecount="2"/>
+      <line num="787" count="0" type="stmt"/>
+      <line num="788" count="0" type="cond" truecount="0" falsecount="2"/>
+      <line num="789" count="0" type="stmt"/>
+      <line num="800" count="1" type="stmt"/>
     </file>
     <file name="server.js" path="/home/kevinb/Desktop/UPenn/2022_fall/cis_550/CIS5500Project/backend/server.js">
       <metrics statements="31" coveredstatements="31" conditionals="0" coveredconditionals="0" methods="1" coveredmethods="1"/>

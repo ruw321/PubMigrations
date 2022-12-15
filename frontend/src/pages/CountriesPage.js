@@ -190,7 +190,7 @@ class CountriesPage extends React.Component {
     }
 
     return (
-      <div>
+      <div style={{ display: 'flex', height: '100%' }}>
       <MenuBar />
       <div style={{ width: '70vw', margin: '0 auto', marginTop: '5vh' }}>
       <Form style={{ width: '80vw', margin: '0 auto', marginTop: '5vh' }}>

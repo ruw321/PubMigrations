@@ -143,7 +143,7 @@ class HomePage extends React.Component {
       window.location = '/login';
     }
     return (
-      <div>
+      <div style={{ display: 'flex', height: '100%' }}>
       <MenuBar />
         <Form style={{ width: '80vw', margin: '0 auto', marginTop: '5vh' }}>
             <Row>

@@ -121,34 +121,36 @@ class PublicationsPage extends React.Component {
       window.location = '/login';
     }
     return (
-      <div>
+      <div style={{ display: 'flex', height: '100%' }}>
       <MenuBar />
-      <Form style={{ width: '80vw', margin: '0 auto', marginTop: '5vh' }}>
-            <Row>
-                <Col flex={2}><FormGroup style={{ width: '15vw', margin: '0 auto' }}>
-                    <label>ANDID</label>
-                    <FormInput type="number" placeholder="andid" value={this.state.andid} onChange={this.handleAndidQueryChange} />
-                </FormGroup></Col>
-                <Col flex={2}><FormGroup style={{ width: '15vw', margin: '0 auto' }}>
-                    <label>PMID</label>
-                    <FormInput type="number" placeholder="pmid" value={this.state.pmid} onChange={this.handlePmidQueryChange} />
-                </FormGroup></Col>
-                <Col flex={2}><FormGroup style={{ width: '15vw', margin: '0 auto' }}>
-                    <label>AuOrder</label>
-                    <FormInput type="number" placeholder="AuOrder" value={this.state.auOrder} onChange={this.handleAuOrderQueryChange} />
-                </FormGroup></Col>
-                <Col flex={2}><FormGroup style={{ width: '15vw', margin: '0 auto' }}>
-                    <label>PubYear</label>
-                    <FormInput type="number" placeholder="pubYear" value={this.state.pubYear} onChange={this.handlePubYearQueryChange} />
-                </FormGroup></Col>
-                <Col flex={2}><FormGroup style={{ width: '10vw' }}>
-                    <Button style={{ marginTop: '4vh' }} onClick={this.updateSearchResults}>Search</Button>
-                </FormGroup></Col>
-            </Row>
-        </Form>
-      <div style={{ width: '70vw', margin: '0 auto', marginTop: '5vh' }}>
-        <h3>Publications</h3>
-        <Table bordered loading={{ indicator: <div><Spin size="large" /></div>, spinning:this.state.loadingPublications}} dataSource={this.state.publicationsResults} columns={publicationsColumns} pagination={{ pageSizeOptions:[5, 10], defaultPageSize: 5, showQuickJumper:true }}/>
+      <div>
+        <Form style={{ width: '80vw', margin: '0 auto', marginTop: '5vh' }}>
+              <Row>
+                  <Col flex={2}><FormGroup style={{ width: '15vw', margin: '0 auto' }}>
+                      <label>ANDID</label>
+                      <FormInput type="number" placeholder="andid" value={this.state.andid} onChange={this.handleAndidQueryChange} />
+                  </FormGroup></Col>
+                  <Col flex={2}><FormGroup style={{ width: '15vw', margin: '0 auto' }}>
+                      <label>PMID</label>
+                      <FormInput type="number" placeholder="pmid" value={this.state.pmid} onChange={this.handlePmidQueryChange} />
+                  </FormGroup></Col>
+                  <Col flex={2}><FormGroup style={{ width: '15vw', margin: '0 auto' }}>
+                      <label>AuOrder</label>
+                      <FormInput type="number" placeholder="AuOrder" value={this.state.auOrder} onChange={this.handleAuOrderQueryChange} />
+                  </FormGroup></Col>
+                  <Col flex={2}><FormGroup style={{ width: '15vw', margin: '0 auto' }}>
+                      <label>PubYear</label>
+                      <FormInput type="number" placeholder="pubYear" value={this.state.pubYear} onChange={this.handlePubYearQueryChange} />
+                  </FormGroup></Col>
+                  <Col flex={2}><FormGroup style={{ width: '10vw' }}>
+                      <Button style={{ marginTop: '4vh' }} onClick={this.updateSearchResults}>Search</Button>
+                  </FormGroup></Col>
+              </Row>
+          </Form>
+        <div style={{ width: '70vw', margin: '0 auto', marginTop: '5vh' }}>
+          <h3>Publications</h3>
+          <Table bordered loading={{ indicator: <div><Spin size="large" /></div>, spinning:this.state.loadingPublications}} dataSource={this.state.publicationsResults} columns={publicationsColumns} pagination={{ pageSizeOptions:[5, 10], defaultPageSize: 5, showQuickJumper:true }}/>
+        </div>
       </div>
     </div>
     )

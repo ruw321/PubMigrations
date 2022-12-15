@@ -140,8 +140,9 @@ class MigrationsPage extends React.Component {
     ];
 
     return (
-      <div>
+      <div style={{ display: 'flex', height: '100%' }}>
       <MenuBar />
+      <div>
         <Form style={{ width: '80vw', margin: '0 auto', marginTop: '5vh' }}>
             <Row>
                 <Col flex={2}><FormGroup style={{ width: '15vw', margin: '0 auto' }}>
@@ -165,9 +166,10 @@ class MigrationsPage extends React.Component {
                 </FormGroup></Col>
             </Row>
         </Form>
-      <div style={{ width: '70vw', margin: '0 auto', marginTop: '5vh' }}>
-        <h3>Migrations</h3>
-        <Table bordered loading={{ indicator: <div><Spin size="large" /></div>, spinning:this.state.loadingMigrations}} rowKey="ORCID" dataSource={this.state.migrationsResults} columns={migrationColumns} pagination={{ pageSizeOptions:[5, 10], defaultPageSize: 5, showQuickJumper:true }}/>
+        <div style={{ width: '70vw', margin: '0 auto', marginTop: '5vh' }}>
+          <h3>Migrations</h3>
+          <Table bordered loading={{ indicator: <div><Spin size="large" /></div>, spinning:this.state.loadingMigrations}} rowKey="ORCID" dataSource={this.state.migrationsResults} columns={migrationColumns} pagination={{ pageSizeOptions:[5, 10], defaultPageSize: 5, showQuickJumper:true }}/>
+        </div>
       </div>
     </div>
     )

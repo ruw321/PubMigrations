@@ -22,7 +22,11 @@ import CountriesPage from './pages/CountriesPage';
 import TwoCountriesPage from './pages/TwoCountriesPage';
 import VisualizationPage from './pages/VisualizationPage';
 
+import { ProSidebarProvider } from 'react-pro-sidebar';
+
+
 ReactDOM.render(
+  <ProSidebarProvider>
   <div>
     <Router>
       <Switch>
@@ -85,7 +89,8 @@ ReactDOM.render(
     </Router>
 
 
-  </div>,
+  </div>
+  </ProSidebarProvider>,
   document.getElementById('root')
 );
 
