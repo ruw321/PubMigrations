@@ -8,7 +8,6 @@ import {
 
 import LoginPage from './pages/LoginPage';
 import SignupPage from './pages/SignupPage';
-import HomePage from './pages/HomePage';
 import 'antd/dist/antd.css';
 
 import "bootstrap/dist/css/bootstrap.min.css";

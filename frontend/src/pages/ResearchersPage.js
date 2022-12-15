@@ -51,7 +51,6 @@ const researchersColumns = [
     title: 'Papers',
     dataIndex: 'Papers',
     key: 'Papers',
-    sorter: (a, b) => a.Papers.localeCompare(b.Papers)
   }
 ];
 
