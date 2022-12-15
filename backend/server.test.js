@@ -32,7 +32,7 @@ describe('testing get requests', () => {
     test('testing migration', async () => {
        const response = await request(webapp).get('/migration');
 	expect(response.status).toEqual(200);
-	expect(JSON.parse(response.text).results[0]).toHaveProperty('HasPhd',0);
+	expect(JSON.parse(response.text).results[0]).toHaveProperty('HasPhd',1);
 	console.log(JSON.parse(response.text).results[0]);
     });
     test('testing migration query params', async () => {
@@ -55,9 +55,9 @@ describe('testing get requests', () => {
     });
 
     test('testing filter paper publication', async () => {
-       const response = await request(webapp).get('/paper/publications?PubYear=1975&PMID=1');
+       const response = await request(webapp).get('/paper/publications?PubYear=1975&PMID=21');
 	expect(response.status).toEqual(200);
-	expect(JSON.parse(response.text).results[0]).toHaveProperty('PMID',1);
+	expect(JSON.parse(response.text).results[0]).toHaveProperty('PMID',21);
 	console.log(JSON.parse(response.text).results[0]);
     });
     test('testing top researcher', async () => {
@@ -92,17 +92,17 @@ describe('testing get requests', () => {
 	expect(JSON.parse(response.text).results[0]).toHaveProperty('NumPapers',320);
 	console.log(JSON.parse(response.text).results[0]);
     });
-    test('testing top institute by country  with limit', async () => {
-       const response = await request(webapp).get('/topInstituteByCountry?Country=US&limit=10');
-	expect(response.status).toEqual(200);
-	expect(JSON.parse(response.text).results).toHaveLength(10);
-	console.log(JSON.parse(response.text).results[0]);
-    });
+    // test('testing top institute by country  with limit', async () => {
+    //    const response = await request(webapp).get('/topInstituteByCountry?Country=US&limit=10');
+    // 	expect(response.status).toEqual(200);
+    // 	expect(JSON.parse(response.text).results).toHaveLength(10);
+    // 	console.log(JSON.parse(response.text).results[0]);
+    // });
 
     test('testing total paper by country', async () => {
-       const response = await request(webapp).get('/paper/totalbycountry');
+       const response = await request(webapp).get('/paper/totalbycountry?country=US');
 	expect(response.status).toEqual(200);
-	expect(JSON.parse(response.text).results[0]).toHaveProperty('Country',"GP");
+	expect(JSON.parse(response.text).results[0]).toHaveProperty('NumPapers',12286);
 	console.log(JSON.parse(response.text).results[0]);
     });
     test('testing countries', async () => {
@@ -114,7 +114,7 @@ describe('testing get requests', () => {
     test('testing visual data', async () => {
        const response = await request(webapp).get('/visualdata');
 	expect(response.status).toEqual(200);
-	expect(JSON.parse(response.text).results[0]).toHaveProperty('ANDID',4970212);
+	expect(JSON.parse(response.text).results[0]).toHaveProperty('ANDID',2224679);
 	console.log(JSON.parse(response.text).results[0]);
     });
     test('testing organizations', async () => {
@@ -130,9 +130,9 @@ describe('testing get requests', () => {
 	console.log(JSON.parse(response.text).results[0]);
     });
     test('testing bio entities moved between two countries', async () => {
-       const response = await request(webapp).get('/twocountries/bioentitiesmoved?country1=US&country2=IT');
+	const response = await request(webapp).get('/twocountries/bioentitiesmoved?country1=US&country2=CN');
 	expect(response.status).toEqual(200);
-	expect(JSON.parse(response.text).results[0]).toHaveProperty('Count',11);
+	expect(JSON.parse(response.text).results[0]).toHaveProperty('Count',2);
 	console.log(JSON.parse(response.text).results[0]);
     });
     test('testing movement', async () => {
@@ -150,34 +150,34 @@ describe('testing get requests', () => {
     test('testing get best authors with limit', async () => {
        const response = await request(webapp).get('/getBestAuthors?limit=1');
 	expect(response.status).toEqual(200);
-	expect(JSON.parse(response.text).results[0]).toHaveProperty('count',11904);
+	expect(JSON.parse(response.text).results[0]).toHaveProperty('count',2384);
 	console.log(JSON.parse(response.text).results[0]);
     });
     test('testing most employed cities', async () => {
-       const response = await request(webapp).get('/mostEmployedCities?limit=1');
+       const response = await request(webapp).get('/mostEmployedCities?country=US');
 	expect(response.status).toEqual(200);
-	expect(JSON.parse(response.text).results[0]).toHaveProperty('count',6606);
+	expect(JSON.parse(response.text).results[0]).toHaveProperty('count',577);
 	console.log(JSON.parse(response.text).results[0]);
     });
 
     test('testing papers both', async () => {
        const response = await request(webapp).get('/twocountries/papersboth?country1=US&country2=IN');
     	expect(response.status).toEqual(200);
-    	expect(JSON.parse(response.text).results[0]).toHaveProperty('PMID',151666);
+    	expect(JSON.parse(response.text).results[0]).toHaveProperty('PMID',1330);
     	console.log(JSON.parse(response.text).results[0]);
     });
 
     test('testing most benefitted org with range', async () => {
        const response = await request(webapp).get('/mostBenefitedOrg?min=0&max=0.4');
     	expect(response.status).toEqual(200);
-    	expect(JSON.parse(response.text).results[0]).toHaveProperty('Organization',"Shanghai Jiao Tong University School of Medicine");
+    	expect(JSON.parse(response.text).results[0]).toHaveProperty('Organization',"University of Western Ontario");
     	console.log(JSON.parse(response.text).results[0]);
     });
 
     test('testing filter researchers', async () => {
-       const response = await request(webapp).get('/filterResearchers?Education=Tsinghua%20University&Employment=Tsinghua%20University&pmid=1341789');
+       const response = await request(webapp).get('/filterResearchers?Education=University%20of%20Amsterdam&Employment=University%20of%20Amsterdam&pmid=44813');
     	expect(response.status).toEqual(200);
-    	expect(JSON.parse(response.text).results[0]).toHaveProperty('ANDID',97327);
+    	expect(JSON.parse(response.text).results[0]).toHaveProperty('ANDID',1377);
     	console.log(JSON.parse(response.text).results[0]);
     });
 
