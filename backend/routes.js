@@ -180,50 +180,12 @@ async function mostBenefitedOrg(req, res) {
   }
 
   let query = `
-  WITH hasMigrated AS
-  (
-    SELECT ORCID FROM Migrations
-    WHERE HasMigrated = True
-  ),
-  ANDID_migrated AS
-  (
-    SELECT ANDID FROM ORCIDs
-    WHERE ORCID IN
-    (
-      SELECT ORCID FROM hasMigrated
-    )
-  ),
-  paperCounts AS
-  (
-    SELECT ANDID, COUNT(*) AS count FROM Writes
-    GROUP BY ANDID
-  ),
-  Orgnization_Paper_Count AS
-  (
-    SELECT e.Organization, SUM(pc.count) AS COUNT
-    FROM paperCounts pc
-    JOIN Employment e ON e.ANDID = pc.ANDID
-    GROUP BY e.Organization
-  ),
-
-  Organization_Migration_Paper_Count AS
-  (
-    SELECT e.Organization, SUM(pc.count) AS Count
-    FROM paperCounts pc
-    JOIN Employment e ON e.ANDID = pc.ANDID
-    WHERE e.ANDID IN
-    (
-      SELECT ANDID FROM ANDID_migrated
-    )
-    GROUP BY e.Organization
-  )
   SELECT o.Organization, om.Count / o.Count AS Percentage
   FROM Orgnization_Paper_Count o
   JOIN Organization_Migration_Paper_Count om ON o.Organization = om.Organization
   WHERE om.Count / o.Count >= ${min} AND om.Count / o.Count <= ${max}
   ORDER BY om.Count / o.Count DESC
   LIMIT ${limit}
-
   `
   connection.query(query,
     function (error, results, fields) {
