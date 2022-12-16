@@ -92,12 +92,6 @@ describe('testing get requests', () => {
 	expect(JSON.parse(response.text).results[0]).toHaveProperty('NumPapers',320);
 	console.log(JSON.parse(response.text).results[0]);
     });
-    // test('testing top institute by country  with limit', async () => {
-    //    const response = await request(webapp).get('/topInstituteByCountry?Country=US&limit=10');
-    // 	expect(response.status).toEqual(200);
-    // 	expect(JSON.parse(response.text).results).toHaveLength(10);
-    // 	console.log(JSON.parse(response.text).results[0]);
-    // });
 
     test('testing total paper by country', async () => {
        const response = await request(webapp).get('/paper/totalbycountry?country=US');
@@ -108,7 +102,7 @@ describe('testing get requests', () => {
     test('testing countries', async () => {
        const response = await request(webapp).get('/countries');
 	expect(response.status).toEqual(200);
-	expect(JSON.parse(response.text).results[0]).toHaveProperty('Name',"Unknown");
+	expect(JSON.parse(response.text).results[0]).toHaveProperty('Name',"Andorra");
 	console.log(JSON.parse(response.text).results[0]);
     });
     test('testing visual data', async () => {
@@ -170,14 +164,14 @@ describe('testing get requests', () => {
     test('testing most benefitted org with range', async () => {
        const response = await request(webapp).get('/mostBenefitedOrg?min=0&max=0.4');
     	expect(response.status).toEqual(200);
-    	expect(JSON.parse(response.text).results[0]).toHaveProperty('Organization',"University of Western Ontario");
+    	expect(JSON.parse(response.text).results[0]).toHaveProperty('Organization',"Université Grenoble Alpes");
     	console.log(JSON.parse(response.text).results[0]);
     });
 
     test('testing filter researchers', async () => {
-       const response = await request(webapp).get('/filterResearchers?Education=University%20of%20Amsterdam&Employment=University%20of%20Amsterdam&pmid=44813');
+       const response = await request(webapp).get('/filterResearchers?employment=Harvard&education=Harvard');
     	expect(response.status).toEqual(200);
-    	expect(JSON.parse(response.text).results[0]).toHaveProperty('ANDID',1377);
+    	expect(JSON.parse(response.text).results[0]).toHaveProperty('ANDID',284506);
     	console.log(JSON.parse(response.text).results[0]);
     });
 
