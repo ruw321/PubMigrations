@@ -78,7 +78,7 @@ function multipleWhere(req, integerProperty, sqlQuery) {
         if (integerProperty.includes(propName)) {
           sqlQuery += `WHERE ${propName} = ${req.query[propName]} `;
         } //else {
-         // sqlQuery += `WHERE ${propName} = '${req.query[propName]}' `;
+        // sqlQuery += `WHERE ${propName} = '${req.query[propName]}' `;
         //}
         firstProperty = false;
       } else {
@@ -409,16 +409,18 @@ async function filterPaperWords(req, res) {
     return;
   }
 
-  let sqlQuery = `WITH temp1 AS (
-    SELECT PMID, Mention
+  let sqlQuery = `
+    WITH temp1 AS (
+    SELECT PMID, Mention, COUNT(*) AS Count
     FROM BioEntities
     WHERE Mention IN (${listOfWords})
+    GROUP BY PMID, Mention
     )
-    SELECT PMID, GROUP_CONCAT(Mention) AS TermsFound, COUNT(*) AS Count
+    SELECT PMID, GROUP_CONCAT(Mention) AS TermsFound, SUM(Count) AS Count
     FROM temp1
     GROUP BY PMID
     ORDER BY Count DESC
-    LIMIT 100;     
+    LIMIT 100;   
     `;
 
   if (req.query.page && !isNaN(req.query.page)) {
@@ -507,16 +509,16 @@ async function topResearcher(req, res) {
 
 
 
-    // we have implemented this for you to see how to return results by querying the database
-    connection.query(sqlQuery,
-      function (error, results, fields) {
-        if (error) {
-          res.json({ error: error });
-        } else if (results) {
-          res.json({ results: results });
-        }
+  // we have implemented this for you to see how to return results by querying the database
+  connection.query(sqlQuery,
+    function (error, results, fields) {
+      if (error) {
+        res.json({ error: error });
+      } else if (results) {
+        res.json({ results: results });
       }
-    
+    }
+
   );
 
 }

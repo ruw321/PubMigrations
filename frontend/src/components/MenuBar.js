@@ -1,6 +1,6 @@
 import React from 'react';
 
-import { Sidebar, Menu, MenuItem, SubMenu, sidebarClasses, menuClasses} from 'react-pro-sidebar';
+import { Sidebar, Menu, MenuItem, sidebarClasses} from 'react-pro-sidebar';
 import { Link } from 'react-router-dom';
 import {FaRunning, FaPencilAlt, FaBookMedical, FaBookReader, FaUniversity, FaGlobeAmericas, FaGlobeAsia, FaEye, FaArrowLeft} from 'react-icons/fa';
 
