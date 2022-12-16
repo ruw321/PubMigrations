@@ -576,7 +576,8 @@ async function getCountries(req, res) {
 }
 
 /*
-
+This query counts the number of migrations occurred for each pair of countries. It is used for calculating 
+the data that will be displayed on the visiualization page.
 */
 
 async function getVisualData(req, res) {
@@ -619,6 +620,9 @@ async function getVisualData(req, res) {
   }
 }
 
+/*
+This query returns a distinct list of all organizations, used to generate drop down menus.
+*/
 
 // example request: http://localhost:8000/organizations?
 async function getOrganizations(req, res) {
@@ -639,6 +643,12 @@ async function getOrganizations(req, res) {
     );
   }
 }
+
+/*
+This query reorganizes the Migration data to count the number of papers that have moved from country A to B.
+If a researcher moves from country A to B and publishes 10 papers, it counts as country A losing 10 papers to country B
+and country B gaining 10 papers.
+*/
 
 async function PapersMoved2C(req, res) {
   let sqlQuery = ` WITH temp1 AS (
@@ -665,6 +675,11 @@ async function PapersMoved2C(req, res) {
   );
 
 }
+
+/*
+This query tracks the bioentites that have "moved" meaning what wrods were contained in the papers written
+by authors that have migrated from one country to another.
+*/
 
 async function bioentitiesMoved2c(req, res) {
   let sqlQuery = ` WITH temp1 AS (
@@ -703,6 +718,10 @@ async function bioentitiesMoved2c(req, res) {
 
 }
 
+/*
+This query calculates the net migration between two coutnries. We see how much country A lost to country B
+*/
+
 async function movement2c(req, res) {
   let sqlQuery = ` WITH temp1 AS (
     SELECT COUNT(*) AS Count
@@ -732,6 +751,12 @@ async function movement2c(req, res) {
   );
 
 }
+
+/*
+This country takes the union of bioentites that are found between two countries, we see how many shared
+words exist between two countries
+*/
+
 
 async function sharedBioentities2c(req, res) {
   let sqlQuery = ` WITH temp1 AS(
@@ -772,6 +797,11 @@ async function sharedBioentities2c(req, res) {
   );
 
 }
+
+/*
+This query returns the papers shared between the given pair of countries. A paper is shared when it
+contains an author from one country and another author from the other.
+*/
 
 async function papersBoth2c(req, res) {
   let sqlQuery = `WITH country1 AS (
