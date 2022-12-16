@@ -170,14 +170,14 @@ describe('testing get requests', () => {
     test('testing most benefitted org with range', async () => {
        const response = await request(webapp).get('/mostBenefitedOrg?min=0&max=0.4');
     	expect(response.status).toEqual(200);
-    	expect(JSON.parse(response.text).results[0]).toHaveProperty('Organization',"University of Western Ontario");
+    	expect(JSON.parse(response.text).results[0]).toHaveProperty('Organization',"Université Grenoble Alpes");
     	console.log(JSON.parse(response.text).results[0]);
     });
 
     test('testing filter researchers', async () => {
-       const response = await request(webapp).get('/filterResearchers?Education=University%20of%20Amsterdam&Employment=University%20of%20Amsterdam&pmid=44813');
+       const response = await request(webapp).get('/filterResearchers?employment=Harvard&education=Harvard');
     	expect(response.status).toEqual(200);
-    	expect(JSON.parse(response.text).results[0]).toHaveProperty('ANDID',1377);
+    	expect(JSON.parse(response.text).results[0]).toHaveProperty('ANDID',284506);
     	console.log(JSON.parse(response.text).results[0]);
     });
 
