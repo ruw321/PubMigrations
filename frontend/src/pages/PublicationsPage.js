@@ -127,19 +127,20 @@ class PublicationsPage extends React.Component {
         <Form style={{ width: '80vw', margin: '0 auto', marginTop: '5vh' }}>
               <Row>
                   <Col flex={2}><FormGroup style={{ width: '15vw', margin: '0 auto' }}>
-                      <label>ANDID</label>
+                      <label>ANDID 
+                        [28, 1406243]</label>
                       <FormInput type="number" placeholder="andid" value={this.state.andid} onChange={this.handleAndidQueryChange} />
                   </FormGroup></Col>
                   <Col flex={2}><FormGroup style={{ width: '15vw', margin: '0 auto' }}>
-                      <label>PMID</label>
+                      <label>PMID [4, 413591]</label>
                       <FormInput type="number" placeholder="pmid" value={this.state.pmid} onChange={this.handlePmidQueryChange} />
                   </FormGroup></Col>
                   <Col flex={2}><FormGroup style={{ width: '15vw', margin: '0 auto' }}>
-                      <label>AuOrder</label>
+                      <label>AuOrder [1, 49]</label>
                       <FormInput type="number" placeholder="AuOrder" value={this.state.auOrder} onChange={this.handleAuOrderQueryChange} />
                   </FormGroup></Col>
                   <Col flex={2}><FormGroup style={{ width: '15vw', margin: '0 auto' }}>
-                      <label>PubYear</label>
+                      <label>PubYear [1974, 1980]</label>
                       <FormInput type="number" placeholder="pubYear" value={this.state.pubYear} onChange={this.handlePubYearQueryChange} />
                   </FormGroup></Col>
                   <Col flex={2}><FormGroup style={{ width: '10vw' }}>
