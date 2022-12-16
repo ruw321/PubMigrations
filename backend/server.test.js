@@ -92,12 +92,6 @@ describe('testing get requests', () => {
 	expect(JSON.parse(response.text).results[0]).toHaveProperty('NumPapers',320);
 	console.log(JSON.parse(response.text).results[0]);
     });
-    // test('testing top institute by country  with limit', async () => {
-    //    const response = await request(webapp).get('/topInstituteByCountry?Country=US&limit=10');
-    // 	expect(response.status).toEqual(200);
-    // 	expect(JSON.parse(response.text).results).toHaveLength(10);
-    // 	console.log(JSON.parse(response.text).results[0]);
-    // });
 
     test('testing total paper by country', async () => {
        const response = await request(webapp).get('/paper/totalbycountry?country=US');
@@ -108,7 +102,7 @@ describe('testing get requests', () => {
     test('testing countries', async () => {
        const response = await request(webapp).get('/countries');
 	expect(response.status).toEqual(200);
-	expect(JSON.parse(response.text).results[0]).toHaveProperty('Name',"Unknown");
+	expect(JSON.parse(response.text).results[0]).toHaveProperty('Name',"Andorra");
 	console.log(JSON.parse(response.text).results[0]);
     });
     test('testing visual data', async () => {

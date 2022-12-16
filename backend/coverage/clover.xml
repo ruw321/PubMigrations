@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<coverage generated="1671222385937" clover="3.2.0">
-  <project timestamp="1671222385937" name="All files">
+<coverage generated="1671229834315" clover="3.2.0">
+  <project timestamp="1671229834315" name="All files">
     <metrics statements="224" coveredstatements="185" conditionals="132" coveredconditionals="69" methods="44" coveredmethods="42" elements="400" coveredelements="296" complexity="0" loc="224" ncloc="224" packages="1" files="2" classes="2"/>
     <file name="routes.js" path="/home/kevinb/Desktop/UPenn/2022_fall/cis_550/CIS5500Project/backend/routes.js">
       <metrics statements="193" coveredstatements="154" conditionals="132" coveredconditionals="69" methods="43" coveredmethods="41"/>
