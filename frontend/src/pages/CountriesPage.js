@@ -176,12 +176,16 @@ class CountriesPage extends React.Component {
             </Row>
           </Form>
           <h3>Total papers</h3>
+          <h6> Number of papers produced by a given country. A paper is produced by a country if the author of the paper is located in the country when the paper was published</h6>
           <Table rowKey="Country" className="my-4" bordered loading={{ indicator: <div><Spin size="large" /></div>, spinning: this.state.loadingPaperByCountries }} dataSource={this.state.papersByCountries} columns={papersByCountriesColumns} pagination={{hideOnSinglePage:true}} />
           <h3>Top institutions by number of papers</h3>
+          <h6> Most prolific institutions in every country. The paper output for each researcher in that institution is grouped and aggregated</h6>
           <Table rowKey="Organization" className="my-4" bordered loading={{ indicator: <div><Spin size="large" /></div>, spinning: this.state.loadingTopInstituteByCountry }} dataSource={this.state.topInstituteByCountry} columns={topInstitutionsByCountryColumns} pagination={{ pageSizeOptions: [5, 10], defaultPageSize: 5, showQuickJumper: true }} />
           <h3>Top bioentities/terms researched</h3>
+          <h6> Top words mentioned in all papers by count</h6>
           <Table rowKey="Mention" className="my-4" bordered loading={{ indicator: <div><Spin size="large" /></div>, spinning: this.state.loadingTopBioEdByCountry }} dataSource={this.state.topBioEdByCountry} columns={topBioEdByCountryColumns} pagination={{ pageSizeOptions: [5, 10], defaultPageSize: 5, showQuickJumper: true }} />
           <h3>Cities employing the most researchers</h3>
+          <h6> Group cities from Employment table and join with Authors table to get the cities with the most employment by number of authors</h6>
           <Table rowKey="City" className="my-4" bordered loading={{ indicator: <div><Spin size="large" /></div>, spinning: this.state.loadingMostEmployedCities }} dataSource={this.state.mostEmployedCities} columns={mostEmployedCitiesColumns} pagination={{ pageSizeOptions: [5, 10], defaultPageSize: 5, showQuickJumper: true }} />
 
         </div>
