@@ -56,17 +56,28 @@ class BioEntitiesSearcherPage extends React.Component {
 
   handleWordsListQueryChange(event) {
     this.setState({ wordsList: event.target.value })
+
   }
 
   updateSearchResults() {
-    this.setState({ loadingBioEntities: true })
-    getPaperWords(this.state.wordsList,
-      null, null).then( res => {
-        this.setState({ bioEntitiesResults: res.results })
-        this.setState({ loadingBioEntities: false })
-    })
-    console.log('done with updating search results');
-
+    const sepWordList = this.state.wordsList.split(',');
+    let wordsAllValid = true;
+    for (let i = 0; i < sepWordList.length; i++){
+      if (!sepWordList[i].match(/^[0-9a-zA-Z]+$/)){
+        wordsAllValid = false;
+      }
+    }
+    if (wordsAllValid === true){
+      this.setState({ loadingBioEntities: true })
+      getPaperWords(this.state.wordsList,
+        null, null).then( res => {
+          this.setState({ bioEntitiesResults: res.results })
+          this.setState({ loadingBioEntities: false })
+      })
+      console.log('done with updating search results');
+    } else {
+      alert("Each word must be alpha numeric");
+    }
   }
 
   componentDidMount() {

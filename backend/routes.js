@@ -437,7 +437,7 @@ async function filterPaperWords(req, res) {
   }
 
   let sqlQuery = `WITH temp1 AS (
-    SELECT DISTINCT PMID, Mention
+    SELECT PMID, Mention
     FROM BioEntities
     WHERE Mention IN (${listOfWords})
     )
