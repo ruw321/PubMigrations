@@ -790,7 +790,9 @@ country2 AS (
 ),
   temp1 AS (
     SELECT PMID, ANDID FROM Writes w1
-    WHERE EXISTS (
+    WHERE (ANDID IN (SELECT * FROM country1)
+    OR ANDID IN (SELECT * FROM country2))
+    AND EXISTS (
       SELECT * FROM Writes w2
       WHERE w2.PMID = w1.PMID
       AND w2.ANDID IN (SELECT * FROM country1)
@@ -800,8 +802,6 @@ country2 AS (
       WHERE w3.PMID = w1.PMID
       AND w3.ANDID IN (SELECT * FROM country2)
     )
-    AND (ANDID IN (SELECT * FROM country1)
-    OR ANDID IN (SELECT * FROM country2))
   )
   SELECT PMID, GROUP_CONCAT(ANDID SEPARATOR ', ') AS Authors
   FROM temp1
