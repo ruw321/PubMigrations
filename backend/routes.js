@@ -310,68 +310,41 @@ async function getMigrations(req, res) {
 async function filterResearchers(req, res) {
 
   let sqlQuery = `WITH temp1 AS (
-    SELECT ANDID, GROUP_CONCAT(PMID SEPARATOR ', ') AS Papers
+    SELECT ANDID, PMID
     FROM Writes
-    GROUP BY ANDID
   ),
+    temp2a AS (
+        SELECT ANDID FROM Education
+        WHERE Organization LIKE '%${req.query.education}%'
+    ),
   temp2 AS (
     SELECT ANDID, GROUP_CONCAT(Organization SEPARATOR ', ') AS Education
     FROM Education
+    WHERE ANDID IN (
+        SELECT * FROM temp2a
+    )
     GROUP BY ANDID
   ),
+    temp3a AS (
+        SELECT ANDID FROM Employment
+        WHERE Organization LIKE '%${req.query.employment}%'
+    ),
   temp3 AS (
     SELECT ANDID, GROUP_CONCAT(Organization SEPARATOR ', ') AS Employment
     FROM Employment
+    WHERE ANDID IN (
+        SELECT * FROM temp3a
+    )
     GROUP BY ANDID
-  )`;
-
-  if (req.query.pmid) {
-    sqlQuery += `, temp4 AS (
-      SELECT * FROM temp1 WHERE Papers LIKE '%${req.query.pmid}%'
-    )`
-  }
-
-  if (req.query.education) {
-    sqlQuery += `, temp5 AS (
-      SELECT * FROM temp2 WHERE Education LIKE '%${req.query.education}%'
-    )`
-  }
-
-  if (req.query.employment) {
-    sqlQuery += `, temp6 AS (
-      SELECT * FROM temp3 WHERE Employment LIKE '%${req.query.employment}%'
-    )`
-  }
-
-  sqlQuery += `
-  SELECT au.ANDID AS ANDID, LastName, Initials, au.BeginYear as BeginYear,
-  Employment, Education, Papers
-  FROM Authors au`
-
-  if (req.query.pmid) {
-    sqlQuery += `
-    NATURAL JOIN temp4`
-  } else {
-    sqlQuery += `
-    NATURAL JOIN temp1`
-  }
-  if (req.query.education) {
-    sqlQuery += `
-    NATURAL JOIN temp5`
-  } else {
-    sqlQuery += `
-    NATURAL JOIN temp2`
-  }
-  if (req.query.employment) {
-    sqlQuery += `
-    NATURAL JOIN temp6`
-  } else {
-    sqlQuery += `
-    NATURAL JOIN temp3`
-  }
-  sqlQuery += `
-                GROUP BY au.ANDID, LastName, Initials, au.BeginYear
-                LIMIT 100;`;
+  )
+  SELECT ANDID, LastName, Initials, BeginYear,
+  Employment, Education, GROUP_CONCAT(PMID SEPARATOR ', ') AS Papers
+  FROM Authors au
+    NATURAL JOIN temp2
+    NATURAL JOIN temp3
+    NATURAL JOIN temp1
+    GROUP BY ANDID, LastName, Initials, BeginYear, Employment, Education
+    LIMIT 100;`;
 
   connection.query(sqlQuery,
     function (error, results, fields) {

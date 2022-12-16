@@ -65,13 +65,12 @@ const getSearchMigrations = async(phdYear, earliestYear, hasPhd, hasMigrated) =>
     return res.json()
 }
 
-const getResearchers = async(employment, education, pmid) => {
+const getResearchers = async(employment, education) => {
     
     let url = `http://${config.server_host}:${config.server_port}/filterResearchers?`;
 
     url += employment !== "" ? `&employment=${employment}` : "";
     url += education !== "" ? `&education=${education}` : "";
-    url += pmid !== "" ? `&pmid=${pmid}` : "";
 
     var res = await fetch(url, {
         method: 'GET',
