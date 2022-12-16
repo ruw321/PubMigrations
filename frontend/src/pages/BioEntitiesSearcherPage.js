@@ -74,7 +74,6 @@ class BioEntitiesSearcherPage extends React.Component {
           this.setState({ bioEntitiesResults: res.results })
           this.setState({ loadingBioEntities: false })
       })
-      console.log('done with updating search results');
     } else {
       alert("Each word must be alpha numeric");
     }
@@ -82,7 +81,7 @@ class BioEntitiesSearcherPage extends React.Component {
 
   componentDidMount() {
 
-    getPaperWords(this.state.wordsList, null, null).then(res => {
+    getPaperWords(this.state.wordsList).then(res => {
       console.log(res.results)
       this.setState({ bioEntitiesResults: res.results})
       console.log('set state')
@@ -112,7 +111,7 @@ class BioEntitiesSearcherPage extends React.Component {
           </Form>
         <div style={{ width: '70vw', margin: '0 auto', marginTop: '5vh' }}>
           <h3>Bio Entities Searcher</h3>
-          <Table bordered loading={{ indicator: <div><Spin size="large" /></div>, spinning:this.state.loadingBioEntities}} dataSource={this.state.bioEntitiesResults} columns={bioEntitiesColumns} pagination={{ pageSizeOptions:[5, 10], defaultPageSize: 5, showQuickJumper:true }}/>
+          <Table rowKey="PMID" bordered loading={{ indicator: <div><Spin size="large" /></div>, spinning:this.state.loadingBioEntities}} dataSource={this.state.bioEntitiesResults} columns={bioEntitiesColumns} pagination={{ pageSizeOptions:[5, 10], defaultPageSize: 5, showQuickJumper:true }}/>
         </div>
       </div>
     </div>
