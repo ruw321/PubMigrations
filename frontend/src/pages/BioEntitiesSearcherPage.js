@@ -111,7 +111,7 @@ class BioEntitiesSearcherPage extends React.Component {
           </Form>
         <div style={{ width: '70vw', margin: '0 auto', marginTop: '5vh' }}>
           <h3>Bio Entities Searcher</h3>
-          <h6> Finds all papers which contain at least one instance of the user specified word ordered by number of occurrences</h6>
+          <h6> Finds papers that contain the most matches for the searched words</h6>
           <Table rowKey="PMID" bordered loading={{ indicator: <div><Spin size="large" /></div>, spinning:this.state.loadingBioEntities}} dataSource={this.state.bioEntitiesResults} columns={bioEntitiesColumns} pagination={{ pageSizeOptions:[5, 10], defaultPageSize: 5, showQuickJumper:true }}/>
         </div>
       </div>

@@ -521,7 +521,7 @@ This simple query returns all the countries that are in the database. It is used
 
 // example request: http://localhost:8000/countries?
 async function getCountries(req, res) {
-  let sqlQuery = `SELECT * FROM Countries `;
+  let sqlQuery = `SELECT * FROM Countries WHERE Name != "Unknown" `;
 
   if (req.query.page && !isNaN(req.query.page)) {
     // TODO: add the page feature 
@@ -790,7 +790,9 @@ country2 AS (
 ),
   temp1 AS (
     SELECT PMID, ANDID FROM Writes w1
-    WHERE EXISTS (
+    WHERE (ANDID IN (SELECT * FROM country1)
+    OR ANDID IN (SELECT * FROM country2))
+    AND EXISTS (
       SELECT * FROM Writes w2
       WHERE w2.PMID = w1.PMID
       AND w2.ANDID IN (SELECT * FROM country1)
@@ -800,8 +802,6 @@ country2 AS (
       WHERE w3.PMID = w1.PMID
       AND w3.ANDID IN (SELECT * FROM country2)
     )
-    AND (ANDID IN (SELECT * FROM country1)
-    OR ANDID IN (SELECT * FROM country2))
   )
   SELECT PMID, GROUP_CONCAT(ANDID SEPARATOR ', ') AS Authors
   FROM temp1

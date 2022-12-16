@@ -193,21 +193,21 @@ class TwoCountriesPage extends React.Component {
               <div style={{ width: '20vw', margin: '0 auto', marginTop: '5vh' }}>
                 <h4>Top Shared BioEntities</h4>
                 {/* <h4>Top Shared BioEntities: They are researched in both countries</h4> */}
-                <h6> Union the terms found between the papers in the given countries and retrieve the words and counts shared between them</h6>
+                <h6> Terms shared in papers from both countries</h6>
                 <Table bordered loading={{ indicator: <div><Spin size="large" /></div>, spinning:this.state.loadingTopSharedBioEntities}} rowKey="Mention" dataSource={this.state.sharedBioentities2c} columns={sharedBioEntitiesColumns} pagination={{ simple: true, pageSizeOptions: [5, 10], defaultPageSize: 10, showQuickJumper: false }} />
               </div>
             </Col >
             <Col>
               <div style={{ width: '20vw', margin: '0 auto', marginTop: '5vh' }}>
                 <h4>Top BioEntities transferred from Country 1 to Country 2</h4>
-                <h6> Count of words from papers from authors that have migrated from country 1 to country 2</h6>
+                <h6> Words from papers by authors that have migrated from country 1 to country 2</h6>
                 <Table bordered loading={{ indicator: <div><Spin size="large" /></div>, spinning:this.state.loadingTopBioEntitiesTransferred}} rowKey="Mention" dataSource={this.state.bioentitiesMoved2c} columns={transferredBioEntitiesColumns} pagination={{ simple: true, defaultPageSize: 10, showQuickJumper: false }} />
               </div>
             </Col>
             <Col>
               <div style={{ width: '20vw', margin: '0 auto', marginTop: '5vh' }}>
                 <h4>Papers with Shared Authors</h4>
-                <h6> Papers with authors who studied/worked in both countries</h6>
+                <h6> Papers with at least one author who worked in each country</h6>
                 <Table bordered loading={{ indicator: <div><Spin size="large" /></div>, spinning:this.state.loadingPapersWithAuthors}} rowKey="PMID" dataSource={this.state.papersBoth2c} columns={sharedAuthorsColumns} pagination={{ simple: true, pageSizeOptions: [5, 10], defaultPageSize: 10, showQuickJumper: false }} />
               </div>
             </Col>
