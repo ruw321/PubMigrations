@@ -69,10 +69,14 @@ export default function VisualizationPage() {
       <div style={{ display: 'flex', height: '100vh' }}>
         <MenuBar />
         <div>
+          <h4>  Interactive Visualization for Migration of Top Researchers Between Countries</h4>
+          {/* <p>In this visualization, the nodes are countries, and the links represent the researchers migration between these countries.
+            And the numbers on the link represent the number of researchers that migrated.
+          </p> */}
           <ForceGraph3D
             graphData={data}
-            width={width}
-            height={height}
+            width={width-250}
+            height={height-44}
             linkDirectionalArrowLength={3.5}
             linkDirectionalArrowRelPos={1}
 
