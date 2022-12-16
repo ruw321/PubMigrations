@@ -521,7 +521,7 @@ This simple query returns all the countries that are in the database. It is used
 
 // example request: http://localhost:8000/countries?
 async function getCountries(req, res) {
-  let sqlQuery = `SELECT * FROM Countries `;
+  let sqlQuery = `SELECT * FROM Countries WHERE Name != "Unknown" `;
 
   if (req.query.page && !isNaN(req.query.page)) {
     // TODO: add the page feature 
