@@ -828,7 +828,7 @@ country2 AS (
 ),
   temp1 AS (
     SELECT PMID, ANDID FROM Writes w1
-    (ANDID IN (SELECT * FROM country1)
+    WHERE (ANDID IN (SELECT * FROM country1)
     OR ANDID IN (SELECT * FROM country2))
     AND EXISTS (
       SELECT * FROM Writes w2
