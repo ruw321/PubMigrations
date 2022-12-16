@@ -183,6 +183,7 @@ class TwoCountriesPage extends React.Component {
           </Form>
           <Row className='d-flex justify-content-around mt-5'>
               <h4>Papers Country 1 lost to Country 2: {this.state.papersMoved2C}</h4>
+              {/* <h6> Counts number of papers that have moved from country 1 to country 2. For example, if a researcher moves from country 1 to country 2 and publishes 10 papers, it counts as country 1 losing 10 papers and country2 gaining 10 papers</h6> */}
           </Row>
           <Row className='d-flex justify-content-around mb-4'>
               <h4>Net migration from Country 1 to Country 2: {this.state.movement2c}</h4>
@@ -190,19 +191,23 @@ class TwoCountriesPage extends React.Component {
           <Row className='d-flex justify-content-around'>
             <Col>
               <div style={{ width: '20vw', margin: '0 auto', marginTop: '5vh' }}>
-                <h4>Top Shared BioEntities: They are researched in both countries</h4>
+                <h4>Top Shared BioEntities</h4>
+                {/* <h4>Top Shared BioEntities: They are researched in both countries</h4> */}
+                <h6> Union the terms found between the papers in the given countries and retrieve the words and counts shared between them</h6>
                 <Table bordered loading={{ indicator: <div><Spin size="large" /></div>, spinning:this.state.loadingTopSharedBioEntities}} rowKey="Mention" dataSource={this.state.sharedBioentities2c} columns={sharedBioEntitiesColumns} pagination={{ simple: true, pageSizeOptions: [5, 10], defaultPageSize: 10, showQuickJumper: false }} />
               </div>
             </Col >
             <Col>
               <div style={{ width: '20vw', margin: '0 auto', marginTop: '5vh' }}>
                 <h4>Top BioEntities transferred from Country 1 to Country 2</h4>
+                <h6> Count of words from papers from authors that have migrated from country 1 to country 2</h6>
                 <Table bordered loading={{ indicator: <div><Spin size="large" /></div>, spinning:this.state.loadingTopBioEntitiesTransferred}} rowKey="Mention" dataSource={this.state.bioentitiesMoved2c} columns={transferredBioEntitiesColumns} pagination={{ simple: true, defaultPageSize: 10, showQuickJumper: false }} />
               </div>
             </Col>
             <Col>
               <div style={{ width: '20vw', margin: '0 auto', marginTop: '5vh' }}>
-                <h4>Papers with authors who studied/worked in both countries</h4>
+                <h4>Papers with Shared Authors</h4>
+                <h6> Papers with authors who studied/worked in both countries</h6>
                 <Table bordered loading={{ indicator: <div><Spin size="large" /></div>, spinning:this.state.loadingPapersWithAuthors}} rowKey="PMID" dataSource={this.state.papersBoth2c} columns={sharedAuthorsColumns} pagination={{ simple: true, pageSizeOptions: [5, 10], defaultPageSize: 10, showQuickJumper: false }} />
               </div>
             </Col>

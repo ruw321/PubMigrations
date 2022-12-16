@@ -208,8 +208,8 @@ class InstitutionsPage extends React.Component {
           <Table bordered loading={{ indicator: <div><Spin size="large" /></div>, spinning: this.state.loadingResearchers }} dataSource={this.state.institutionsResults} columns={institutionsColumns} pagination={{ pageSizeOptions: [5, 10], defaultPageSize: 5, showQuickJumper: true }} />
           <h3>Best Authors</h3>
           <Table bordered loading={{ indicator: <div><Spin size="large" /></div>, spinning: this.state.loadingBestAuthors }} dataSource={this.state.bestAuthorsResults} columns={bestAuthorsColumns} pagination={{ pageSizeOptions: [5, 10], defaultPageSize: 5, showQuickJumper: true }} /> */}
-          <h3>Institution % of papers written</h3>
-          <h3>by a researcher that has migrated</h3>
+          <h3>Institution Percentage </h3>
+          <h6> Percentage of papers written by a researcher that has migrated</h6>
           <Form style={{ width: '80vw', margin: '0 auto', marginTop: '5vh' }}>
             <Row>
               <Col flex={2}><FormGroup style={{ width: '20vw', margin: '0 auto' }}>

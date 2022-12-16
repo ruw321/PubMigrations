@@ -170,6 +170,7 @@ class HomePage extends React.Component {
         </Form>
       <div style={{ width: '70vw', margin: '0 auto', marginTop: '5vh' }}>
         <h3>Migrations</h3>
+        <h6> Search migration table for whether a researcher has migrated and when they got their PhD (if applicable)</h6>
         <Table bordered loading={{ indicator: <div><Spin size="large" /></div>, spinning:this.state.loadingMigrations}} dataSource={this.state.migrationsResults} columns={migrationColumns} pagination={{ pageSizeOptions:[5, 10], defaultPageSize: 5, showQuickJumper:true }}/>
       </div>
     </div>
