@@ -78,7 +78,7 @@ function multipleWhere(req, integerProperty, sqlQuery) {
         if (integerProperty.includes(propName)) {
           sqlQuery += `WHERE ${propName} = ${req.query[propName]} `;
         } //else {
-         // sqlQuery += `WHERE ${propName} = '${req.query[propName]}' `;
+        // sqlQuery += `WHERE ${propName} = '${req.query[propName]}' `;
         //}
         firstProperty = false;
       } else {
@@ -347,68 +347,41 @@ inlcude ANDID and utilizes joins to group all the information.
 async function filterResearchers(req, res) {
 
   let sqlQuery = `WITH temp1 AS (
-    SELECT ANDID, GROUP_CONCAT(PMID SEPARATOR ', ') AS Papers
+    SELECT ANDID, PMID
     FROM Writes
-    GROUP BY ANDID
   ),
+    temp2a AS (
+        SELECT ANDID FROM Education
+        WHERE Organization LIKE '%${req.query.education}%'
+    ),
   temp2 AS (
     SELECT ANDID, GROUP_CONCAT(Organization SEPARATOR ', ') AS Education
     FROM Education
+    WHERE ANDID IN (
+        SELECT * FROM temp2a
+    )
     GROUP BY ANDID
   ),
+    temp3a AS (
+        SELECT ANDID FROM Employment
+        WHERE Organization LIKE '%${req.query.employment}%'
+    ),
   temp3 AS (
     SELECT ANDID, GROUP_CONCAT(Organization SEPARATOR ', ') AS Employment
     FROM Employment
+    WHERE ANDID IN (
+        SELECT * FROM temp3a
+    )
     GROUP BY ANDID
-  )`;
-
-  if (req.query.pmid) {
-    sqlQuery += `, temp4 AS (
-      SELECT * FROM temp1 WHERE Papers LIKE '%${req.query.pmid}%'
-    )`
-  }
-
-  if (req.query.education) {
-    sqlQuery += `, temp5 AS (
-      SELECT * FROM temp2 WHERE Education LIKE '%${req.query.education}%'
-    )`
-  }
-
-  if (req.query.employment) {
-    sqlQuery += `, temp6 AS (
-      SELECT * FROM temp3 WHERE Employment LIKE '%${req.query.employment}%'
-    )`
-  }
-
-  sqlQuery += `
-  SELECT au.ANDID AS ANDID, LastName, Initials, au.BeginYear as BeginYear,
-  Employment, Education, Papers
-  FROM Authors au`
-
-  if (req.query.pmid) {
-    sqlQuery += `
-    NATURAL JOIN temp4`
-  } else {
-    sqlQuery += `
-    NATURAL JOIN temp1`
-  }
-  if (req.query.education) {
-    sqlQuery += `
-    NATURAL JOIN temp5`
-  } else {
-    sqlQuery += `
-    NATURAL JOIN temp2`
-  }
-  if (req.query.employment) {
-    sqlQuery += `
-    NATURAL JOIN temp6`
-  } else {
-    sqlQuery += `
-    NATURAL JOIN temp3`
-  }
-  sqlQuery += `
-                GROUP BY au.ANDID, LastName, Initials, au.BeginYear
-                LIMIT 100;`;
+  )
+  SELECT ANDID, LastName, Initials, BeginYear,
+  Employment, Education, GROUP_CONCAT(PMID SEPARATOR ', ') AS Papers
+  FROM Authors au
+    NATURAL JOIN temp2
+    NATURAL JOIN temp3
+    NATURAL JOIN temp1
+    GROUP BY ANDID, LastName, Initials, BeginYear, Employment, Education
+    LIMIT 100;`;
 
   connection.query(sqlQuery,
     function (error, results, fields) {
@@ -436,16 +409,18 @@ async function filterPaperWords(req, res) {
     return;
   }
 
-  let sqlQuery = `WITH temp1 AS (
-    SELECT DISTINCT PMID, Mention
+  let sqlQuery = `
+    WITH temp1 AS (
+    SELECT PMID, Mention, COUNT(*) AS Count
     FROM BioEntities
     WHERE Mention IN (${listOfWords})
+    GROUP BY PMID, Mention
     )
-    SELECT PMID, GROUP_CONCAT(Mention) AS TermsFound, COUNT(*) AS Count
+    SELECT PMID, GROUP_CONCAT(Mention) AS TermsFound, SUM(Count) AS Count
     FROM temp1
     GROUP BY PMID
     ORDER BY Count DESC
-    LIMIT 100;     
+    LIMIT 100;   
     `;
 
   if (req.query.page && !isNaN(req.query.page)) {
@@ -534,16 +509,16 @@ async function topResearcher(req, res) {
 
 
 
-    // we have implemented this for you to see how to return results by querying the database
-    connection.query(sqlQuery,
-      function (error, results, fields) {
-        if (error) {
-          res.json({ error: error });
-        } else if (results) {
-          res.json({ results: results });
-        }
+  // we have implemented this for you to see how to return results by querying the database
+  connection.query(sqlQuery,
+    function (error, results, fields) {
+      if (error) {
+        res.json({ error: error });
+      } else if (results) {
+        res.json({ results: results });
       }
-    
+    }
+
   );
 
 }
@@ -579,7 +554,7 @@ async function getTotalPaperByCountry(req, res) {
 }
 
 /*
-This simple query returns 
+This simple query returns all the countries that are in the database. It is used for displaying the countries page.
 */
 
 // example request: http://localhost:8000/countries?
@@ -601,6 +576,11 @@ async function getCountries(req, res) {
     );
   }
 }
+
+/*
+This query counts the number of migrations occurred for each pair of countries. It is used for calculating 
+the data that will be displayed on the visiualization page.
+*/
 
 async function getVisualData(req, res) {
   let sqlQuery = `WITH temp1 AS (
@@ -642,6 +622,9 @@ async function getVisualData(req, res) {
   }
 }
 
+/*
+This query returns a distinct list of all organizations, used to generate drop down menus.
+*/
 
 // example request: http://localhost:8000/organizations?
 async function getOrganizations(req, res) {
@@ -662,6 +645,12 @@ async function getOrganizations(req, res) {
     );
   }
 }
+
+/*
+This query reorganizes the Migration data to count the number of papers that have moved from country A to B.
+If a researcher moves from country A to B and publishes 10 papers, it counts as country A losing 10 papers to country B
+and country B gaining 10 papers.
+*/
 
 async function PapersMoved2C(req, res) {
   let sqlQuery = ` WITH temp1 AS (
@@ -688,6 +677,11 @@ async function PapersMoved2C(req, res) {
   );
 
 }
+
+/*
+This query tracks the bioentites that have "moved" meaning what wrods were contained in the papers written
+by authors that have migrated from one country to another.
+*/
 
 async function bioentitiesMoved2c(req, res) {
   let sqlQuery = ` WITH temp1 AS (
@@ -726,6 +720,10 @@ async function bioentitiesMoved2c(req, res) {
 
 }
 
+/*
+This query calculates the net migration between two coutnries. We see how much country A lost to country B
+*/
+
 async function movement2c(req, res) {
   let sqlQuery = ` WITH temp1 AS (
     SELECT COUNT(*) AS Count
@@ -755,6 +753,12 @@ async function movement2c(req, res) {
   );
 
 }
+
+/*
+This country takes the union of bioentites that are found between two countries, we see how many shared
+words exist between two countries
+*/
+
 
 async function sharedBioentities2c(req, res) {
   let sqlQuery = ` WITH temp1 AS(
@@ -795,6 +799,11 @@ async function sharedBioentities2c(req, res) {
   );
 
 }
+
+/*
+This query returns the papers shared between the given pair of countries. A paper is shared when it
+contains an author from one country and another author from the other.
+*/
 
 async function papersBoth2c(req, res) {
   let sqlQuery = `WITH country1 AS (

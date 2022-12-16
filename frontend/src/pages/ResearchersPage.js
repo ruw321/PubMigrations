@@ -67,20 +67,13 @@ class ResearchersPage extends React.Component {
 
       education: '',
       employment: '',
-      pmid: '',
       researchersResults: []
     }
 
-    this.handlePmidChange = this.handlePmidChange.bind(this);
     this.handleEmploymentChange = this.handleEmploymentChange.bind(this);
     this.handleEducationChange = this.handleEducationChange.bind(this);
     this.updateSearchResults = this.updateSearchResults.bind(this);
 
-  }
-
-  handlePmidChange(event) {
-    this.setState({ pmid: event.target.value });
-    // console.log(this.state.pmid);
   }
 
   handleEmploymentChange(event) {
@@ -96,14 +89,13 @@ class ResearchersPage extends React.Component {
   updateSearchResults() {
     // console.log("here1");
     console.log(this.state.education);
-    console.log(this.state.pmid);
     console.log(this.state.employment);
     // console.log("here2");
     if (this.state.employment === '' || this.state.education === '') {
       alert("Employment and Education are required");
     } else {
       this.setState({ loadingResearchers: true });
-      getResearchers(this.state.employment, this.state.education, this.state.pmid).then(res => {
+      getResearchers(this.state.employment, this.state.education).then(res => {
         this.setState({ researchersResults: res.results });
         this.setState({ loadingResearchers: false });
       })
@@ -129,10 +121,6 @@ class ResearchersPage extends React.Component {
               <Col flex={2}><FormGroup style={{ width: '20vw', margin: '0 auto' }}>
                 <label>Education (required)</label>
                 <FormInput placeholder="Education" value={this.state.education} onChange={this.handleEducationChange} />
-              </FormGroup></Col>
-              <Col flex={2}><FormGroup style={{ width: '20vw', margin: '0 auto' }}>
-                <label>Paper ID (PMID)</label>
-                <FormInput type="number" placeholder="PMID" value={this.state.pmid} onChange={this.handlePmidChange} />
               </FormGroup></Col>
               <Col flex={2}><FormGroup style={{ width: '10vw' }}>
                 <Button style={{ marginTop: '4vh' }} onClick={this.updateSearchResults}>Search</Button>
