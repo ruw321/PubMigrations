@@ -133,7 +133,7 @@ class PublicationsPage extends React.Component {
           </Form>
         <div style={{ width: '70vw', margin: '0 auto', marginTop: '5vh' }}>
           <h3>Publications</h3>
-          <h6> Papers and Authors tables are joined to find papers that match the search criteria</h6>
+          <h6> Search publications by author id (ANDID), paper id (PMID), author order, and publication year.</h6>
           <Table bordered loading={{ indicator: <div><Spin size="large" /></div>, spinning:this.state.loadingPublications}} dataSource={this.state.publicationsResults} columns={publicationsColumns} pagination={{ pageSizeOptions:[5, 10], defaultPageSize: 5, showQuickJumper:true }}/>
         </div>
       </div>
