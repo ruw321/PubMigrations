@@ -129,7 +129,7 @@ class ResearchersPage extends React.Component {
           </Form>
           <div style={{ width: '70vw', margin: '0 auto', marginTop: '5vh' }}>
             <h3>Researchers</h3>
-            <h6> Filter researcher based on employment, education, and paper id</h6>
+            <h6> Get researcher information based on employment and education</h6>
             <Table bordered loading={{ indicator: <div><Spin size="large" /></div>, spinning: this.state.loadingResearchers }} rowKey="ANDID" dataSource={this.state.researchersResults} columns={researchersColumns} pagination={{ pageSizeOptions: [5, 10], defaultPageSize: 10, showQuickJumper: true }} />
           </div>
         </div>
