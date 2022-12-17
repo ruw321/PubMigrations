@@ -18,7 +18,6 @@ const migrationColumns = [
     dataIndex: 'ORCID',
     key: 'ORCID',
     sorter: (a, b) => a.ORCID.localeCompare(b.ORCID),
-    // render: (text, row) => <a href={`/players?id=${row.PlayerId}`}>{text}</a>
   },
   {
     title: 'PhdYear',
@@ -38,7 +37,6 @@ const migrationColumns = [
     key: 'EarliestYear',
     sorter: (a, b) => a.EarliestYear - b.EarliestYear    
   },
-  // TASK 8: add a column for Club, with the ability to (alphabetically) sort 
   {
     title: 'EarliestCountry',
     dataIndex: 'EarliestCountry',

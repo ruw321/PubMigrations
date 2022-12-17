@@ -16,13 +16,11 @@ const papersByCountriesColumns = [
     title: 'Country',
     dataIndex: 'Country',
     key: 'Country',
-    // sorter: (a, b) => a.Country.localeCompare(b.Country),
   },
   {
     title: 'Number of papers',
     dataIndex: 'NumPapers',
     key: 'NumPapers',
-    // sorter: (a, b) => a.NumPapers - b.NumPapers
   }
 ];
 
@@ -98,8 +96,6 @@ class CountriesPage extends React.Component {
     this.updateSearchResults = this.updateSearchResults.bind(this)
 
   }
-
-  // const [loading, setLoading] = useState();
 
   handleCountryQueryChange(value) {
     console.log("value here:", value.value)
