@@ -150,7 +150,7 @@ describe('testing get requests', () => {
     test('testing most employed cities', async () => {
        const response = await request(webapp).get('/mostEmployedCities?country=US');
 	expect(response.status).toEqual(200);
-	expect(JSON.parse(response.text).results[0]).toHaveProperty('count',577);
+	expect(JSON.parse(response.text).results[0]).toHaveProperty('count',6272);
 	console.log(JSON.parse(response.text).results[0]);
     });
 
