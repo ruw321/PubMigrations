@@ -12,7 +12,7 @@ Kevin Bernat, Christian Richmond, Radin Nojoomi, Ruifan Wang
 4) Run `npm start`. The terminal should show `Server running at http://localhost:8080/
 `.
 5) Open another terminal and navigate to frontend folder.
-6) Run `npm install`.
+6) Run `npm install --force`.
 7) Run `npm start`.
 8) The application should open automatically at http://localhost:3000/
 
