@@ -16,4 +16,7 @@ Kevin Bernat, Christian Richmond, Radin Nojoomi, Ruifan Wang
 7) Run `npm start`.
 8) The application should open automatically at http://localhost:3000/
 
+## Testing
 
+1) Navigate terminal to the backend folder.
+2) Run `npm test`.
