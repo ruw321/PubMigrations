@@ -27,7 +27,6 @@ const publicationsColumns = [
     key: 'LastName',
     sorter: (a, b) => a.LastName.localeCompare(b.LastName)
   },
-  // TASK 7: add a column for Potential, with the ability to (numerically) sort ,
   {
     title: 'Initials',
     dataIndex: 'Initials',
@@ -92,7 +91,6 @@ class PublicationsPage extends React.Component {
   componentDidMount() {
     getPublications().then(res => {
       console.log(res.results)
-      // TASK 1: set the correct state attribute to res.results
       this.setState({ publicationsResults: res.results})
       console.log('set state')
       this.setState({ loadingPublications: false })

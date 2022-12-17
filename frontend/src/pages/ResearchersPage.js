@@ -78,19 +78,14 @@ class ResearchersPage extends React.Component {
 
   handleEmploymentChange(event) {
     this.setState({ employment: event.target.value });
-    // console.log(this.state.employment);
   }
 
   handleEducationChange(event) {
     this.setState({ education: event.target.value });
-    // console.log(this.state.education);
   }
 
   updateSearchResults() {
-    // console.log("here1");
-    console.log(this.state.education);
-    console.log(this.state.employment);
-    // console.log("here2");
+
     if (this.state.employment === '' || this.state.education === '') {
       alert("Employment and Education are required");
     } else {

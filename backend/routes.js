@@ -16,7 +16,7 @@ connection.connect();
 // Connecting to MongoDB
 const client = new MongoClient(config.mongodb_uri, { useNewUrlParser: true, useUnifiedTopology: true, serverApi: ServerApiVersion.v1 });
 
-// login fucntion to authenticate user
+// login function to authenticate user
 async function login(req, res) {
   const email = req.body.email;
   const password = req.body.password;
@@ -60,7 +60,7 @@ async function signup(req, res) {
   }
 }
 
-// helper function to split comma seperated string
+// helper function to split comma separated string
 function processSearchWords(words) {
   let wordList = words.split(',');
   wordList.forEach(function (part, index, theArray) {
@@ -77,9 +77,7 @@ function multipleWhere(req, integerProperty, sqlQuery) {
       if (firstProperty) {
         if (integerProperty.includes(propName)) {
           sqlQuery += `WHERE ${propName} = ${req.query[propName]} `;
-        } //else {
-        // sqlQuery += `WHERE ${propName} = '${req.query[propName]}' `;
-        //}
+        }
         firstProperty = false;
       } else {
         if (integerProperty.includes(propName)) {
@@ -96,10 +94,8 @@ function multipleWhere(req, integerProperty, sqlQuery) {
 
 // Get top authors by number of papers
 /*
-This query returns the authors who have written the most papers grouped by organization.
-So the reuslt table is over organization along with it's most impactful researcher
+This query is not used - IGNORE
 */
-
 async function getBestAuthors(req, res) {
   // a GET request to /getBestAuthors
 
@@ -134,17 +130,31 @@ async function getBestAuthors(req, res) {
 
 
 /*
-This query selects all cities from the Employment table and joins with the Author table
-It groups by the city to find the ones where the most Authors work
+This query selects all cities from the Employment table.
+It groups by the city to find the ones where the most Authors work for one country.
 */
 async function mostEmployedCities(req, res) {
   // a GET request to /mostEmployedCities?limit=100
   let query = `
-  SELECT e.City, COUNT(*) as count FROM Employment e
-  JOIN Authors a ON a.ANDID = e.ANDID
-  WHERE Country = '${req.query.country}'
-  GROUP BY e.City
-  ORDER BY count DESC 
+  WITH temp1 AS (
+    SELECT City
+    FROM (
+      SELECT ANDID, City, BeginYear
+      FROM Employment
+      WHERE Country = '${req.query.country}'
+      ) u
+    INNER JOIN  (
+      SELECT ANDID, MAX(BeginYear) as BeginYear
+      FROM Employment
+      WHERE Country = '${req.query.country}'
+      GROUP BY ANDID
+    ) t
+    ON u.ANDID = t.ANDID AND u.BeginYear = t.BeginYear
+  )
+  SELECT City, COUNT(*) as count
+  FROM temp1
+  GROUP BY City
+  ORDER BY count DESC
   LIMIT 100
   `;
 
@@ -161,7 +171,7 @@ async function mostEmployedCities(req, res) {
 
 /*
 This query combines the migration and employment and employment table by using the ORCID table to
-match the two table. It find the count of those who have migrated from every Organization and divides it
+match the two tables. It finds the count of those who have migrated from every Organization and divides it
 by the total number of employees at said organization, this returns the percentage of employees who have migrated
 */
 async function mostBenefitedOrg(req, res) {
@@ -203,7 +213,6 @@ This query returns the top words mentioned in all papers by count.
 It accepts on optional country parameter that looks at papers published in a specific country
 */
 
-
 async function topBioEdByCountry(req, res) {
   // a GET request to /topBioEdByCountry?limit=100&country=
   let limit = 100;
@@ -238,9 +247,9 @@ async function topBioEdByCountry(req, res) {
 }
 
 /*
-This query returns finds the most prolific institions in every country. We define this
-by seeing which institutes have had researchers that prodcued the most papers while working
-for a specific orginization.
+This query returns the most prolific institutions in every country. We define this
+by seeing which institutes have had researchers that produced the most papers while working
+for a specific organization.
 */
 async function topInstituteByCountry(req, res) {
   // a GET request to /topInstitudeByCountry?country="Country"
@@ -282,30 +291,22 @@ async function getMigrations(req, res) {
 
   sqlQuery += `\nLIMIT 100`;
 
-  if (req.query.page && !isNaN(req.query.page)) {
-    // TODO: add the page feature 
-  } else {
-    // we have implemented this for you to see how to return results by querying the database
-    connection.query(sqlQuery,
-      function (error, results, fields) {
-        if (error) {
-          res.json({ error: error });
-        } else if (results) {
-          res.json({ results: results });
-        }
+  connection.query(sqlQuery,
+    function (error, results, fields) {
+      if (error) {
+        res.json({ error: error });
+      } else if (results) {
+        res.json({ results: results });
       }
-    );
-  }
+    }
+  );
+
 }
 
 /*
-This query allows the user to filter every researcher based on employment, education, and paper id. It combines the three tables that
-inlcude ANDID and utilizes joins to group all the information.
+This query allows the user to filter every researcher based on employment and education.
 */
-
-
-// example request is: http://localhost:8000/filterResearchers?Education=Tsinghua University&Employment=Tsinghua University&Writes=1726147
-// TODO: note that the frontend will have to deal with different number of columns depending on how many tables we are joining
+// example request is: http://localhost:8000/filterResearchers?education=Tsinghua University&employment=Tsinghua University
 async function filterResearchers(req, res) {
 
   let sqlQuery = `WITH temp1 AS (
@@ -358,8 +359,7 @@ async function filterResearchers(req, res) {
 }
 
 /*
-This query finds all papers which contain at least one instance of the user specified
-word that will be inputted. This allows the user to search relevant terms to find papers of interest.
+This query finds papers that contain the specified words.
 */
 // example request: http://localhost:8000/paper/words?words=brain,neurology
 async function filterPaperWords(req, res) {
@@ -385,27 +385,23 @@ async function filterPaperWords(req, res) {
     LIMIT 100;   
     `;
 
-  if (req.query.page && !isNaN(req.query.page)) {
-    // TODO: add the page feature 
-  } else {
-    // we have implemented this for you to see how to return results by querying the database
-    connection.query(sqlQuery,
-      function (error, results, fields) {
-        if (error) {
-          res.json({ error: error });
-        } else if (results) {
-          res.json({ results: results });
-        }
+  connection.query(sqlQuery,
+    function (error, results, fields) {
+      if (error) {
+        res.json({ error: error });
+      } else if (results) {
+        res.json({ results: results });
       }
-    );
-  }
+    }
+  );
+
 }
 
 
 /*
 This query allows the Papers and Authors tables to be used in order to find papers
-that match a given criteria. The user can select from specific authors, publication year
-specifc paper ID, and the order on authors name appears within the list of authors
+that match a given criteria. The user can filter by specific authors, publication year,
+paper ID, and the order on authors name appears within the list of authors
 */
 // example request: http://localhost:8000/paper/publications?PubYear=1975&PMID=1
 async function filterPaperPublication(req, res) {
@@ -426,34 +422,25 @@ async function filterPaperPublication(req, res) {
 
   sqlQuery += `\nLIMIT 100`;
 
-  if (req.query.page && !isNaN(req.query.page)) {
-    // TODO: add the page feature 
-  } else {
-    // we have implemented this for you to see how to return results by querying the database
-    connection.query(sqlQuery,
-      function (error, results, fields) {
-        if (error) {
-          res.json({ error: error });
-        } else if (results) {
-          res.json({ results: results });
-        }
+  connection.query(sqlQuery,
+    function (error, results, fields) {
+      if (error) {
+        res.json({ error: error });
+      } else if (results) {
+        res.json({ results: results });
       }
-    );
-  }
+    }
+  );
+
 }
 
 
 
 /*
-This query returns the top research from every organziation, it may seem similar to a previos query,
-however in this one the author is included if they have ever worked or studied at at least one of the 
-parameters that was inputted. The user has the choice of education, employment, or paper id.
+This query returns the top researcher for an organization by number of papers.
 */
-
-
 // example request: http://localhost:8000/researchers/top?Organization=Tsinghua University
-// this one takes about 2 minutes
-// be careful with parsing in the frontend, it returns more stuff but it has multiple sql statements
+
 async function topResearcher(req, res) {
   if (!req.query.Organization) {
     res.json({ error: "Organization is not specified" });
@@ -469,9 +456,6 @@ async function topResearcher(req, res) {
     LIMIT 100
     `;
 
-
-
-  // we have implemented this for you to see how to return results by querying the database
   connection.query(sqlQuery,
     function (error, results, fields) {
       if (error) {
@@ -487,8 +471,7 @@ async function topResearcher(req, res) {
 
 
 /*
-This query returns the number of papers that have been produced by a given country. A paper is produced by a country
-if the author of that paper is located in the country when the paper was published.
+This query returns the number of papers that have been produced by a given country. A paper is produced by a country if the author of that paper is located in the country when the paper was published.
 */
 
 async function getTotalPaperByCountry(req, res) {
@@ -499,51 +482,40 @@ async function getTotalPaperByCountry(req, res) {
   GROUP BY Country
   ORDER BY NumPapers`;
 
-  if (req.query.page && !isNaN(req.query.page)) {
-    // TODO: add the page feature 
-  } else {
-    // we have implemented this for you to see how to return results by querying the database
-    connection.query(sqlQuery,
-      function (error, results, fields) {
-        if (error) {
-          res.json({ error: error });
-        } else if (results) {
-          res.json({ results: results });
-        }
+  connection.query(sqlQuery,
+    function (error, results, fields) {
+      if (error) {
+        res.json({ error: error });
+      } else if (results) {
+        res.json({ results: results });
       }
-    );
-  }
+    }
+  );
+
 }
 
 /*
-This simple query returns all the countries that are in the database. It is used for displaying the countries page.
+This query returns all the countries that are in the database.
 */
-
 // example request: http://localhost:8000/countries?
 async function getCountries(req, res) {
   let sqlQuery = `SELECT * FROM Countries WHERE Name != "Unknown" `;
 
-  if (req.query.page && !isNaN(req.query.page)) {
-    // TODO: add the page feature 
-  } else {
-    // we have implemented this for you to see how to return results by querying the database
-    connection.query(sqlQuery,
-      function (error, results, fields) {
-        if (error) {
-          res.json({ error: error });
-        } else if (results) {
-          res.json({ results: results });
-        }
+  connection.query(sqlQuery,
+    function (error, results, fields) {
+      if (error) {
+        res.json({ error: error });
+      } else if (results) {
+        res.json({ results: results });
       }
-    );
-  }
+    }
+  );
+
 }
 
 /*
-This query counts the number of migrations occurred for each pair of countries. It is used for calculating 
-the data that will be displayed on the visiualization page.
+This query counts the number of migrations occurred for each pair of countries among the top 150 researchers. It is used for calculating the data that will be displayed on the visualization page.
 */
-
 async function getVisualData(req, res) {
   let sqlQuery = `WITH temp1 AS (
     SELECT ORCID, EarliestCountry, Country2016
@@ -568,20 +540,16 @@ async function getVisualData(req, res) {
     LIMIT 150;
   `
 
-  if (req.query.page && !isNaN(req.query.page)) {
-    // TODO: add the page feature 
-  } else {
-    // we have implemented this for you to see how to return results by querying the database
-    connection.query(sqlQuery,
-      function (error, results, fields) {
-        if (error) {
-          res.json({ error: error });
-        } else if (results) {
-          res.json({ results: results });
-        }
+  connection.query(sqlQuery,
+    function (error, results, fields) {
+      if (error) {
+        res.json({ error: error });
+      } else if (results) {
+        res.json({ results: results });
       }
-    );
-  }
+    }
+  );
+
 }
 
 /*
@@ -592,26 +560,21 @@ This query returns a distinct list of all organizations, used to generate drop d
 async function getOrganizations(req, res) {
   let sqlQuery = `SELECT DISTINCT Organization FROM PmidAndidInfo `;
 
-  if (req.query.page && !isNaN(req.query.page)) {
-    // TODO: add the page feature 
-  } else {
-    // we have implemented this for you to see how to return results by querying the database
-    connection.query(sqlQuery,
-      function (error, results, fields) {
-        if (error) {
-          res.json({ error: error });
-        } else if (results) {
-          res.json({ results: results });
-        }
+  connection.query(sqlQuery,
+    function (error, results, fields) {
+      if (error) {
+        res.json({ error: error });
+      } else if (results) {
+        res.json({ results: results });
       }
-    );
-  }
+    }
+  );
+
 }
 
 /*
 This query reorganizes the Migration data to count the number of papers that have moved from country A to B.
-If a researcher moves from country A to B and publishes 10 papers, it counts as country A losing 10 papers to country B
-and country B gaining 10 papers.
+If a researcher moves from country A to B and publishes 10 papers, it counts as country A losing 10 papers to country B and country B gaining 10 papers.
 */
 
 async function PapersMoved2C(req, res) {
@@ -641,10 +604,9 @@ async function PapersMoved2C(req, res) {
 }
 
 /*
-This query tracks the bioentites that have "moved" meaning what wrods were contained in the papers written
+This query tracks the bioentites that have "moved" meaning what words were contained in the papers written
 by authors that have migrated from one country to another.
 */
-
 async function bioentitiesMoved2c(req, res) {
   let sqlQuery = ` WITH temp1 AS (
     SELECT ORCID
@@ -685,7 +647,6 @@ async function bioentitiesMoved2c(req, res) {
 /*
 This query calculates the net migration between two coutnries. We see how much country A lost to country B
 */
-
 async function movement2c(req, res) {
   let sqlQuery = ` WITH temp1 AS (
     SELECT COUNT(*) AS Count
@@ -717,11 +678,8 @@ async function movement2c(req, res) {
 }
 
 /*
-This country takes the union of bioentites that are found between two countries, we see how many shared
-words exist between two countries
+This query returns bioentities/terms that are found in papers from two countries
 */
-
-
 async function sharedBioentities2c(req, res) {
   let sqlQuery = ` WITH temp1 AS(
     SELECT Mention, Count(*) as Count
@@ -764,7 +722,7 @@ async function sharedBioentities2c(req, res) {
 
 /*
 This query returns the papers shared between the given pair of countries. A paper is shared when it
-contains an author from one country and another author from the other.
+contains at least one author who has been employed/educated in country 1 and at least one author who has been employed/educated in country 2. It may be the same author. The authors who have been to one of the two countries are returned as a list.
 */
 
 async function papersBoth2c(req, res) {
@@ -820,8 +778,6 @@ country2 AS (
   );
 
 }
-
-
 
 
 

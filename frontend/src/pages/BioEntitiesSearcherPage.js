@@ -17,7 +17,6 @@ const bioEntitiesColumns = [
     dataIndex: 'PMID',
     key: 'PMID',
     sorter: (a, b) => a.PMID - b.PMID
-    // render: (text, row) => <a href={`/players?id=${row.PlayerId}`}>{text}</a>
   },
   {
     title: 'TermsFound',
