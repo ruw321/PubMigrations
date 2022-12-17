@@ -14,6 +14,6 @@ Kevin Bernat, Christian Richmond, Radin Nojoomi, Ruifan Wang
 5) Open another terminal and navigate to frontend folder.
 6) Run `npm install`.
 7) Run `npm start`.
-8) The application should open automatically at ([linkurl](http://localhost:3000/))
+8) The application should open automatically at http://localhost:3000/
 
 
